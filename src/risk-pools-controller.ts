@@ -121,8 +121,7 @@ export function handleLogNewProduct(event: LogNewProduct): void {
   product.productIncentiveFee = productInfo.value2;
   product.maxMarketIncentiveFee = productInfo.value3;
 
-  product.defaultPremiumRateModels =
-    productContract.getDefaultPremiumRateModels().map<Bytes>((m: Address) => m as Bytes);
+  product.defaultPremiumRateModels = changetype<Bytes[]>(productContract.getDefaultPremiumRateModels());
   product.defaultRatesOracle = productContract.defaultRatesOracle();
   product.withdrawalDelay = productContract.withdrawalDelay();
   product.withdrawRequestExpiration =
