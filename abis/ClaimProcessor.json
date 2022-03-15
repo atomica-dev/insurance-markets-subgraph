@@ -1,0 +1,111 @@
+[
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "aragonDao_",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor",
+        "signature": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "productId",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "policyId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "details",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "votingId",
+                "type": "uint256"
+            }
+        ],
+        "name": "LogClaimSubmitted",
+        "type": "event",
+        "signature": "0x4f7b4b6d40967e16951f8bd64e9f92993e8753cb589b0de62ed080e47e58f1fb"
+    },
+    {
+        "inputs": [],
+        "name": "aragonDao",
+        "outputs": [
+            {
+                "internalType": "contract IVoting",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x29b9ea14"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "votingId",
+                "type": "uint256"
+            }
+        ],
+        "name": "getVotingStatus",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "_open",
+                "type": "bool"
+            },
+            {
+                "internalType": "bool",
+                "name": "_executed",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x8f633994"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "productId_",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "policyId_",
+                "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "details_",
+                "type": "string"
+            }
+        ],
+        "name": "submitClaim",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x34dc3c66"
+    }
+]

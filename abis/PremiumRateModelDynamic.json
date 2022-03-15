@@ -1,0 +1,145 @@
+[
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "baseRatePerYear_",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "kink_",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "normalRatePerYear_",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "jumpRatePerYear_",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor",
+        "signature": "constructor"
+    },
+    {
+        "inputs": [],
+        "name": "ONE",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0xc2ee3a08"
+    },
+    {
+        "inputs": [],
+        "name": "YEAR",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x83914540"
+    },
+    {
+        "inputs": [],
+        "name": "baseRatePerSec",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x5e3d69b2"
+    },
+    {
+        "inputs": [],
+        "name": "jumpMultiplierPerSec",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0xf84170fe"
+    },
+    {
+        "inputs": [],
+        "name": "kink",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0xfd2da339"
+    },
+    {
+        "inputs": [],
+        "name": "multiplierPerSec",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x9830d19e"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "capacity_",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "cover_",
+                "type": "uint256"
+            }
+        ],
+        "name": "getPremiumRate",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0xf517130a"
+    }
+]

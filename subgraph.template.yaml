@@ -1,0 +1,336 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: RiskPoolsController
+    network: ganache
+    source:
+      abi: RiskPoolsController
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Market
+        - Policy
+        - Event
+        - State
+        - Pool
+        - Charge
+        - PoolMarketRelation
+        - Product
+        - FrontendOperator
+        - AccruedFee
+        - PremiumRateModel
+        - Swap
+        - Payout
+        - PayoutRequest
+        - IncomingPayoutRequest
+      abis:
+        - name: Product
+          file: ./abis/Product.json
+        - name: RiskPoolsController
+          file: ./abis/RiskPoolsController.json
+        - name: Pool
+          file: ./abis/RiskPool.json
+        - name: PolicyTokenIssuer
+          file: ./abis/PolicyTokenIssuer.json
+        - name: PayoutRequester
+          file: ./abis/ClaimProcessor.json
+        - name: PremiumRateModelFixed
+          file: ./abis/PremiumRateModelFixed.json
+        - name: PremiumRateModelDynamic
+          file: ./abis/PremiumRateModelDynamic.json
+      eventHandlers:
+        - event: LogLiquidation(uint256)
+          handler: handleLogLiquidation
+        - event: LogPolicyCoverChanged(uint256,uint256,uint256)
+          handler: handleLogPolicyCoverChanged
+        - event: LogNewPool(address)
+          handler: handleLogNewPool
+        - event: LogMarketStatusChanged(uint256,bool)
+          handler: handleLogMarketStatusChanged
+        - event: LogMarketIncentiveFeeUpdated(uint256,uint256)
+          handler: handleLogMarketIncentiveFeeUpdated
+        - event: LogRiskPoolAddedToLevel(uint256,uint256,address)
+          handler: handleLogRiskPoolAddedToLevel
+        - event: LogNextLevelRemoved(uint256,uint256,uint256,uint256)
+          handler: handleLogNextLevelRemoved
+        - event: LogRiskPoolRemovedFromLevel(uint256,uint256,address)
+          handler: handleLogRiskPoolRemovedFromLevel
+        - event: LogNextLevelAdded(uint256,uint256,uint256)
+          handler: handleLogNextLevelAdded
+        - event: LogGovernance(uint8,address,address,uint256,uint256,bool)
+          handler: handleLogGovernance
+        - event: LogNewProductStatus(address,uint8)
+          handler: handleLogNewProductStatus
+        - event: LogNewMarketStatus(uint256,uint8)
+          handler: handleLogNewMarketStatus
+        - event: LogNewSystemStatus(uint8)
+          handler: handleLogNewSystemStatus
+        - event: LogPermissionTokenIssued(uint256,uint256,address)
+          handler: handleLogPermissionTokenIssued
+        - event: LogNewProduct(address)
+          handler: handleLogNewProduct
+        - event: LogPolicyDeposit(uint256,address,uint256,uint256,uint256)
+          handler: handleLogPolicyDeposit
+        - event: LogPolicyWithdraw(uint256,address,uint256,uint256,uint256)
+          handler: handleLogPolicyWithdraw
+        - event: LogWithdrawFee(address,address,address,uint256)
+          handler: handleLogWithdrawFee
+        - event: LogFeeAccrued(uint256,address,uint256,uint256,address,uint256,address)
+          handler: handleLogFeeAccrued
+        - event: LogSwap(uint256,address,address,uint256,address,uint256)
+          handler: handleLogSwap
+        - event: LogPayout(uint256,address,address,uint256)
+          handler: handleLogPayout
+        - event: LogNewPayoutRequest(uint256)
+          handler: handleLogNewPayoutRequest
+        - event: LogForwardedPayoutRequestProcessed(uint256,address,uint256)
+          handler: handleLogForwardedPayoutRequestProcessed
+        - event: LogForwardedPayoutRequestDeclined(uint256)
+          handler: handleLogForwardedPayoutRequestDeclined
+        - event: LogNewForwardedPayoutRequest(uint256)
+          handler: handleLogNewForwardedPayoutRequest
+      file: ./src/risk-pools-controller.ts
+  - kind: ethereum/contract
+    name: CoverAdjuster
+    network: ganache
+    source:
+      abi: CoverAdjuster
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - AdjustmentConfiguration
+      abis:
+        - name: Product
+          file: ./abis/Product.json
+        - name: RiskPoolsController
+          file: ./abis/RiskPoolsController.json
+        - name: CoverAdjuster
+          file: ./abis/CoverAdjuster.json
+      eventHandlers:
+        - event: LogConfigurationCreated(uint256)
+          handler: handleLogConfigurationCreated
+        - event: LogConfigurationRemoved(uint256)
+          handler: handleLogConfigurationRemoved
+        - event: LogPolicyAdjusted(uint256,uint256)
+          handler: handleLogPolicyAdjusted
+        - event: LogConfigurationUpdated(uint256)
+          handler: handleLogConfigurationUpdated
+      file: ./src/cover-adjuster.ts
+templates:
+  - kind: ethereum/contract
+    name: PayoutRequester
+    network: ganache
+    source:
+      abi: PayoutRequester
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Product
+        - Market
+        - Policy
+        - Claim
+      abis:
+        - name: PayoutRequester
+          file: ./abis/ClaimProcessor.json
+      eventHandlers:
+        - event: LogClaimSubmitted(address,uint256,string,uint256)
+          handler: handleLogClaimSubmitted
+      file: ./src/payout-requester.ts
+  - kind: ethereum/contract
+    name: Product
+    network: ganache
+    source:
+      abi: Product
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Product
+        - Market
+        - Policy
+        - Event
+        - State
+        - Pool
+        - Charge
+        - PoolMarketRelation
+      abis:
+        - name: Product
+          file: ./abis/Product.json
+        - name: RiskPoolsController
+          file: ./abis/RiskPoolsController.json
+        - name: Pool
+          file: ./abis/RiskPool.json
+        - name: PolicyTokenIssuer
+          file: ./abis/PolicyTokenIssuer.json
+      eventHandlers:
+        - event: LogNewMarket(uint256)
+          handler: handleLogNewMarket
+        - event: LogNewPolicy(uint256,uint256)
+          handler: handleLogNewPolicy
+        - event: LogUintPropUpdated(uint8,uint256)
+          handler: handleLogUintPropUpdated
+        - event: LogAddressPropUpdated(uint8,address)
+          handler: handleLogAddressPropUpdated
+      file: ./src/product.ts
+  - kind: ethereum/contract
+    name: PolicyTokenIssuer
+    network: ganache
+    source:
+      abi: PolicyTokenIssuer
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Policy
+        - Event
+        - State
+      abis:
+        - name: PolicyTokenIssuer
+          file: ./abis/PolicyTokenIssuer.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/policy-token-issuer.ts
+  - kind: ethereum/contract
+    name: PolicyPermissionTokenIssuer
+    network: ganache
+    source:
+      abi: PolicyPermissionTokenIssuer
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - PolicyPermissionToken
+      abis:
+        - name: PolicyPermissionTokenIssuer
+          file: ./abis/PolicyTokenPermissionIssuer.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/policy-permission-token-issuer.ts
+  - name: Pool
+    kind: ethereum/contract
+    network: ganache
+    source:
+      abi: Pool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/templates/pool.ts
+      entities:
+        - Pool
+        - PoolParticipant
+        - Event
+        - State
+        - Market
+        - Policy
+        - Reward
+        - WithdrawRequest
+        - PoolMarketRelation
+        - PoolPremium
+        - PoolSettlement
+        - ExternalPool
+        - OutgoingPayoutRequest
+        - IncomingLoss
+        - OutgoingLoss
+        - PoolOwnLoss
+      abis:
+        - name: Pool
+          file: ./abis/RiskPool.json
+        - name: Product
+          file: ./abis/Product.json
+        - name: RiskPools
+          file: ./abis/RiskPoolsController.json
+        - name: RiskPoolsController
+          file: ./abis/RiskPoolsController.json
+        - name: PolicyTokenIssuer
+          file: ./abis/PolicyTokenIssuer.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: LogDeposit(address,uint256,uint256)
+          handler: handleLogDeposit
+        - event: LogWithdraw(address,uint256,uint256)
+          handler: handleLogWithdraw
+        - event: LogRequestCapital(address,address,uint256)
+          handler: handleLogRequestCapital
+        - event: LogContributePremium(uint256,address,address,uint256)
+          handler: handleLogContributePremium
+        - event: LogContributeSettlement(uint256,address,address,uint256)
+          handler: handleLogContributeSettlement
+        - event: LogForwardPayoutRequest(uint256,uint256,address,uint256,address)
+          handler: handleLogForwardPayoutRequest
+        - event: LogCoverChanged(uint256,uint256,uint256)
+          handler: handleLogCoverChanged
+        - event: LogCapacityChanged(uint256)
+          handler: handleLogCapacityChanged
+        - event: LogNewRewardDistribution(uint256,address,uint256,uint256,uint256)
+          handler: handleLogNewRewardDistribution
+        - event: LogAddRewardAmount(uint256,uint256)
+          handler: handleLogAddRewardAmount
+        - event: LogWithdrawRequestCreated(address,uint256,uint256,uint256)
+          handler: handleLogWithdrawRequestCreated
+        - event: LogWithdrawRequestCancelled(address,uint256)
+          handler: handleLogWithdrawRequestCancelled
+        - event: LogWithdrawRequestProcessed(address,uint256)
+          handler: handleLogWithdrawRequestProcessed
+        - event: LogMcrUpdated(uint256)
+          handler: handleLogMcrUpdated
+        - event: LogWithdrawDelayUpdated(uint256)
+          handler: handleLogWithdrawDelayUpdated
+        - event: LogWithdrawRequestExpirationUpdated(uint256)
+          handler: handleLogWithdrawRequestExpirationUpdated
+        - event: LogConnectedRiskPoolsDataUpdated(uint256,uint256)
+          handler: handleLogConnectedRiskPoolsDataUpdated
+        - event: LogPremiumDistributionUpdated(bytes32)
+          handler: handleLogPremiumDistributionUpdated
+        - event: LogSettlementDistributionUpdated(bytes32)
+          handler: handleLogSettlementDistributionUpdated
+        - event: LogRequestRiskPoolSync(uint256,address,address)
+          handler: handleLogRequestRiskPoolSync
+        - event: LogCancelRiskPoolSync(uint256,address)
+          handler: handleLogCancelRiskPoolSync
+        - event: LogAcceptRiskPoolSync(uint256,address,address,address)
+          handler: handleLogAcceptRiskPoolSync
+        - event: LogAcknowledgeRiskPoolSync(uint256,address,address)
+          handler: handleLogAcknowledgeRiskPoolSync
+        - event: LogTransferReserve(uint256,address,address,address,uint256,bool)
+          handler: handleLogTransferReserve
+        - event: LogPullFromReserveWallet(uint256,address,uint256)
+          handler: handleLogPullFromReserveWallet
+        - event: LogCommitLoss(uint256,address,uint256)
+          handler: handleLogCommitLoss
+        - event: LogForwardCommitLoss(uint256,address,address,uint256)
+          handler: handleLogForwardCommitLoss
+        - event: LogCapitalReleased(address,uint256)
+          handler: handleLogCapitalReleased
+  - kind: ethereum/contract
+    name: RateOracle
+    network: ganache
+    source:
+      abi: RateOracle
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - RateOracle
+        - RateOraclePairRate
+      abis:
+        - name: RateOracle
+          file: ./abis/ExchangeRatesOracle.json
+      blockHandlers:
+        - handler: handleBlock
+      file: ./src/rate-oracle.ts
