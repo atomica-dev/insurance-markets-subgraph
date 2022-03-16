@@ -16,7 +16,7 @@ export function getOracle(
 ): RateOracle {
   let oracle = RateOracle.load(id);
 
-  if (oracle == null) {
+  if (oracle === null) {
     oracle = new RateOracle(id);
 
     oracle.pairList = [];
@@ -27,7 +27,7 @@ export function getOracle(
 
     context.setString("oracleAddress", id);
 
-    RateOracleTemplate.createWithContext(Address.fromHexString(id) as Address, context);
+    RateOracleTemplate.createWithContext(Address.fromString(id), context);
   }
 
   return oracle;
@@ -62,7 +62,7 @@ export function addOraclePair(oracleId: string, from: Bytes, to: Bytes): void {
 
 export function updateOracleRates(oracleId: string, timestamp: BigInt): void {
   let oracle = getOracle(oracleId);
-  let contract = RateOracleContract.bind(Address.fromHexString(oracleId) as Address);
+  let contract = RateOracleContract.bind(Address.fromString(oracleId));
   let pairs = oracle.pairList;
 
   oracle.avgGasPrice = contract.avgGasPrice();
@@ -78,8 +78,8 @@ export function updateOracleRates(oracleId: string, timestamp: BigInt): void {
 function _updatePairRate(contract: RateOracleContract, pair: string, oracleId: string, timestamp: BigInt):void {
   let fromTo = pair.split("-");
   let from = fromTo[0], to = fromTo[1];
-  let fa = Address.fromHexString(from) as Address;
-  let ta = Address.fromHexString(to) as Address;
+  let fa = Address.fromString(from);
+  let ta = Address.fromString(to);
 
   let r = contract.try_value(fa, ta);
   let rr = contract.try_value(ta, fa);

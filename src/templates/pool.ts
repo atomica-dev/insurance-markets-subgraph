@@ -65,7 +65,7 @@ export function handleTransfer(event: Transfer): void {
   let sender = PoolParticipant.load(pool.id + event.params.from.toHexString());
   let receiver = PoolParticipant.load(pool.id + event.params.to.toHexString());
 
-  if (receiver == null) {
+  if (receiver === null) {
     receiver = addPoolParticipant(pool, event.params.to.toHexString(), event);
   }
 
@@ -113,7 +113,7 @@ export function handleLogDeposit(event: LogDeposit): void {
     event.params.poolTokenAmount
   );
 
-  if (account == null) {
+  if (account === null) {
     account = addPoolParticipant(pool, event.params.usr.toHexString(), event);
   }
 

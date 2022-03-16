@@ -106,7 +106,7 @@ export function getState(
   let id = getEventTypeString(type) + "-" + marketId + "-" + key;
   let state = State.load(id);
 
-  if (state == null) {
+  if (state === null) {
     state = new State(id);
 
     state.type = getEventTypeString(type);

@@ -144,7 +144,7 @@ export function handleLogNewProduct(event: LogNewProduct): void {
   );
   PolicyTokenIssuer.create(rpcContract.policyTokenIssuer());
   PolicyPermissionTokenIssuer.create(rpcContract.policyTokenPermissionIssuer());
-  PayoutRequesterTemplate.create(product.claimProcessor as Address);
+  PayoutRequesterTemplate.create(changetype<Address>(product.claimProcessor));
 
   updateState(EventType.SystemProductCount, BigInt.fromI32(1), null);
 }
@@ -256,7 +256,7 @@ function updatePolicyBalances(
   let market = Market.load(marketId)!;
 
   let productContract = ProductContract.bind(
-    Address.fromHexString(market.product) as Address
+    Address.fromString(market.product)
   );
   let rpcContract = RiskPoolsControllerContract.bind(
     productContract.riskPoolsController()
@@ -317,7 +317,7 @@ export function handleLogRiskPoolAddedToLevel(
   let levelId = event.params.levelId;
 
   let currentLevel = rpcContract.riskTowerBase(marketId);
-  let levelNo = 1;
+  let levelNo: i32 = 1;
 
   while (!currentLevel.isZero() && currentLevel != levelId) {
     levelNo++;
@@ -365,7 +365,7 @@ export function handleLogNextLevelAdded(event: LogNextLevelAdded): void {
   let levelId = event.params.levelIdToAdd;
 
   let currentLevel = rpcContract.riskTowerBase(marketId);
-  let levelNo = 1;
+  let levelNo: i32 = 1;
 
   while (!currentLevel.isZero() && currentLevel != levelId) {
     levelNo++;
@@ -614,7 +614,7 @@ function handleUpdateMarketExchangeRateOracle(event: LogGovernance): void {
   addOraclePair(
     market.rateOracle!.toHexString(),
     market.premiumToken,
-    Address.fromHexString(ETH_ADDRESS) as Bytes
+    Address.fromHexString(ETH_ADDRESS)
   );
 }
 
@@ -1178,11 +1178,11 @@ function updatePolicy(
   let market = Market.load(policy.market)!;
   let result = rpcContract.try_policyBalance(
     policy.policyId,
-    market.premiumToken as Address
+    changetype<Address>(market.premiumToken)
   );
   let pInfo = rpcContract.policyDeposits(
     policy.policyId,
-    market.premiumToken as Address
+    changetype<Address>(market.premiumToken)
   );
   let balance = !result.reverted ? result.value : BigInt.fromI32(0);
 

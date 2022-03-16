@@ -5,11 +5,11 @@ import { RiskPoolsController as RiskPoolsControllerContract } from "../generated
 export function getSystemConfig(id: string): System {
   let config = System.load(id);
 
-  if (config == null) {
+  if (config === null) {
     config = new System(id);
 
     let contract = RiskPoolsControllerContract.bind(
-      Address.fromHexString(id) as Address
+      Address.fromString(id)
     );
 
     config.rateOracleList = [];

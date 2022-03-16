@@ -46,7 +46,7 @@ export function handleLogNewMarket(event: LogNewMarket): void {
   let marketId = event.params.marketId;
   let product = Product.load(event.address.toHexString())!;
   let rpcContract = RiskPoolsControllerContract.bind(
-    product.riskPoolsControllerAddress as Address
+    changetype<Address>(product.riskPoolsControllerAddress)
   );
 
   let id =
@@ -104,7 +104,7 @@ export function handleLogNewMarket(event: LogNewMarket): void {
     addOraclePair(
       market.rateOracle!.toHexString(),
       market.premiumToken,
-      Address.fromHexString(ETH_ADDRESS) as Bytes
+      Address.fromHexString(ETH_ADDRESS)
     );
 
     if (market.insuredToken != Address.fromHexString(ZERO_ADDRESS)) {
@@ -117,7 +117,7 @@ export function handleLogNewMarket(event: LogNewMarket): void {
   }
 
   let currentLevel = rpcContract.riskTowerBase(marketId);
-  let levelNo = 1;
+  let levelNo: i32 = 1;
 
   while (!currentLevel.isZero()) {
     let pools = rpcContract.riskPoolsAtLevel(marketId, currentLevel);
@@ -210,7 +210,7 @@ export function addPoolToMarket(
   marketId: string,
   event: ethereum.Event,
   levelId: BigInt,
-  levelNo: number,
+  levelNo: i32,
   rpcAddress: Address | null = null
 ): void {
   let pool = Pool.load(poolId.toHexString());
@@ -233,7 +233,7 @@ export function addPoolToMarket(
     return;
   }
 
-  if (pools == null) {
+  if (pools === null) {
     pools = [];
   }
 
@@ -261,7 +261,7 @@ export function addPoolToMarket(
     let product = Product.load(event.address.toHexString());
 
     if (product != null) {
-      address = product.riskPoolsControllerAddress as Address;
+      address = changetype<Address>(product.riskPoolsControllerAddress);
     } else {
       return;
     }
@@ -283,7 +283,7 @@ export function addPoolToMarket(
   pme.allowance = allowanceResult.reverted
     ? BigInt.fromI32(0)
     : allowanceResult.value;
-  pme.levelNo = levelNo as i32;
+  pme.levelNo = levelNo;
   pme.levelId = levelId;
 
   pme.save();
@@ -391,7 +391,7 @@ export function removePoolsAtLevel(
       pmr !== null &&
       pmr.levelId !== null &&
       pmr.levelId! == level &&
-      (poolList == null || poolList.includes(pmr.poolId))
+      (poolList === null || poolList.includes(pmr.poolId))
     ) {
       removePoolFromMarket(pmr.poolId, marketId, event);
     }

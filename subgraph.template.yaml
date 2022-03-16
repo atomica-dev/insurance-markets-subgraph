@@ -9,7 +9,7 @@ dataSources:
       abi: RiskPoolsController
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - Market
@@ -101,7 +101,7 @@ dataSources:
       abi: CoverAdjuster
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - AdjustmentConfiguration
@@ -130,7 +130,7 @@ templates:
       abi: PayoutRequester
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - Product
@@ -151,7 +151,7 @@ templates:
       abi: Product
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - Product
@@ -188,7 +188,7 @@ templates:
       abi: PolicyTokenIssuer
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - Policy
@@ -208,7 +208,7 @@ templates:
       abi: PolicyPermissionTokenIssuer
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - PolicyPermissionToken
@@ -226,7 +226,7 @@ templates:
       abi: Pool
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/templates/pool.ts
       entities:
@@ -323,7 +323,7 @@ templates:
       abi: RateOracle
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - RateOracle

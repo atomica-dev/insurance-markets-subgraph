@@ -14,7 +14,7 @@ export function handleLogClaimSubmitted(event: LogClaimSubmitted): void {
   let votingId = event.params.votingId;
   let product = Product.load(productId);
 
-  if (product == null) {
+  if (product === null) {
     return;
   }
 
