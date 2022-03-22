@@ -481,9 +481,17 @@ export function handleLogPremiumDistributionUpdated(
 export function handleLogRequestRiskPoolSync(
   event: LogRequestRiskPoolSync
 ): void {
-  let pool = Pool.load(event.address.toHexString())!;
-  let epId =
-    event.params.chainId.toString() + "-" + event.params.riskPool.toHexString();
+  event.params.riskPool
+}
+
+export function addExternalPool(
+  poolAddress: Address,
+  chainId: BigInt,
+  riskPool: Address,
+  event: ethereum.Event,
+): void {
+  let pool = Pool.load(poolAddress.toHexString())!;
+  let epId = chainId.toString() + "-" + riskPool.toHexString();
   let l = pool.externalPoolList;
 
   if (l.indexOf(epId) < 0) {
@@ -497,8 +505,8 @@ export function handleLogRequestRiskPoolSync(
       event,
       null,
       pool.id,
-      event.params.chainId.toString(),
-      event.params.riskPool.toHexString(),
+      chainId.toString(),
+      riskPool.toHexString(),
       "+"
     );
   }
@@ -531,27 +539,12 @@ export function handleLogCancelRiskPoolSync(
 export function handleLogAcceptRiskPoolSync(
   event: LogAcceptRiskPoolSync
 ): void {
-  let pool = Pool.load(event.address.toHexString())!;
-  let epId =
-    event.params.chainId.toString() + "-" + event.params.riskPool.toHexString();
-  let l = pool.externalPoolList;
-
-  if (l.indexOf(epId) < 0) {
-    l.push(epId);
-    pool.externalPoolList = l;
-
-    pool.save();
-
-    addEvent(
-      EventType.ExternalPoolConnectionChanged,
-      event,
-      null,
-      pool.id,
-      event.params.chainId.toString(),
-      event.params.riskPool.toHexString(),
-      "+"
-    );
-  }
+  addExternalPool(
+    event.address,
+    event.params.chainId,
+    event.params.riskPool,
+    event,
+  );
 
   createOrUpdatePoolWallet(
     event.params.chainId,
@@ -563,6 +556,13 @@ export function handleLogAcceptRiskPoolSync(
 export function handleLogAcknowledgeRiskPoolSync(
   event: LogAcknowledgeRiskPoolSync
 ): void {
+  addExternalPool(
+    event.address,
+    event.params.chainId,
+    event.params.riskPool_,
+    event,
+  );
+
   createOrUpdatePoolWallet(
     event.params.chainId,
     event.params.riskPool_,
