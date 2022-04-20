@@ -40,7 +40,7 @@ export function getSystemConfig(id: string): System {
     config.swapDuration = contract.swapDuration();
     config.idleDuration = contract.idleDuration();
     config.extPoolDetailsConfidenceInterval =
-      contract.connectedCapacityDetailsConfidenceInterval();
+      contract.externalRiskPoolsConfidenceInterval();
 
     config.save();
   }

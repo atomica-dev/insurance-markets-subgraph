@@ -38,6 +38,7 @@ import {
   WithdrawRequest,
   PoolPremium,
   PoolSettlement,
+  PoolFee,
   ExternalPool,
   OutgoingPayoutRequest,
   OutgoingLoss,
@@ -48,7 +49,7 @@ import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import { EventType, addEvent, updateAndLogState, updateState } from "../event";
 import { marketPremiumEarned } from "../risk-pools-controller";
 import { filterNotEqual } from "../product";
-import { getRiskPoolConnection } from "../contract-mapper";
+import { getPoolBucket, getRiskPoolConnection } from "../contract-mapper";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
@@ -245,6 +246,23 @@ export function handleLogContributePremium(event: LogContributePremium): void {
 
   pp.save();
 
+  let pf = PoolFee.load(id);
+
+  if (!pf) {
+    pf = new PoolFee(id);
+
+    pf.poolId = event.address;
+    pf.tokenId = event.params.token;
+    pf.pool = pool.id;
+    pf.amount = BigInt.fromI32(0);
+  }
+
+  let pContract = PoolContract.bind(event.address);
+
+  pf.amount = getPoolBucket(pContract, event.params.token).managerFeeBalance;
+
+  pf.save();
+
   addEvent(
     EventType.PoolEarnedPremium,
     event,
@@ -373,7 +391,7 @@ export function handleLogCoverChanged(event: LogCoverChanged): void {
   if (marketRelation != null) {
     marketRelation.poolId = pool.id;
     marketRelation.pool = pool.id;
-    marketRelation.exposure = event.params.marketCover;
+    marketRelation.exposure = event.params.internalCover;
     marketRelation.rate = !pContract.try_currentPremiumRate().reverted
       ? pContract.currentPremiumRate()
       : BigInt.fromI32(0);

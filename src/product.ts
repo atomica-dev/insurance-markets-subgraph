@@ -141,14 +141,14 @@ export function createPool(
 ): void {
   let pool = new Pool(poolId.toHexString());
   let pContract = PoolContract.bind(poolId);
-  let btContract = PoolContract.bind(pContract.capitalToken()); // It is also ERC20
+  let btContract = PoolContract.bind(pContract.assetToken()); // It is also ERC20
   let premiumRate = !pContract.try_currentPremiumRate().reverted
     ? pContract.currentPremiumRate()
     : BigInt.fromI32(0);
 
-  pool.riskPoolsControllerAddress = pContract.operator();
+  pool.riskPoolsControllerAddress = pContract.controller();
   pool.name = pContract.name();
-  pool.capitalTokenAddress = pContract.capitalToken();
+  pool.capitalTokenAddress = pContract.assetToken();
   pool.capitalTokenBalance = BigInt.fromI32(1);
   pool.poolTokenBalance = BigInt.fromI32(1);
   pool.participants = BigInt.fromI32(0);
@@ -276,7 +276,7 @@ export function addPoolToMarket(
     market.marketId
   );
 
-  pme.exposure = pContract.marketCover(market.marketId);
+  pme.exposure = pContract.internalCoverPerMarket(market.marketId);
   pme.rate = pool.premiumRate;
   pme.poolId = pool.id;
   pme.pool = pool.id;

@@ -18,7 +18,7 @@ export enum GovernanceLogType {
   RiskPoolPremiumRateModel,
   RiskPoolMarketCapacityAllowance,
   RiskPoolMcr,
-  RiskPoolCapitalRequirement,
+  RiskPoolCap,
   RiskPoolWithdrawDelay,
   RiskPoolWithdrawRequestExpiration,
   RiskPoolLpAllowlistId,
@@ -52,7 +52,7 @@ export enum GovernanceLogType {
   PolicyBuyerReferralBonus,
 
   BridgeConnector,
-  ConnectedCapacityDetailsConfidenceInterval,
+  ExternalRiskPoolsConfidenceInterval,
 
   SwapCycle,
   SettlementDiscount

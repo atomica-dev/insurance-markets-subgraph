@@ -59,6 +59,29 @@ export function getPolicyDeposit(
   };
 }
 
+export class PoolBucket {
+  premiumAccumulator: BigInt;
+  settlementAccumulator: BigInt;
+  premiumTotalBalance: BigInt;
+  settlementTotalBalance: BigInt;
+  managerFeeBalance: BigInt;
+}
+
+export function getPoolBucket(
+  contract: RiskPoolContract,
+  token: Address,
+): PoolBucket {
+  let b = contract.buckets(token);
+
+  return {
+    premiumAccumulator: b.value0,
+    settlementAccumulator: b.value1,
+    premiumTotalBalance: b.value2,
+    settlementTotalBalance: b.value3,
+    managerFeeBalance: b.value4,
+  };
+}
+
 export class CMarket {
   marketOperator: Address;
   product: Address;
@@ -188,7 +211,7 @@ export function getRiskPoolConnection(
   chain: BigInt,
   id: Address
 ): CRiskPoolConnection {
-  let d = contract.connectedRiskPools(chain, id);
+  let d = contract.riskPoolsConnections(chain, id);
 
   return {
     reserveWallet: d.value0,

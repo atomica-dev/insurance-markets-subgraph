@@ -863,7 +863,7 @@ function handlePolicyBuyerReferralBonus(event: LogGovernance): void {
   }
 }
 
-function handleUpdateRiskPoolCapitalRequirement(event: LogGovernance): void {
+function handleRiskPoolCap(event: LogGovernance): void {
   let pool = Pool.load(event.params.param1.toHexString());
 
   if (!pool) {
@@ -995,8 +995,8 @@ map.set(
   handlePolicyBuyerReferralBonus
 );
 map.set(
-  GovernanceLogType.RiskPoolCapitalRequirement,
-  handleUpdateRiskPoolCapitalRequirement
+  GovernanceLogType.RiskPoolCap,
+  handleRiskPoolCap
 );
 map.set(
   GovernanceLogType.FrontendOperatorPenalty,
@@ -1008,13 +1008,13 @@ map.set(
 );
 map.set(GovernanceLogType.BridgeConnector, handleBridgeConnector);
 map.set(
-  GovernanceLogType.ConnectedCapacityDetailsConfidenceInterval,
-  handleConnectedCapacityDetailsConfidenceInterval
+  GovernanceLogType.ExternalRiskPoolsConfidenceInterval,
+  handleExternalRiskPoolsConfidenceInterval
 );
 map.set(GovernanceLogType.SwapCycle, handleSwapCycle);
 map.set(GovernanceLogType.SettlementDiscount, handleSettlementDiscount);
 
-export function handleConnectedCapacityDetailsConfidenceInterval(
+export function handleExternalRiskPoolsConfidenceInterval(
   event: LogGovernance
 ): void {
   let config = getSystemConfig(event.address.toHexString());

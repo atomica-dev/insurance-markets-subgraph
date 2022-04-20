@@ -241,6 +241,7 @@ templates:
         - PoolMarketRelation
         - PoolPremium
         - PoolSettlement
+        - PoolFee
         - ExternalPool
         - OutgoingPayoutRequest
         - IncomingLoss

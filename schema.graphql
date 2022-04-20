@@ -208,6 +208,7 @@ type Pool @entity {
   rewards: [Reward!]!
   premiums: [PoolPremium!] @derivedFrom(field: "pool")
   settlements: [PoolSettlement!] @derivedFrom(field: "pool")
+  fees: [PoolFee!] @derivedFrom(field: "pool")
   poolMarketRelations: [PoolMarketRelation!] @derivedFrom(field: "pool")
   externalPoolList: [String!]!
   externalCapacity: BigInt
@@ -248,6 +249,17 @@ type PoolPremium @entity {
 }
 
 type PoolSettlement @entity {
+  """
+  poolId-tokenId
+  """
+  id: ID!
+  poolId: Bytes!
+  tokenId: Bytes!
+  amount: BigInt!
+  pool: Pool!
+}
+
+type PoolFee @entity {
   """
   poolId-tokenId
   """
