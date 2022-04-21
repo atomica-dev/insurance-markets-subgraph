@@ -16,6 +16,7 @@ import {
   LogCancelRiskPoolSync,
   LogConnectedRiskPoolsDataUpdated,
   LogCapitalReleased,
+  LogManageFeeWithdrawn,
   LogPremiumDistributionUpdated,
   LogSettlementDistributionUpdated,
   LogRequestRiskPoolSync,
@@ -663,6 +664,20 @@ export function handleLogCommitLoss(event: LogCommitLoss): void {
     event.params.fromRiskPool,
     event.address
   );
+}
+
+export function handleLogManageFeeWithdrawn(event: LogManageFeeWithdrawn): void {
+  let id = event.address.toHexString() + "-" + event.params.erc20.toHexString();
+
+  let pf = PoolFee.load(id);
+
+  if (!pf) {
+    return;
+  }
+
+  pf.amount = pf.amount.minus(event.params.amount);
+
+  pf.save();
 }
 
 export function handleLogCapitalReleased(event: LogCapitalReleased): void {
