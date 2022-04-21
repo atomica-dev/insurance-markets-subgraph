@@ -41,6 +41,7 @@ import {
   Product,
   FrontendOperator,
   AccruedFee,
+  MarketAccruedFee,
   PremiumRateModel,
   Swap,
   Payout,
@@ -82,6 +83,7 @@ import {
   getMarketMeta,
   getPayoutRequest,
   getPolicy,
+  getPolicyDeposit,
 } from "./contract-mapper";
 
 export function handleLogNewProduct(event: LogNewProduct): void {
@@ -1145,13 +1147,18 @@ export function handleLogPolicyDeposit(event: LogPolicyDeposit): void {
   updatePolicy(id, event.address, event);
 }
 
-export function handleLogPolicyWithdraw(event: LogPolicyWithdraw): void {
-  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+function loadPolicyByRpc(rpcAddress: Address, policyId: BigInt): Policy | null {
+  let rpcContract = RiskPoolsControllerContract.bind(rpcAddress);
   let id =
     rpcContract.policyTokenIssuer().toHexString() +
     "-" +
-    event.params.policyId.toString();
-  let policy = Policy.load(id);
+    policyId.toString();
+
+  return Policy.load(id);
+}
+
+export function handleLogPolicyWithdraw(event: LogPolicyWithdraw): void {
+  let policy = loadPolicyByRpc(event.address, event.params.policyId);
 
   if (!policy) {
     return;
@@ -1164,7 +1171,7 @@ export function handleLogPolicyWithdraw(event: LogPolicyWithdraw): void {
 
   policy.save();
 
-  updatePolicy(id, event.address, event);
+  updatePolicy(policy.id, event.address, event);
 }
 
 function updatePolicy(
@@ -1180,7 +1187,8 @@ function updatePolicy(
     policy.policyId,
     changetype<Address>(market.premiumToken)
   );
-  let pInfo = rpcContract.policyDeposits(
+  let pInfo = getPolicyDeposit(
+    rpcContract,
     policy.policyId,
     changetype<Address>(market.premiumToken)
   );
@@ -1189,10 +1197,10 @@ function updatePolicy(
   policy.totalCharged = policy.originalBalance.minus(balance);
   policy.balance = balance;
 
-  policy.premiumDeposit = pInfo.value0;
-  policy.foFeeDeposit = pInfo.value1;
-  policy.referralFeeDeposit = pInfo.value2;
-  policy.initialMarketPremiumMulAccumulator = pInfo.value3;
+  policy.premiumDeposit = pInfo.premiumFeeDeposit;
+  policy.foFeeDeposit = pInfo.frontendOperatorFeeDeposit;
+  policy.referralFeeDeposit = pInfo.referralFeeDeposit;
+  policy.initialMarketPremiumMulAccumulator = pInfo.premiumMulAccumulator;
 
   policy.updatedAt = event.block.timestamp;
 
@@ -1202,22 +1210,33 @@ function updatePolicy(
 }
 
 export function handleLogFeeAccrued(event: LogFeeAccrued): void {
+  let policy = loadPolicyByRpc(event.address, event.params.policyId);
+
+  if (!policy) {
+    return;
+  }
+
   increaseFeeRecipientBalance(
     event.params.frontendOperatorFeeRecipient,
     event.params.premiumToken,
-    event.params.frontendOperatorFee
+    event.params.frontendOperatorFee,
+    policy.market,
   );
   increaseFeeRecipientBalance(
     event.params.referralFeeRecipient,
     event.params.premiumToken,
-    event.params.referralFee
+    event.params.referralFee,
+    policy.market,
   );
+
+  updatePolicy(policy.id, event.address, event);
 }
 
 function increaseFeeRecipientBalance(
   recipient: Address,
   token: Address,
-  amount: BigInt
+  amount: BigInt,
+  marketId: string,
 ): void {
   let id = recipient.toHexString() + "-" + token.toHexString();
   let af = AccruedFee.load(id);
@@ -1234,6 +1253,28 @@ function increaseFeeRecipientBalance(
   af.balance = af.balance.plus(amount);
 
   af.save();
+
+  let mid = id + "-" + marketId;
+
+  let maf = MarketAccruedFee.load(mid);
+
+  if (!maf) {
+    maf = new MarketAccruedFee(mid);
+
+    maf.marketId = marketId;
+    maf.recipientAddress = recipient;
+    maf.tokenAddress = token;
+    maf.balance = BigInt.fromI32(0);
+    maf.claimedBalance = af.claimedBalance;
+  }
+
+  if (maf.claimedBalance != af.claimedBalance) {
+    maf.balance = amount;
+  } else {
+    maf.balance += amount;
+  }
+
+  maf.save();
 }
 
 export function handleLogWithdrawFee(event: LogWithdrawFee): void {

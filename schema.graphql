@@ -116,6 +116,18 @@ type AccruedFee @entity {
   claimedBalance: BigInt!
 }
 
+type MarketAccruedFee @entity {
+  """
+  recipientAddress-tokenAddress-marketId
+  """
+  id: ID!
+  marketId: String!
+  recipientAddress: Bytes!
+  tokenAddress: Bytes!
+  balance: BigInt!
+  claimedBalance: BigInt!
+}
+
 type FrontendOperator @entity {
   id: ID!
   feeRecipient: Bytes
