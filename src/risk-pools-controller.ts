@@ -1270,6 +1270,7 @@ function increaseFeeRecipientBalance(
 
   if (maf.claimedBalance != af.claimedBalance) {
     maf.balance = amount;
+    maf.claimedBalance = af.claimedBalance;
   } else {
     maf.balance += amount;
   }
