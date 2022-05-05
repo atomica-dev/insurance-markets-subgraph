@@ -234,6 +234,7 @@ type Pool @entity {
   settlementRootHashLastUpdated: BigInt
   settlementDataUrl: String
   physicalSettlementMarketCount: Int
+  managerFee: BigInt
 }
 
 type ExternalPool @entity {

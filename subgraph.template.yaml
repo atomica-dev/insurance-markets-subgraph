@@ -319,6 +319,8 @@ templates:
           handler: handleLogCapitalReleased
         - event: LogManageFeeWithdrawn(address,uint256)
           handler: handleLogManageFeeWithdrawn
+        - event: LogManagerFeeChanged(uint256)
+          handler: handleLogManagerFeeChanged
   - kind: ethereum/contract
     name: RateOracle
     network: ganache

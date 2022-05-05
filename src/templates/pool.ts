@@ -30,6 +30,7 @@ import {
   LogContributeSettlement,
   LogForwardPayoutRequest,
   LogRequestCapital,
+  LogManagerFeeChanged,
 } from "../../generated/templates/Pool/Pool";
 import {
   Pool,
@@ -283,6 +284,14 @@ export function handleLogContributePremium(event: LogContributePremium): void {
     event.params.token,
     event
   );
+}
+
+export function handleLogManagerFeeChanged(event: LogManagerFeeChanged): void {
+  let pool = Pool.load(event.address.toHexString())!;
+
+  pool.managerFee = event.params.managerFee;
+
+  pool.save();
 }
 
 export function handleLogContributeSettlement(

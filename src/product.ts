@@ -161,6 +161,7 @@ export function createPool(
   pool.poolTokenSymbol = !pContract.try_symbol().reverted
     ? pContract.try_symbol().value
     : "";
+  pool.managerFee = pContract.managerFee();
   pool.capitalTokenDecimals = !btContract.try_decimals().reverted
     ? btContract.try_decimals().value
     : 18;
@@ -409,9 +410,9 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
     rpcContract.policyTokenIssuer()
   );
   let policyInfo = getPolicy(rpcContract, policyId);
-  let marketInfo = rpcContract.markets(event.params.marketId);
-  let policyBalance = rpcContract.policyBalance(policyId, marketInfo.value2);
-  let depositInfo = getPolicyDeposit(rpcContract, policyId, marketInfo.value2);
+  let marketInfo = getMarket(rpcContract, event.params.marketId);
+  let policyBalance = rpcContract.policyBalance(policyId, marketInfo.premiumToken);
+  let depositInfo = getPolicyDeposit(rpcContract, policyId, marketInfo.premiumToken);
 
   let id =
     rpcContract.policyTokenIssuer().toHexString() + "-" + policyId.toString();
