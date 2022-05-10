@@ -170,7 +170,7 @@ export function createPool(
     : "";
   pool.premiumRate = premiumRate;
   pool.exposure = BigInt.fromI32(0);
-  pool.capitalRequirement = BigInt.fromI32(0);
+  pool.capitalRequirement = pContract.cap();
   pool.mcr = pContract.mcr();
   pool.capacity = pool.capitalTokenBalance.times(pool.mcr!);
   pool.markets = [];
