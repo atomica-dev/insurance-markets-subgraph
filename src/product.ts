@@ -174,6 +174,7 @@ export function createPool(
   pool.mcr = pContract.mcr();
   pool.capacity = pool.capitalTokenBalance.times(pool.mcr!);
   pool.markets = [];
+  pool.withdrawRequestExpiration = pContract.withdrawRequestExpiration();
   pool.withdrawDelay = pContract.withdrawDelay();
   pool.premiumRateModel = pContract.premiumRateModel();
   pool.lpAllowListId = pContract.allowlistId();
