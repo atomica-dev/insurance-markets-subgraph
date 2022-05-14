@@ -71,6 +71,7 @@ import {
   removePoolsAtLevel,
 } from "./product";
 import { Product as ProductContract } from "../generated/RiskPoolsController/Product";
+import { CoverAdjuster as CoverAdjusterTemplate } from "../generated/templates";
 import { PremiumRateModelFixed } from "../generated/RiskPoolsController/PremiumRateModelFixed";
 import { PremiumRateModelDynamic } from "../generated/RiskPoolsController/PremiumRateModelDynamic";
 import { PolicyTokenIssuer as PolicyTokenIssuerContract } from "../generated/RiskPoolsController/PolicyTokenIssuer";
@@ -510,6 +511,7 @@ function handleUpdateCoverAdjusterOracle(event: LogGovernance): void {
     }
 
     config.coverAdjusterOracleList = l;
+    CoverAdjusterTemplate.create(event.params.param1);
   } else {
     config.coverAdjusterOracleList = filterNotEqual(
       config.coverAdjusterOracleList,

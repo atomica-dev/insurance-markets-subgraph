@@ -94,6 +94,7 @@ dataSources:
         - event: LogNewForwardedPayoutRequest(uint256)
           handler: handleLogNewForwardedPayoutRequest
       file: ./src/risk-pools-controller.ts
+templates:
   - kind: ethereum/contract
     name: CoverAdjuster
     network: ganache
@@ -122,7 +123,6 @@ dataSources:
         - event: LogConfigurationUpdated(uint256)
           handler: handleLogConfigurationUpdated
       file: ./src/cover-adjuster.ts
-templates:
   - kind: ethereum/contract
     name: PayoutRequester
     network: ganache
