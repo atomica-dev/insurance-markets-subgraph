@@ -31,6 +31,7 @@ import {
   LogForwardPayoutRequest,
   LogRequestCapital,
   LogManagerFeeChanged,
+  LogManagerChanged,
 } from "../../generated/templates/Pool/Pool";
 import {
   Pool,
@@ -46,12 +47,13 @@ import {
   OutgoingLoss,
   IncomingLoss,
   PoolOwnLoss,
+  MarketPoolFee,
 } from "../../generated/schema";
 import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import { EventType, addEvent, updateAndLogState, updateState } from "../event";
-import { marketPremiumEarned } from "../risk-pools-controller";
+import { marketPremiumEarned, WEI_BIGINT } from "../risk-pools-controller";
 import { filterNotEqual } from "../product";
-import { getPoolBucket, getRiskPoolConnection } from "../contract-mapper";
+import { getRiskPoolConnection } from "../contract-mapper";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
@@ -257,13 +259,37 @@ export function handleLogContributePremium(event: LogContributePremium): void {
     pf.tokenId = event.params.token;
     pf.pool = pool.id;
     pf.amount = BigInt.fromI32(0);
+    pf.claimedAmount = BigInt.fromI32(0);
   }
 
-  let pContract = PoolContract.bind(event.address);
+  let amount = event.params.amount.times(pool.managerFee).div(WEI_BIGINT);
 
-  pf.amount = getPoolBucket(pContract, event.params.token).managerFeeBalance;
+  pf.amount = pf.amount.plus(amount);
 
   pf.save();
+
+  let mid = id + event.params.marketId.toString();
+  let mpf = MarketPoolFee.load(mid);
+
+  if (!mpf) {
+    mpf = new MarketPoolFee(mid);
+
+    mpf.poolId = event.address;
+    mpf.marketId = event.params.marketId;
+    mpf.tokenId = event.params.token;
+    mpf.pool = pool.id;
+    mpf.amount = BigInt.fromI32(0);
+    mpf.claimedAmount = BigInt.fromI32(0);
+  }
+
+  if (mpf.claimedAmount != pf.claimedAmount) {
+    mpf.amount = amount;
+    mpf.claimedAmount = pf.claimedAmount;
+  } else {
+    mpf.amount = mpf.amount.plus(amount);
+  }
+
+  mpf.save();
 
   addEvent(
     EventType.PoolEarnedPremium,
@@ -290,6 +316,14 @@ export function handleLogManagerFeeChanged(event: LogManagerFeeChanged): void {
   let pool = Pool.load(event.address.toHexString())!;
 
   pool.managerFee = event.params.managerFee;
+
+  pool.save();
+}
+
+export function handleLogManagerChanged(event: LogManagerChanged): void {
+  let pool = Pool.load(event.address.toHexString())!;
+
+  pool.createdBy = event.params.manager;
 
   pool.save();
 }
@@ -685,6 +719,7 @@ export function handleLogManageFeeWithdrawn(event: LogManageFeeWithdrawn): void 
   }
 
   pf.amount = pf.amount.minus(event.params.amount);
+  pf.claimedAmount = pf.claimedAmount.plus(event.params.amount);
 
   pf.save();
 }

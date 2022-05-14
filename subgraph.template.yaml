@@ -242,6 +242,7 @@ templates:
         - PoolPremium
         - PoolSettlement
         - PoolFee
+        - MarketPoolFee
         - ExternalPool
         - OutgoingPayoutRequest
         - IncomingLoss
@@ -321,6 +322,8 @@ templates:
           handler: handleLogManageFeeWithdrawn
         - event: LogManagerFeeChanged(uint256)
           handler: handleLogManagerFeeChanged
+        - event: LogManagerChanged(address)
+          handler: handleLogManagerChanged
   - kind: ethereum/contract
     name: RateOracle
     network: ganache

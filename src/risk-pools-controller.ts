@@ -883,7 +883,8 @@ function handleFrontendOperatorPenalty(event: LogGovernance): void {
   let af = AccruedFee.load(id);
 
   if (af != null) {
-    af.balance = event.params.param3;
+    af.balance = event.params.param4;
+    af.claimedBalance = af.claimedBalance.plus(event.params.param3);
 
     af.save();
   }
@@ -1272,7 +1273,7 @@ function increaseFeeRecipientBalance(
     maf.balance = amount;
     maf.claimedBalance = af.claimedBalance;
   } else {
-    maf.balance += amount;
+    maf.balance = maf.balance.plus(amount);
   }
 
   maf.save();
@@ -1302,7 +1303,7 @@ enum PremiumModelType {
 }
 
 let SECONDS_IN_A_YEAR = BigInt.fromI32(60 * 60 * 24 * 365);
-let WEI_BIGINT = BigInt.fromI32(1000000000).times(BigInt.fromI32(1000000000));
+export const WEI_BIGINT = BigInt.fromI32(1000000000).times(BigInt.fromI32(1000000000));
 let WEI_DECIMALS = new BigDecimal(WEI_BIGINT);
 
 function guessRateModelType(modelAddress: Address): void {

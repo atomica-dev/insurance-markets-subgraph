@@ -221,6 +221,7 @@ type Pool @entity {
   premiums: [PoolPremium!] @derivedFrom(field: "pool")
   settlements: [PoolSettlement!] @derivedFrom(field: "pool")
   fees: [PoolFee!] @derivedFrom(field: "pool")
+  marketFees: [MarketPoolFee!] @derivedFrom(field: "pool")
   poolMarketRelations: [PoolMarketRelation!] @derivedFrom(field: "pool")
   externalPoolList: [String!]!
   externalCapacity: BigInt
@@ -234,7 +235,7 @@ type Pool @entity {
   settlementRootHashLastUpdated: BigInt
   settlementDataUrl: String
   physicalSettlementMarketCount: Int
-  managerFee: BigInt
+  managerFee: BigInt!
 }
 
 type ExternalPool @entity {
@@ -280,6 +281,20 @@ type PoolFee @entity {
   poolId: Bytes!
   tokenId: Bytes!
   amount: BigInt!
+  claimedAmount: BigInt!
+  pool: Pool!
+}
+
+type MarketPoolFee @entity {
+  """
+  poolId-tokenId-marketId
+  """
+  id: ID!
+  poolId: Bytes!
+  marketId: BigInt!
+  tokenId: Bytes!
+  amount: BigInt!
+  claimedAmount: BigInt!
   pool: Pool!
 }
 
