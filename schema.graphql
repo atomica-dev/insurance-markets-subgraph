@@ -224,6 +224,7 @@ type Pool @entity {
   marketFees: [MarketPoolFee!] @derivedFrom(field: "pool")
   poolMarketRelations: [PoolMarketRelation!] @derivedFrom(field: "pool")
   externalPoolList: [String!]!
+  externalWalletList: [ExternalWallet!] @derivedFrom(field: "pool")
   externalCapacity: BigInt
   externalCoverage: BigInt
   externalStatLastUpdated: BigInt
@@ -238,16 +239,17 @@ type Pool @entity {
   managerFee: BigInt!
 }
 
-type ExternalPool @entity {
+type ExternalWallet @entity {
   """
-  chainId-poolId-reserveWallet
+  poolId-extChainId-extPoolId
   """
   id: ID!
-  chainId: BigInt
-  poolId: Bytes
+  pool: Pool!
+  externalChainId: BigInt
+  externalPoolId: Bytes
   reserveWallet: Bytes
   externalReserveWallet: Bytes
-  balance: BigInt
+  transferredTo: BigInt
   isActive: Boolean
 }
 

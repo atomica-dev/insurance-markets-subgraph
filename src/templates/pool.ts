@@ -42,7 +42,7 @@ import {
   PoolPremium,
   PoolSettlement,
   PoolFee,
-  ExternalPool,
+  ExternalWallet,
   OutgoingPayoutRequest,
   OutgoingLoss,
   IncomingLoss,
@@ -648,24 +648,25 @@ function createOrUpdatePoolWallet(
   pool.save();
 
   let id =
+    poolAddress.toHexString() +
+    "-" +
     chainId.toString() +
     "-" +
-    poolId.toHexString() +
-    "-" +
-    ePoolConfig.reserveWallet.toHexString();
+    poolId.toHexString();
 
-  let w = ExternalPool.load(id);
+  let w = ExternalWallet.load(id);
 
   if (!w) {
-    w = new ExternalPool(id);
+    w = new ExternalWallet(id);
   }
 
-  w.chainId = chainId;
-  w.poolId = poolId;
+  w.externalChainId = chainId;
+  w.externalPoolId = poolId;
   w.externalReserveWallet = ePoolConfig.externalReserveWallet;
   w.reserveWallet = ePoolConfig.reserveWallet;
   w.isActive = ePoolConfig.active;
-  w.balance = ePoolConfig.transferredToReserve;
+  w.transferredTo = ePoolConfig.transferredToReserve;
+  w.pool = poolAddress.toHexString();
 
   w.save();
 }

@@ -1,25 +1,8 @@
 {
   "environment": {
     "srm-dev": {
-      "defaultStartBlock": 10650427,
-      "RiskPoolsController": "0xe9B9c4fb57B882D8f9720f88Df249b6F7B1fe7ED",
-      "PolicyTokenIssuer": "0xd145F16173eA4cfE812917a71852F813a0E9e7b7",
-      "PolicyTokenPermissionIssuer": "0x26529EB684CE857cd8B1f55B00AEf26aD0449825",
-      "PremiumRateModelFixed": "0x1F5c00A3bCa26069A3cFea2B3c7360155c718045",
-      "PremiumRateModelDynamic": "0x2554A9aF42B8f3144f27200079ed0be5c363263C",
-      "Allowlist": "0x7399217610AC1f17abd3396AdF54e1E74119A8dc",
-      "Registry": "0xaC140eD18eeE39DEea09f604cA3Baf7f73eaead8",
-      "OperatorImpl": "0xb97ADc0caf976254085C615F07d9c6dBa0b48689",
-      "MarketImpl": "0x410159eCAd63443Dfa366e5516B7De51A815D2AE",
-      "PolicyImpl": "0x9BE31921E51490a36390A15592A1452E14445Ad3",
-      "ChargeImpl": "0xa4BaE3A25ca788af02B18B95bBB1E1437e950aFC",
-      "ERC20Impl": "0x2bC152Fd8B16e32B99EC6bee99F990Df3c7EF179",
-      "PoolImpl": "0x22941A44302dA7d64a5d5847ED41c09DC90dDC70",
-      "RewardsImpl": "0xB3CFE7c9B1468BD52ba4Ec120F04f8D6feA60010",
-      "CoverAdjuster": "0xb8B12E68B4B2DDF5bd31AF00FdE7cC291acB7191",
-      "ExchangeRatesOracle": "0xcf741996B91e0991a22fD35Da144fFb389369830",
-      "Wallet": "0x6d8F9970026e7fa4c2108c5FDEBF674c207221a4",
-      "ClaimProcessor": "0x30336b0163FA136F14CB1CBe1eeC3D422250dA5b"
+      "defaultStartBlock": 10691294,
+      "RiskPoolsController": "0x1060a7c2AfA7a58cFF3116d61A98De20ff7628f0"
     },
     "srm-staging": {
       "defaultStartBlock": 10171000,
