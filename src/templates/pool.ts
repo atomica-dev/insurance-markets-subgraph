@@ -54,6 +54,7 @@ import { EventType, addEvent, updateAndLogState, updateState } from "../event";
 import { marketPremiumEarned, WEI_BIGINT } from "../risk-pools-controller";
 import { filterNotEqual } from "../product";
 import { getRiskPoolConnection } from "../contract-mapper";
+import { PremiumRateModelDynamic as PremiumRateModelContract } from "../../generated/templates/Pool/PremiumRateModelDynamic";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
@@ -436,9 +437,11 @@ export function handleLogCoverChanged(event: LogCoverChanged): void {
     marketRelation.poolId = pool.id;
     marketRelation.pool = pool.id;
     marketRelation.exposure = event.params.internalCover;
-    marketRelation.rate = !pContract.try_currentPremiumRate().reverted
-      ? pContract.currentPremiumRate()
-      : BigInt.fromI32(0);
+
+    let premiumRateModel = PremiumRateModelContract.bind(pContract.premiumRateModel());
+    let rate = premiumRateModel.try_getPremiumRate(pContract.capacity(), marketRelation.exposure!);
+
+    marketRelation.rate = rate.reverted ? BigInt.fromI32(0) : rate.value;
 
     marketRelation.save();
   }
@@ -789,11 +792,10 @@ export function handleLogCapacityChanged(event: LogCapacityChanged): void {
       continue;
     }
 
-    let premiumRate = !pContract.try_currentPremiumRate().reverted
-      ? pContract.currentPremiumRate()
-      : BigInt.fromI32(0);
+    let premiumRateModel = PremiumRateModelContract.bind(pContract.premiumRateModel());
+    let rate = premiumRateModel.try_getPremiumRate(pContract.capacity(), pmr.exposure!);
 
-    pmr.rate = premiumRate;
+    pmr.rate = rate.reverted ? BigInt.fromI32(0) : rate.value;
 
     pmr.save();
 

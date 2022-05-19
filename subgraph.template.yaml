@@ -259,6 +259,8 @@ templates:
           file: ./abis/RiskPoolsController.json
         - name: PolicyTokenIssuer
           file: ./abis/PolicyTokenIssuer.json
+        - name: PremiumRateModelDynamic
+          file: ./abis/PremiumRateModelDynamic.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer

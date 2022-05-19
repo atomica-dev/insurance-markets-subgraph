@@ -8,6 +8,7 @@ import {
 import { RiskPoolsController as RiskPoolsControllerContract } from "../generated/templates/Product/RiskPoolsController";
 import { PolicyTokenIssuer as PolicyTokenIssuerContract } from "../generated/templates/Product/PolicyTokenIssuer";
 import { Pool as PoolContract } from "../generated/templates/Product/Pool";
+import { PremiumRateModelDynamic as PremiumRateModelContract } from "../generated/templates/Pool/PremiumRateModelDynamic";
 import {
   Market,
   Policy,
@@ -277,9 +278,11 @@ export function addPoolToMarket(
     poolId,
     market.marketId
   );
+  let premiumRateModel = PremiumRateModelContract.bind(pContract.premiumRateModel());
+  let rate = premiumRateModel.try_getPremiumRate(pContract.capacity(), pme.exposure!);
 
   pme.exposure = pContract.internalCoverPerMarket(market.marketId);
-  pme.rate = pool.premiumRate;
+  pme.rate = rate.reverted ? BigInt.fromI32(0) : rate.value;
   pme.poolId = pool.id;
   pme.pool = pool.id;
   pme.market = marketId;
