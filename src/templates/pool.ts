@@ -661,15 +661,17 @@ function createOrUpdatePoolWallet(
 
   if (!w) {
     w = new ExternalWallet(id);
+
+    w.transferredTo = BigInt.fromI32(0);
+    w.externalChainId = chainId;
+    w.externalPoolId = poolId;
+    w.pool = poolAddress.toHexString();
   }
 
-  w.externalChainId = chainId;
-  w.externalPoolId = poolId;
   w.externalReserveWallet = ePoolConfig.externalReserveWallet;
   w.reserveWallet = ePoolConfig.reserveWallet;
   w.isActive = ePoolConfig.active;
   w.transferredTo = ePoolConfig.transferredToReserve;
-  w.pool = poolAddress.toHexString();
 
   w.save();
 }
