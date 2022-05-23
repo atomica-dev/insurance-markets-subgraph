@@ -5,7 +5,7 @@ import {
   LogConfigurationRemoved,
   LogConfigurationUpdated,
   LogPolicyAdjusted,
-} from "../generated/CoverAdjuster/CoverAdjuster";
+} from "../generated/templates/CoverAdjuster/CoverAdjuster";
 import { log, store } from "@graphprotocol/graph-ts";
 
 export function handleLogConfigurationCreated(
