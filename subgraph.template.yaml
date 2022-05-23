@@ -28,10 +28,10 @@ dataSources:
         - PayoutRequest
         - IncomingPayoutRequest
       abis:
-        - name: Product
-          file: ./abis/Product.json
         - name: RiskPoolsController
           file: ./abis/RiskPoolsController.json
+        - name: Product
+          file: ./abis/Product.json
         - name: Pool
           file: ./abis/RiskPool.json
         - name: PolicyTokenIssuer
@@ -171,6 +171,8 @@ templates:
           file: ./abis/RiskPool.json
         - name: PolicyTokenIssuer
           file: ./abis/PolicyTokenIssuer.json
+        - name: PremiumRateModelDynamic
+          file: ./abis/PremiumRateModelDynamic.json
       eventHandlers:
         - event: LogNewMarket(uint256)
           handler: handleLogNewMarket
