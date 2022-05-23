@@ -278,10 +278,12 @@ export function addPoolToMarket(
     poolId,
     market.marketId
   );
+
+  pme.exposure = pContract.internalCoverPerMarket(market.marketId);
+
   let premiumRateModel = PremiumRateModelContract.bind(pContract.premiumRateModel());
   let rate = premiumRateModel.try_getPremiumRate(pContract.capacity(), pme.exposure!);
 
-  pme.exposure = pContract.internalCoverPerMarket(market.marketId);
   pme.rate = rate.reverted ? BigInt.fromI32(0) : rate.value;
   pme.poolId = pool.id;
   pme.pool = pool.id;
