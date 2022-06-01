@@ -48,7 +48,19 @@
             {
                 "indexed": false,
                 "internalType": "address",
+                "name": "externalRefundWallet",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
                 "name": "reserveWallet",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "refundWallet",
                 "type": "address"
             }
         ],
@@ -74,6 +86,12 @@
                 "indexed": false,
                 "internalType": "address",
                 "name": "externalReserveWallet",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "externalRefundWallet",
                 "type": "address"
             }
         ],
@@ -568,7 +586,7 @@
                 "type": "uint256"
             }
         ],
-        "name": "LogPullFromReserveWallet",
+        "name": "LogPullFromRefundWallet",
         "type": "event"
     },
     {
@@ -615,6 +633,12 @@
                 "indexed": false,
                 "internalType": "address",
                 "name": "reserveWallet",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "refundWallet",
                 "type": "address"
             }
         ],
@@ -720,7 +744,7 @@
             {
                 "indexed": false,
                 "internalType": "bool",
-                "name": "fromReserveWallet",
+                "name": "refund",
                 "type": "bool"
             }
         ],
@@ -888,6 +912,11 @@
                 "internalType": "address",
                 "name": "externalReserveWallet",
                 "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "externalRefundWallet",
+                "type": "address"
             }
         ],
         "name": "acceptRiskPoolSync",
@@ -997,6 +1026,11 @@
             {
                 "internalType": "address",
                 "name": "externalReserveWallet",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "externalRefundWallet",
                 "type": "address"
             }
         ],
@@ -2081,7 +2115,7 @@
                 "type": "address"
             }
         ],
-        "name": "pullFromReserveWallet",
+        "name": "pullFromRefundWallet",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -2299,7 +2333,17 @@
             },
             {
                 "internalType": "address",
+                "name": "refundWallet",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
                 "name": "externalReserveWallet",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "externalRefundWallet",
                 "type": "address"
             },
             {
@@ -2665,7 +2709,7 @@
             },
             {
                 "internalType": "bool",
-                "name": "fromReserveWallet",
+                "name": "refund",
                 "type": "bool"
             }
         ],

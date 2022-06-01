@@ -914,13 +914,18 @@
                 "internalType": "address",
                 "name": "externalReserveWallet",
                 "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "externalRefundWallet",
+                "type": "address"
             }
         ],
         "name": "acceptRiskPoolSync",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xaabc701c"
+        "signature": "0x86bf4c56"
     },
     {
         "inputs": [
@@ -1023,13 +1028,44 @@
                 "internalType": "address",
                 "name": "externalReserveWallet",
                 "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "externalRefundWallet",
+                "type": "address"
             }
         ],
         "name": "acknowledgeRiskPoolSync",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x2c0d305a"
+        "signature": "0xfd8e1b4b"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "index",
+                "type": "uint256"
+            }
+        ],
+        "name": "activeRewardsIds",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "rewardId",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0xc0276200"
     },
     {
         "inputs": [
@@ -1145,6 +1181,32 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0xaf826c2f"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "rewardId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "policyId",
+                "type": "uint256"
+            }
+        ],
+        "name": "archivedRewardClaimed",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0xdfab5fb7"
     },
     {
         "inputs": [
@@ -2284,6 +2346,27 @@
         "inputs": [
             {
                 "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            }
+        ],
+        "name": "getActiveRewards",
+        "outputs": [
+            {
+                "internalType": "uint256[]",
+                "name": "",
+                "type": "uint256[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x5c47eee2"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
                 "name": "allowlistId",
                 "type": "uint256"
             },
@@ -2992,6 +3075,21 @@
         "signature": "0xf8432eaa"
     },
     {
+        "inputs": [],
+        "name": "maxSimultaneousRewards",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x96482454"
+    },
+    {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -3415,6 +3513,58 @@
         "type": "function",
         "constant": true,
         "signature": "0x113f375b"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "rewardId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "policyId",
+                "type": "uint256"
+            }
+        ],
+        "name": "policyRewardEarned",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0xb2ef19f5"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "rewardId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "policyId",
+                "type": "uint256"
+            }
+        ],
+        "name": "policyRewardPerSharePaid",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x810d02bd"
     },
     {
         "inputs": [],
@@ -3885,6 +4035,21 @@
         "signature": "0xd33b3b06"
     },
     {
+        "inputs": [],
+        "name": "rewardIdInc",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0xab9825b6"
+    },
+    {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -3904,6 +4069,82 @@
         "type": "function",
         "constant": true,
         "signature": "0xcdd8d69c"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "rewardId",
+                "type": "uint256"
+            }
+        ],
+        "name": "rewards",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "distributor",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "erc20",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "startTime",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "endTime",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "rate",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "lastUpdateTime",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "rewardPerShareStored",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bool",
+                "name": "archived",
+                "type": "bool"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "rootHash",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "string",
+                "name": "sid",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0xf301af42"
     },
     {
         "inputs": [],

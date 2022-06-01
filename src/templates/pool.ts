@@ -23,7 +23,7 @@ import {
   LogAcceptRiskPoolSync,
   LogAcknowledgeRiskPoolSync,
   LogTransferReserve,
-  LogPullFromReserveWallet,
+  LogPullFromRefundWallet,
   LogCommitLoss,
   LogForwardCommitLoss,
   LogContributePremium,
@@ -669,7 +669,9 @@ function createOrUpdatePoolWallet(
   }
 
   w.externalReserveWallet = ePoolConfig.externalReserveWallet;
+  w.externalRefundWallet = ePoolConfig.externalRefundWallet;
   w.reserveWallet = ePoolConfig.reserveWallet;
+  w.refundWallet = ePoolConfig.refundWallet;
   w.isActive = ePoolConfig.active;
   w.transferredTo = ePoolConfig.transferredToReserve;
 
@@ -684,8 +686,8 @@ export function handleLogTransferReserve(event: LogTransferReserve): void {
   );
 }
 
-export function handleLogPullFromReserveWallet(
-  event: LogPullFromReserveWallet
+export function handleLogPullFromRefundWallet(
+  event: LogPullFromRefundWallet
 ): void {
   createOrUpdatePoolWallet(
     event.params.forChainId,

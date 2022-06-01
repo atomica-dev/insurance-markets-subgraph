@@ -248,7 +248,9 @@ type ExternalWallet @entity {
   externalChainId: BigInt
   externalPoolId: Bytes
   reserveWallet: Bytes
+  refundWallet: Bytes
   externalReserveWallet: Bytes
+  externalRefundWallet: Bytes
   transferredTo: BigInt
   isActive: Boolean
 }

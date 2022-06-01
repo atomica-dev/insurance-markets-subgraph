@@ -201,7 +201,9 @@ export function getForwardedPayoutRequest(
 
 export class CRiskPoolConnection {
   reserveWallet: Address;
+  refundWallet: Address;
   externalReserveWallet: Address;
+  externalRefundWallet: Address;
   transferredToReserve: BigInt;
   active: boolean;
 }
@@ -215,8 +217,10 @@ export function getRiskPoolConnection(
 
   return {
     reserveWallet: d.value0,
-    externalReserveWallet: d.value1,
-    transferredToReserve: d.value2,
-    active: d.value3,
+    refundWallet: d.value1,
+    externalReserveWallet: d.value2,
+    externalRefundWallet: d.value3,
+    transferredToReserve: d.value4,
+    active: d.value5,
   };
 }

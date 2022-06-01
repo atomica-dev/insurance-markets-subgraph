@@ -304,18 +304,18 @@ templates:
           handler: handleLogPremiumDistributionUpdated
         - event: LogSettlementDistributionUpdated(bytes32)
           handler: handleLogSettlementDistributionUpdated
-        - event: LogRequestRiskPoolSync(uint256,address,address)
+        - event: LogRequestRiskPoolSync(uint256,address,address,address)
           handler: handleLogRequestRiskPoolSync
         - event: LogCancelRiskPoolSync(uint256,address)
           handler: handleLogCancelRiskPoolSync
-        - event: LogAcceptRiskPoolSync(uint256,address,address,address)
+        - event: LogAcceptRiskPoolSync(uint256,address,address,address,address,address)
           handler: handleLogAcceptRiskPoolSync
-        - event: LogAcknowledgeRiskPoolSync(uint256,address,address)
+        - event: LogAcknowledgeRiskPoolSync(uint256,address,address,address)
           handler: handleLogAcknowledgeRiskPoolSync
         - event: LogTransferReserve(uint256,address,address,address,uint256,bool)
           handler: handleLogTransferReserve
-        - event: LogPullFromReserveWallet(uint256,address,uint256)
-          handler: handleLogPullFromReserveWallet
+        - event: LogPullFromRefundWallet(uint256,address,uint256)
+          handler: handleLogPullFromRefundWallet
         - event: LogCommitLoss(uint256,address,uint256)
           handler: handleLogCommitLoss
         - event: LogForwardCommitLoss(uint256,address,address,uint256)
