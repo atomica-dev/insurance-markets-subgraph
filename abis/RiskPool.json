@@ -468,6 +468,19 @@
         "inputs": [
             {
                 "indexed": false,
+                "internalType": "address",
+                "name": "managerFeeRecipient",
+                "type": "address"
+            }
+        ],
+        "name": "LogManagerFeeRecipientChanged",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
                 "internalType": "uint256",
                 "name": "mcr",
                 "type": "uint256"
@@ -1334,6 +1347,19 @@
         "type": "function"
     },
     {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "managerFeeRecipient",
+                "type": "address"
+            }
+        ],
+        "name": "changeManagerFeeRecipient",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
         "inputs": [],
         "name": "claimAll",
         "outputs": [],
@@ -1920,6 +1946,19 @@
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "managerFeeRecipient",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
             }
         ],
         "stateMutability": "view",

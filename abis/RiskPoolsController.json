@@ -1839,6 +1839,11 @@
                 "type": "address"
             },
             {
+                "internalType": "address",
+                "name": "managerFeeRecipient",
+                "type": "address"
+            },
+            {
                 "internalType": "uint256",
                 "name": "managerFee",
                 "type": "uint256"
@@ -1879,7 +1884,7 @@
         ],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x5917193d"
+        "signature": "0x50b9fcaa"
     },
     {
         "inputs": [

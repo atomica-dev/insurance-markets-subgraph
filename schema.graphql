@@ -236,7 +236,9 @@ type Pool @entity {
   settlementRootHashLastUpdated: BigInt
   settlementDataUrl: String
   physicalSettlementMarketCount: Int
+  manager: Bytes!
   managerFee: BigInt!
+  feeRecipient: Bytes!
 }
 
 type ExternalWallet @entity {

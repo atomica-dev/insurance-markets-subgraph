@@ -154,7 +154,9 @@ export function createPool(
   pool.poolTokenBalance = BigInt.fromI32(1);
   pool.participants = BigInt.fromI32(0);
   pool.createdAt = event.block.timestamp;
-  pool.createdBy = pContract.manager();
+  pool.createdBy = event.transaction.from;
+  pool.manager = pContract.manager();
+  pool.feeRecipient = pContract.managerFeeRecipient();
   pool.updatedAt = event.block.timestamp;
   pool.poolTokenDecimals = !pContract.try_decimals().reverted
     ? pContract.try_decimals().value

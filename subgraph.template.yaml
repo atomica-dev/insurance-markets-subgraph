@@ -328,6 +328,8 @@ templates:
           handler: handleLogManagerFeeChanged
         - event: LogManagerChanged(address)
           handler: handleLogManagerChanged
+        - event: LogManagerFeeRecipientChanged(address)
+          handler: handleLogManagerFeeRecipientChanged
   - kind: ethereum/contract
     name: RateOracle
     network: ganache

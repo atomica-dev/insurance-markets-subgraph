@@ -32,6 +32,7 @@ import {
   LogRequestCapital,
   LogManagerFeeChanged,
   LogManagerChanged,
+  LogManagerFeeRecipientChanged,
 } from "../../generated/templates/Pool/Pool";
 import {
   Pool,
@@ -324,7 +325,15 @@ export function handleLogManagerFeeChanged(event: LogManagerFeeChanged): void {
 export function handleLogManagerChanged(event: LogManagerChanged): void {
   let pool = Pool.load(event.address.toHexString())!;
 
-  pool.createdBy = event.params.manager;
+  pool.manager = event.params.manager;
+
+  pool.save();
+}
+
+export function handleLogManagerFeeRecipientChanged(event: LogManagerFeeRecipientChanged): void {
+  let pool = Pool.load(event.address.toHexString())!;
+
+  pool.feeRecipient = event.params.managerFeeRecipient;
 
   pool.save();
 }
