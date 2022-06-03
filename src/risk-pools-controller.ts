@@ -24,6 +24,9 @@ import {
   LogNewForwardedPayoutRequest,
   LogForwardedPayoutRequestProcessed,
   LogForwardedPayoutRequestDeclined,
+  LogRewardClaimed,
+  LogIncreaseRewardAmount,
+  LogNewReward,
 } from "../generated/RiskPoolsController/RiskPoolsController";
 import { RiskPoolsController as RiskPoolsControllerContract } from "../generated/templates/Product/RiskPoolsController";
 import {
@@ -47,6 +50,8 @@ import {
   Payout,
   PayoutRequest,
   IncomingPayoutRequest,
+  CoverMiningReward,
+  CoverMiningRewardClaim,
 } from "../generated/schema";
 import {
   EventType,
@@ -80,6 +85,7 @@ import { addOraclePair } from "./rate-oracle";
 import { GovernanceLogType } from "./governance-type.enum";
 import {
   CPolicy,
+  getCoverReward,
   getForwardedPayoutRequest,
   getMarketMeta,
   getPayoutRequest,
@@ -1481,4 +1487,63 @@ export function handleLogForwardedPayoutRequestDeclined(
   request.status = 1; // Declined
 
   request.save();
+}
+
+export function handleLogNewReward(event: LogNewReward): void {
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+  let reward = getCoverReward(rpcContract, event.params.rewardId);
+  let cmReward = new CoverMiningReward(event.params.rewardId.toString());
+
+  cmReward.market = event.address.toHexString() + "-" + reward.marketId.toString();
+  cmReward.amount = reward.amount;
+  cmReward.creator = event.transaction.from;
+  cmReward.rewardToken = reward.erc20;
+  cmReward.startedAt = reward.startTime;
+  cmReward.endedAt = reward.endTime;
+  cmReward.ratePerSecond = reward.rate;
+  cmReward.updatedAt = event.block.timestamp;
+  cmReward.rewardPerToken = reward.rewardPerShareStored;
+  cmReward.cid = reward.sid;
+
+  cmReward.save();
+}
+
+export function handleLogIncreaseRewardAmount(event: LogIncreaseRewardAmount): void {
+  let cmReward = CoverMiningReward.load(event.params.rewardId.toString());
+
+  if (!cmReward) {
+    return;
+  }
+
+  cmReward.amount = cmReward.amount.plus(event.params.amount);
+
+  cmReward.save();
+}
+
+export function handleLogRewardClaimed(event: LogRewardClaimed): void {
+  let cmReward = CoverMiningReward.load(event.params.rewardId.toString());
+
+  if (!cmReward) {
+    return;
+  }
+
+  cmReward.amount = cmReward.amount.minus(event.params.rewardAmount);
+
+  cmReward.save();
+
+  let id = event.transaction.from.toHexString() + "-" + event.params.rewardId.toString() + "-" + event.params.policyId.toString();
+  let cmRewardClaim = CoverMiningRewardClaim.load(id);
+
+  if (!cmRewardClaim) {
+    cmRewardClaim = new CoverMiningRewardClaim(id);
+
+    cmRewardClaim.rewardId = event.params.rewardId;
+    cmRewardClaim.policyId = event.params.policyId;
+    cmRewardClaim.account = event.transaction.from;
+    cmRewardClaim.amount = BigInt.fromI32(0);
+  }
+
+  cmRewardClaim.amount = cmRewardClaim.amount.plus(event.params.rewardAmount);
+
+  cmRewardClaim.save();
 }

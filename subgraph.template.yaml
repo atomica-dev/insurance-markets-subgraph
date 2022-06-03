@@ -27,6 +27,8 @@ dataSources:
         - Payout
         - PayoutRequest
         - IncomingPayoutRequest
+        - CoverMiningReward
+        - CoverMiningRewardClaim
       abis:
         - name: RiskPoolsController
           file: ./abis/RiskPoolsController.json
@@ -93,6 +95,12 @@ dataSources:
           handler: handleLogForwardedPayoutRequestDeclined
         - event: LogNewForwardedPayoutRequest(uint256)
           handler: handleLogNewForwardedPayoutRequest
+        - event: LogNewReward(uint256)
+          handler: handleLogNewReward
+        - event: LogIncreaseRewardAmount(uint256,uint256)
+          handler: handleLogIncreaseRewardAmount
+        - event: LogRewardClaimed(uint256,uint256,uint256)
+          handler: handleLogRewardClaimed
       file: ./src/risk-pools-controller.ts
 templates:
   - kind: ethereum/contract

@@ -224,3 +224,40 @@ export function getRiskPoolConnection(
     active: d.value5,
   };
 }
+
+export class CCoverReward {
+  distributor: Address;
+  erc20: Address;
+  amount: BigInt;
+  marketId: BigInt;
+  startTime: BigInt;
+  endTime: BigInt;
+  rate: BigInt;
+  lastUpdateTime: BigInt;
+  rewardPerShareStored: BigInt;
+  archived: boolean;
+  rootHash: Bytes;
+  sid: string;
+}
+
+export function getCoverReward(
+  contract: RiskPoolsControllerContract,
+  id: BigInt,
+): CCoverReward {
+  let d = contract.rewards(id);
+
+  return {
+    distributor: d.value0,
+    erc20: d.value1,
+    amount: d.value2,
+    marketId: d.value3,
+    startTime: d.value4,
+    endTime: d.value5,
+    rate: d.value6,
+    lastUpdateTime: d.value7,
+    rewardPerShareStored: d.value8,
+    archived: d.value9,
+    rootHash: d.value10,
+    sid: d.value11,
+  };
+}

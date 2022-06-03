@@ -103,6 +103,30 @@ type Market @entity {
   status: Int
   premiumMulAccumulator: BigInt
   settlementDiscount: BigInt
+
+  rewards: [CoverMiningReward!]!  @derivedFrom(field: "market")
+}
+
+type CoverMiningReward @entity {
+  id: ID!
+  market: Market!
+  amount: BigInt!
+  creator: Bytes!
+  rewardToken: Bytes!
+  startedAt: BigInt
+  endedAt: BigInt
+  ratePerSecond: BigInt
+  updatedAt: BigInt
+  rewardPerToken: BigInt
+  cid: String
+}
+
+type CoverMiningRewardClaim @entity {
+  id: ID!
+  rewardId: BigInt!
+  policyId: BigInt!
+  account: Bytes!
+  amount: BigInt!
 }
 
 type AccruedFee @entity {
