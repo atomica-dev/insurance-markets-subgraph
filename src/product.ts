@@ -8,13 +8,12 @@ import {
 import { RiskPoolsController as RiskPoolsControllerContract } from "../generated/templates/Product/RiskPoolsController";
 import { PolicyTokenIssuer as PolicyTokenIssuerContract } from "../generated/templates/Product/PolicyTokenIssuer";
 import { Pool as PoolContract } from "../generated/templates/Product/Pool";
-import { PremiumRateModelDynamic as PremiumRateModelContract } from "../generated/templates/Pool/PremiumRateModelDynamic";
 import {
   Market,
   Policy,
   Pool,
-  PoolMarketRelation,
   Product,
+  RiskTowerLevel,
 } from "../generated/schema";
 import { Pool as PoolTemplate } from "../generated/templates";
 import {
@@ -27,10 +26,8 @@ import {
 import {
   Address,
   BigInt,
-  Bytes,
   ethereum,
   log,
-  store,
 } from "@graphprotocol/graph-ts";
 import { addOraclePair } from "./rate-oracle";
 import {
@@ -38,6 +35,8 @@ import {
   getMarketMeta,
   getPolicy,
   getPolicyDeposit,
+  getRiskPoolData,
+  getRiskTowerLevel,
 } from "./contract-mapper";
 
 export const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
@@ -93,6 +92,7 @@ export function handleLogNewMarket(event: LogNewMarket): void {
   market.pools = [];
   market.poolMarketRelations = [];
   market.status = StatusEnum.Opened;
+  market.riskTowerRoot = marketMeta.riskTowerRootLevel;
 
   market.save();
 
@@ -117,19 +117,19 @@ export function handleLogNewMarket(event: LogNewMarket): void {
     }
   }
 
-  let currentLevel = rpcContract.riskTowerBase(marketId);
+  let currentLevel = market.riskTowerRoot!;
   let levelNo: i32 = 1;
 
   while (!currentLevel.isZero()) {
-    let pools = rpcContract.riskPoolsAtLevel(marketId, currentLevel);
+    let level = new RiskTowerLevel(currentLevel.toString());
 
-    for (let i = 0; i < pools.length; i++) {
-      createPool(pools[i], event);
-      addPoolToMarket(pools[i], id, event, currentLevel, levelNo);
-    }
+    level.market = id;
+    level.levelNo = levelNo;
+
+    level.save();
 
     levelNo++;
-    currentLevel = rpcContract.nextLevelId(marketId, currentLevel);
+    currentLevel = getRiskTowerLevel(rpcContract, currentLevel).nextRiskTowerLevelId;
   }
 
   updateAndLogState(EventType.TotalMarkets, event, BigInt.fromI32(1), null);
@@ -143,9 +143,8 @@ export function createPool(
   let pool = new Pool(poolId.toHexString());
   let pContract = PoolContract.bind(poolId);
   let btContract = PoolContract.bind(pContract.assetToken()); // It is also ERC20
-  let premiumRate = !pContract.try_currentPremiumRate().reverted
-    ? pContract.currentPremiumRate()
-    : BigInt.fromI32(0);
+  let rpcContract = RiskPoolsControllerContract.bind(pContract.controller());
+  let riskPoolData = getRiskPoolData(rpcContract, poolId);
 
   pool.riskPoolsControllerAddress = pContract.controller();
   pool.name = pContract.name();
@@ -155,8 +154,8 @@ export function createPool(
   pool.participants = BigInt.fromI32(0);
   pool.createdAt = event.block.timestamp;
   pool.createdBy = event.transaction.from;
-  pool.manager = pContract.manager();
-  pool.feeRecipient = pContract.managerFeeRecipient();
+  pool.manager = riskPoolData.manager;
+  pool.feeRecipient = riskPoolData.managerFeeRecipient;
   pool.updatedAt = event.block.timestamp;
   pool.poolTokenDecimals = !pContract.try_decimals().reverted
     ? pContract.try_decimals().value
@@ -164,22 +163,19 @@ export function createPool(
   pool.poolTokenSymbol = !pContract.try_symbol().reverted
     ? pContract.try_symbol().value
     : "";
-  pool.managerFee = pContract.managerFee();
+  pool.managerFee = riskPoolData.managerFee;
   pool.capitalTokenDecimals = !btContract.try_decimals().reverted
     ? btContract.try_decimals().value
     : 18;
   pool.capitalTokenSymbol = !btContract.try_symbol().reverted
     ? btContract.try_symbol().value
     : "";
-  pool.premiumRate = premiumRate;
-  pool.exposure = BigInt.fromI32(0);
   pool.capitalRequirement = pContract.cap();
-  pool.mcr = pContract.mcr();
-  pool.capacity = pool.capitalTokenBalance.times(pool.mcr!);
+  pool.capacityAllowanceLimit = riskPoolData.capacityAllowanceLimit;
+  pool.totalCapacityAllowance = riskPoolData.totalCapacityAllowance;
   pool.markets = [];
   pool.withdrawRequestExpiration = pContract.withdrawRequestExpiration();
   pool.withdrawDelay = pContract.withdrawDelay();
-  pool.premiumRateModel = pContract.premiumRateModel();
   pool.lpAllowListId = pContract.allowlistId();
   pool.rewards = [];
   pool.externalPoolList = [];
@@ -193,13 +189,6 @@ export function createPool(
   PoolTemplate.create(poolId);
 
   addEvent(
-    EventType.PoolPremiumRate,
-    event,
-    null,
-    pool.id,
-    premiumRate.toString()
-  );
-  addEvent(
     EventType.PoolBalance,
     event,
     null,
@@ -211,167 +200,6 @@ export function createPool(
   updateState(EventType.SystemPoolCount, BigInt.fromI32(1), null);
 }
 
-export function addPoolToMarket(
-  poolId: Address,
-  marketId: string,
-  event: ethereum.Event,
-  levelId: BigInt,
-  levelNo: i32,
-  rpcAddress: Address | null = null
-): void {
-  let pool = Pool.load(poolId.toHexString());
-  let market = Market.load(marketId);
-  let pContract = PoolContract.bind(poolId);
-
-  if (!market) {
-    return;
-  }
-
-  if (!pool) {
-    log.warning("No pool found {}", [poolId.toHexString()]);
-    return;
-  }
-
-  let pools = market.pools;
-  let exposures = market.poolMarketRelations;
-
-  if (pools != null && pools.indexOf(poolId.toHexString()) > -1) {
-    return;
-  }
-
-  if (pools === null) {
-    pools = [];
-  }
-
-  let pMarkets = pool.markets;
-
-  pMarkets.push(marketId);
-
-  pool.markets = pMarkets;
-  pool.productId = market.product;
-
-  if (market.insuredToken.toHexString() != ZERO_ADDRESS) {
-    pool.physicalSettlementMarketCount += 1;
-  }
-
-  if (!pool.market || pool.market == "") {
-    pool.market = marketId;
-    pool.num = pools.length + 1;
-  }
-
-  pool.save();
-
-  let address = rpcAddress;
-
-  if (!address) {
-    let product = Product.load(event.address.toHexString());
-
-    if (product != null) {
-      address = changetype<Address>(product.riskPoolsControllerAddress);
-    } else {
-      return;
-    }
-  }
-
-  let rpcContract = RiskPoolsControllerContract.bind(address);
-  let pmeId = pool.id + "-" + marketId;
-  let pme = new PoolMarketRelation(pmeId);
-  let allowanceResult = rpcContract.try_marketCapacityAllowances(
-    poolId,
-    market.marketId
-  );
-
-  pme.exposure = pContract.internalCoverPerMarket(market.marketId);
-
-  let premiumRateModel = PremiumRateModelContract.bind(pContract.premiumRateModel());
-  let rate = premiumRateModel.try_getPremiumRate(pContract.capacity(), pme.exposure!);
-
-  pme.rate = rate.reverted ? BigInt.fromI32(0) : rate.value;
-  pme.poolId = pool.id;
-  pme.pool = pool.id;
-  pme.market = marketId;
-  pme.allowance = allowanceResult.reverted
-    ? BigInt.fromI32(0)
-    : allowanceResult.value;
-  pme.levelNo = levelNo;
-  pme.levelId = levelId;
-
-  pme.save();
-
-  pools.push(poolId.toHexString());
-  market.pools = pools;
-
-  exposures.push(pmeId);
-  market.poolMarketRelations = exposures;
-
-  market.save();
-
-  updateAndLogState(
-    EventType.MarketCapacity,
-    event,
-    pool.capacity,
-    marketId,
-    pool.capitalTokenAddress.toHexString()
-  );
-
-  if (market.rateOracle) {
-    addOraclePair(
-      market.rateOracle!.toHexString(),
-      market.capitalToken,
-      pool.capitalTokenAddress
-    );
-    addOraclePair(
-      market.rateOracle!.toHexString(),
-      market.premiumToken,
-      pool.capitalTokenAddress
-    );
-  }
-}
-
-export function removePoolFromMarket(
-  poolId: string,
-  marketId: string,
-  event: ethereum.Event
-): void {
-  let pool = Pool.load(poolId);
-  let market = Market.load(marketId);
-
-  if (!market) {
-    return;
-  }
-
-  if (!pool) {
-    log.warning("No pool found {}", [poolId]);
-    return;
-  }
-
-  let pmeId = pool.id + "-" + marketId;
-
-  pool.markets = filterNotEqual(pool.markets, marketId);
-
-  if (market.insuredToken.toHexString() != ZERO_ADDRESS) {
-    pool.physicalSettlementMarketCount -= 1;
-  }
-
-  market.pools = filterNotEqual(market.pools, poolId);
-  market.poolMarketRelations = filterNotEqual(
-    market.poolMarketRelations,
-    pmeId
-  );
-
-  pool.save();
-  market.save();
-
-  store.remove("PoolMarketRelation", pmeId);
-
-  updateAndLogState(
-    EventType.MarketCapacity,
-    event,
-    pool.capacity.neg(),
-    marketId,
-    pool.capitalTokenAddress.toHexString()
-  );
-}
 
 export function filterNotEqual(array: string[], item: string): string[] {
   let res: string[] = [];
@@ -383,29 +211,6 @@ export function filterNotEqual(array: string[], item: string): string[] {
   }
 
   return res;
-}
-
-export function removePoolsAtLevel(
-  level: BigInt,
-  marketId: string,
-  event: ethereum.Event,
-  poolList: string[] | null = null
-): void {
-  let market = Market.load(marketId);
-  let pmrList = market!.poolMarketRelations;
-
-  for (let i = 0; i < pmrList.length; i++) {
-    let pmr = PoolMarketRelation.load(pmrList[i]);
-
-    if (
-      pmr !== null &&
-      pmr.levelId !== null &&
-      pmr.levelId! == level &&
-      (poolList === null || poolList.includes(pmr.poolId))
-    ) {
-      removePoolFromMarket(pmr.poolId, marketId, event);
-    }
-  }
 }
 
 export function handleLogNewPolicy(event: LogNewPolicy): void {

@@ -114,7 +114,69 @@ export function getMarket(
   };
 }
 
+export class CRiskTowerLevel {
+  marketId: BigInt;
+  nextRiskTowerLevelId: BigInt;
+}
+
+export function getRiskTowerLevel(
+  contract: RiskPoolsControllerContract,
+  marketId: BigInt
+): CRiskTowerLevel {
+  let d = contract.riskTowerLevels(marketId);
+
+  return {
+    marketId: d.value0,
+    nextRiskTowerLevelId: d.value1,
+  };
+}
+
+export class CAggregatedPool {
+  marketId: BigInt;
+  totalCapacity: BigInt;
+  distributedCover: BigInt;
+  premiumRateModel: Address;
+}
+
+export function getAggregatedPool(
+  contract: RiskPoolsControllerContract,
+  id: BigInt,
+): CAggregatedPool {
+  let d = contract.aggregatedPools(id);
+
+  return {
+    marketId: d.value0,
+    totalCapacity: d.value1,
+    distributedCover: d.value2,
+    premiumRateModel: d.value3,
+  };
+}
+
+export class CRiskPoolData {
+  manager: Address;
+  managerFeeRecipient: Address;
+  managerFee: BigInt;
+  capacityAllowanceLimit: BigInt;
+  totalCapacityAllowance: BigInt;
+}
+
+export function getRiskPoolData(
+  contract: RiskPoolsControllerContract,
+  id: Address
+): CRiskPoolData {
+  let d = contract.riskPools(id);
+
+  return {
+    manager: d.value0,
+    managerFeeRecipient: d.value1,
+    managerFee: d.value2,
+    capacityAllowanceLimit: d.value3,
+    totalCapacityAllowance: d.value4,
+  };
+}
+
 export class CMarketMeta {
+  riskTowerRootLevel: BigInt;
   desiredCover: BigInt;
   actualCover: BigInt;
   waitingPeriod: BigInt;
@@ -130,12 +192,13 @@ export function getMarketMeta(
   let d = contract.marketsMeta(id);
 
   return {
-    desiredCover: d.value0,
-    actualCover: d.value1,
-    waitingPeriod: d.value2,
-    marketOperatorIncentiveFee: d.value3,
-    accrualBlockNumberPrior: d.value4,
-    settlementDiscount: d.value5,
+    riskTowerRootLevel: d.value0,
+    desiredCover: d.value1,
+    actualCover: d.value2,
+    waitingPeriod: d.value3,
+    marketOperatorIncentiveFee: d.value4,
+    accrualBlockNumberPrior: d.value5,
+    settlementDiscount: d.value6,
   };
 }
 

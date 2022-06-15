@@ -20,6 +20,7 @@ export function getSystemConfig(id: string): System {
     config.governanceFee = contract.governanceIncentiveFee();
     config.status = contract.systemStatus();
     config.operator = contract.operator();
+    config.allowanceManager = contract.allowanceManager();
     config.treasury = contract.treasury();
     config.defaultPayoutRequester = contract.defaultPayoutRequester();
     config.productCreatorsAllowlistId = contract.productCreatorsAllowlistId();

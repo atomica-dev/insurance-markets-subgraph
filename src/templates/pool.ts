@@ -10,7 +10,6 @@ import {
   LogWithdrawRequestCreated,
   LogWithdrawRequestCancelled,
   LogWithdrawRequestProcessed,
-  LogMcrUpdated,
   LogWithdrawDelayUpdated,
   LogWithdrawRequestExpirationUpdated,
   LogCancelRiskPoolSync,
@@ -30,9 +29,6 @@ import {
   LogContributeSettlement,
   LogForwardPayoutRequest,
   LogRequestCapital,
-  LogManagerFeeChanged,
-  LogManagerChanged,
-  LogManagerFeeRecipientChanged,
 } from "../../generated/templates/Pool/Pool";
 import {
   Pool,
@@ -49,6 +45,7 @@ import {
   IncomingLoss,
   PoolOwnLoss,
   MarketPoolFee,
+  AggregatedPool,
 } from "../../generated/schema";
 import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import { EventType, addEvent, updateAndLogState, updateState } from "../event";
@@ -99,7 +96,7 @@ export function handleTransfer(event: Transfer): void {
     addEvent(
       EventType.TotalPoolParticipants,
       event,
-      pool.market,
+      null,
       pool.id,
       pool.participants.toString()
     );
@@ -137,7 +134,7 @@ export function handleLogDeposit(event: LogDeposit): void {
   addEvent(
     EventType.ParticipantBalance,
     event,
-    pool.market,
+    null,
     account.id,
     account.tokenBalance.toString(),
     account.user,
@@ -195,7 +192,7 @@ export function handleLogWithdraw(event: LogWithdraw): void {
       addEvent(
         EventType.TotalPoolParticipants,
         event,
-        pool.market,
+        null,
         pool.id,
         pool.participants.toString()
       );
@@ -206,7 +203,7 @@ export function handleLogWithdraw(event: LogWithdraw): void {
     addEvent(
       EventType.ParticipantBalance,
       event,
-      pool.market,
+      null,
       account.id,
       account.tokenBalance.toString(),
       account.user,
@@ -293,49 +290,23 @@ export function handleLogContributePremium(event: LogContributePremium): void {
 
   mpf.save();
 
+  let marketId = pool.riskPoolsControllerAddress.toHexString() + "-" + event.params.marketId.toString();
+
   addEvent(
     EventType.PoolEarnedPremium,
     event,
-    pool.market,
+    marketId,
     pool.id,
     event.params.amount.toString(),
     event.params.token.toHexString()
   );
 
-  if (pool.market === null) {
-    return;
-  }
-
   marketPremiumEarned(
-    pool.market!,
+    marketId,
     event.params.amount,
     event.params.token,
     event
   );
-}
-
-export function handleLogManagerFeeChanged(event: LogManagerFeeChanged): void {
-  let pool = Pool.load(event.address.toHexString())!;
-
-  pool.managerFee = event.params.managerFee;
-
-  pool.save();
-}
-
-export function handleLogManagerChanged(event: LogManagerChanged): void {
-  let pool = Pool.load(event.address.toHexString())!;
-
-  pool.manager = event.params.manager;
-
-  pool.save();
-}
-
-export function handleLogManagerFeeRecipientChanged(event: LogManagerFeeRecipientChanged): void {
-  let pool = Pool.load(event.address.toHexString())!;
-
-  pool.feeRecipient = event.params.managerFeeRecipient;
-
-  pool.save();
 }
 
 export function handleLogContributeSettlement(
@@ -362,7 +333,7 @@ export function handleLogContributeSettlement(
   addEvent(
     EventType.PoolReceivedSettlement,
     event,
-    pool.market,
+    null,
     pool.id,
     event.params.amount.toString(),
     event.params.token.toHexString()
@@ -414,7 +385,6 @@ function addPoolParticipant(
   account.tokenBalance = BigInt.fromI32(0);
   account.poolId = pool.id;
   account.user = userId;
-  account.market = pool.market;
   account.depositSum = BigInt.fromI32(0);
   account.withdrawSum = BigInt.fromI32(0);
 
@@ -423,7 +393,7 @@ function addPoolParticipant(
   addEvent(
     EventType.TotalPoolParticipants,
     event,
-    pool.market,
+    null,
     pool.id,
     pool.participants.toString()
   );
@@ -433,59 +403,50 @@ function addPoolParticipant(
 
 export function handleLogCoverChanged(event: LogCoverChanged): void {
   let pool = Pool.load(event.address.toHexString())!;
-  let pContract = PoolContract.bind(event.address);
   let marketId =
     pool.riskPoolsControllerAddress.toHexString() +
     "-" +
     event.params.marketId.toString();
   let id = pool.id + "-" + marketId;
   let marketRelation = PoolMarketRelation.load(id);
-  let oldExposure = pool.exposure;
 
   if (marketRelation != null) {
-    marketRelation.poolId = pool.id;
-    marketRelation.pool = pool.id;
-    marketRelation.exposure = event.params.internalCover;
+    let aggPool = AggregatedPool.load(marketRelation.aggregatedPool)!;
+    let premiumRateModel = PremiumRateModelContract.bind(changetype<Address>(aggPool.premiumRateModel));
+    let rate = premiumRateModel.try_getPremiumRate(aggPool.totalCapacity, aggPool.coverage);
+    let oldExposure = aggPool.coverage;
 
-    let premiumRateModel = PremiumRateModelContract.bind(pContract.premiumRateModel());
-    let rate = premiumRateModel.try_getPremiumRate(pContract.capacity(), marketRelation.exposure!);
+    aggPool.rate = rate.reverted ? BigInt.fromI32(0) : rate.value;
+    aggPool.coverage = event.params.internalCover;
 
-    marketRelation.rate = rate.reverted ? BigInt.fromI32(0) : rate.value;
+    aggPool.save();
 
-    marketRelation.save();
+    addEvent(
+      EventType.PoolPremiumRate,
+      event,
+      null,
+      aggPool.id,
+      aggPool.rate.toString(),
+    );
+    addEvent(
+      EventType.PoolExposure,
+      event,
+      null,
+      aggPool.id,
+      aggPool.coverage.toString()
+    );
+
+    updateState(
+      EventType.SystemExposure,
+      event.params.totalCover.minus(oldExposure),
+      null,
+      pool.capitalTokenAddress.toHexString()
+    );
   }
 
-  let premiumRate = !pContract.try_currentPremiumRate().reverted
-    ? pContract.currentPremiumRate()
-    : BigInt.fromI32(0);
-
-  pool.premiumRate = premiumRate;
-  pool.exposure = event.params.totalCover;
   pool.updatedAt = event.block.timestamp;
 
   pool.save();
-
-  addEvent(
-    EventType.PoolPremiumRate,
-    event,
-    null,
-    pool.id,
-    premiumRate.toString()
-  );
-  addEvent(
-    EventType.PoolExposure,
-    event,
-    null,
-    pool.id,
-    pool.exposure.toString()
-  );
-
-  updateState(
-    EventType.SystemExposure,
-    event.params.totalCover.minus(oldExposure),
-    null,
-    pool.capitalTokenAddress.toHexString()
-  );
 }
 
 export function handleLogConnectedRiskPoolsDataUpdated(
@@ -502,8 +463,6 @@ export function handleLogConnectedRiskPoolsDataUpdated(
 
   pool.externalCapacity = event.params.capacity;
   pool.externalCoverage = event.params.cover;
-  pool.capacity = pContract.capacity();
-  pool.exposure = pContract.totalCover();
   pool.poolTokenBalance = pContract.totalSupply();
 
   pool.save();
@@ -511,7 +470,7 @@ export function handleLogConnectedRiskPoolsDataUpdated(
   addEvent(
     EventType.PoolExternalBalance,
     event,
-    pool.market,
+    null,
     pool.id,
     event.params.capacity.toString(),
     event.params.cover.toString()
@@ -778,19 +737,11 @@ export function handleLogCapacityChanged(event: LogCapacityChanged): void {
   let pool = Pool.load(event.address.toHexString())!;
   let pContract = PoolContract.bind(event.address);
   let oldBalance = pool.capitalTokenBalance;
-  let oldCapacity = pool.capacity;
   let stats = pContract.stats();
 
   pool.capitalTokenBalance = stats.value0;
-  pool.capacity = event.params.capacity;
   pool.poolTokenBalance = stats.value1;
   pool.updatedAt = event.block.timestamp;
-
-  let premiumRate = !pContract.try_currentPremiumRate().reverted
-    ? pContract.currentPremiumRate()
-    : pool.premiumRate;
-
-  pool.premiumRate = premiumRate;
 
   pool.save();
 
@@ -805,29 +756,22 @@ export function handleLogCapacityChanged(event: LogCapacityChanged): void {
       continue;
     }
 
-    let premiumRateModel = PremiumRateModelContract.bind(pContract.premiumRateModel());
-    let rate = premiumRateModel.try_getPremiumRate(pContract.capacity(), pmr.exposure!);
+    let aggPool = AggregatedPool.load(pmr.aggregatedPool)!;
+    let premiumRateModel = PremiumRateModelContract.bind(changetype<Address>(aggPool.premiumRateModel));
+    let rate = premiumRateModel.try_getPremiumRate(aggPool.totalCapacity, aggPool.coverage);
 
-    pmr.rate = rate.reverted ? BigInt.fromI32(0) : rate.value;
+    aggPool.rate = rate.reverted ? BigInt.fromI32(0) : rate.value;
 
-    pmr.save();
+    aggPool.save();
 
-    updateAndLogState(
-      EventType.MarketCapacity,
+    addEvent(
+      EventType.PoolPremiumRate,
       event,
-      event.params.capacity.minus(oldCapacity),
-      marketId,
-      pool.capitalTokenAddress.toHexString()
+      null,
+      aggPool.id,
+      aggPool.rate.toString()
     );
   }
-
-  addEvent(
-    EventType.PoolPremiumRate,
-    event,
-    null,
-    pool.id,
-    premiumRate.toString()
-  );
 
   if (!pool.capitalTokenBalance.minus(oldBalance).isZero()) {
     addEvent(
@@ -984,14 +928,6 @@ export function handleLogWithdrawRequestProcessed(
   request.status = WithdrawRequestStatus.Withdrawn;
 
   request.save();
-}
-
-export function handleLogMcrUpdated(event: LogMcrUpdated): void {
-  let pool = Pool.load(event.address.toHexString())!;
-
-  pool.mcr = event.params.mcr;
-
-  pool.save();
 }
 
 export function handleLogWithdrawDelayUpdated(

@@ -442,58 +442,6 @@
         "inputs": [
             {
                 "indexed": false,
-                "internalType": "address",
-                "name": "manager",
-                "type": "address"
-            }
-        ],
-        "name": "LogManagerChanged",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "managerFee",
-                "type": "uint256"
-            }
-        ],
-        "name": "LogManagerFeeChanged",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "address",
-                "name": "managerFeeRecipient",
-                "type": "address"
-            }
-        ],
-        "name": "LogManagerFeeRecipientChanged",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "mcr",
-                "type": "uint256"
-            }
-        ],
-        "name": "LogMcrUpdated",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
                 "internalType": "uint256",
                 "name": "rewardId",
                 "type": "uint256"
@@ -562,19 +510,6 @@
             }
         ],
         "name": "LogPremiumDistributionUpdated",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "address",
-                "name": "premiumRateModel",
-                "type": "address"
-            }
-        ],
-        "name": "LogPremiumRateModelUpdated",
         "type": "event"
     },
     {
@@ -1235,11 +1170,6 @@
                 "internalType": "uint256",
                 "name": "settlementTotalBalance",
                 "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "managerFeeBalance",
-                "type": "uint256"
             }
         ],
         "stateMutability": "view",
@@ -1305,58 +1235,6 @@
             }
         ],
         "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "capacity",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "manager",
-                "type": "address"
-            }
-        ],
-        "name": "changeManager",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "managerFee",
-                "type": "uint256"
-            }
-        ],
-        "name": "changeManagerFee",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "managerFeeRecipient",
-                "type": "address"
-            }
-        ],
-        "name": "changeManagerFeeRecipient",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
@@ -1612,19 +1490,6 @@
         "name": "createWithdrawRequest",
         "outputs": [],
         "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "currentPremiumRate",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -1926,58 +1791,6 @@
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "manager",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "managerFee",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "managerFeeRecipient",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "mcr",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [
             {
                 "internalType": "address",
@@ -2042,30 +1855,6 @@
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "marketId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "nextMarketCover",
-                "type": "uint256"
-            }
-        ],
-        "name": "nextPremiumRate",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [],
         "name": "premiumDistributionRootHash",
         "outputs": [
@@ -2086,19 +1875,6 @@
                 "internalType": "string",
                 "name": "",
                 "type": "string"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "premiumRateModel",
-        "outputs": [
-            {
-                "internalType": "contract IPremiumRateModel",
-                "name": "",
-                "type": "address"
             }
         ],
         "stateMutability": "view",
@@ -2487,19 +2263,6 @@
     {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "mcr",
-                "type": "uint256"
-            }
-        ],
-        "name": "setMcr",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
                 "internalType": "bytes32",
                 "name": "premiumDistributionRootHash",
                 "type": "bytes32"
@@ -2511,19 +2274,6 @@
             }
         ],
         "name": "setPremiumDistribution",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "premiumRateModel",
-                "type": "address"
-            }
-        ],
-        "name": "setPremiumRateModel",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -2836,19 +2586,6 @@
             }
         ],
         "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "erc20",
-                "type": "address"
-            }
-        ],
-        "name": "withdrawManagerFee",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
     },
     {

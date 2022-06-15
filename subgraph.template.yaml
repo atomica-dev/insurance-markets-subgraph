@@ -29,6 +29,8 @@ dataSources:
         - IncomingPayoutRequest
         - CoverMiningReward
         - CoverMiningRewardClaim
+        - RiskTowerLevel
+        - AggregatedPool
       abis:
         - name: RiskPoolsController
           file: ./abis/RiskPoolsController.json
@@ -55,14 +57,6 @@ dataSources:
           handler: handleLogMarketStatusChanged
         - event: LogMarketIncentiveFeeUpdated(uint256,uint256)
           handler: handleLogMarketIncentiveFeeUpdated
-        - event: LogRiskPoolAddedToLevel(uint256,uint256,address)
-          handler: handleLogRiskPoolAddedToLevel
-        - event: LogNextLevelRemoved(uint256,uint256,uint256,uint256)
-          handler: handleLogNextLevelRemoved
-        - event: LogRiskPoolRemovedFromLevel(uint256,uint256,address)
-          handler: handleLogRiskPoolRemovedFromLevel
-        - event: LogNextLevelAdded(uint256,uint256,uint256)
-          handler: handleLogNextLevelAdded
         - event: LogGovernance(uint8,address,address,uint256,uint256,bool)
           handler: handleLogGovernance
         - event: LogNewProductStatus(address,uint8)
@@ -101,6 +95,36 @@ dataSources:
           handler: handleLogIncreaseRewardAmount
         - event: LogRewardClaimed(uint256,uint256,uint256)
           handler: handleLogRewardClaimed
+        - event: LogMarketCharge(uint256,uint256,uint256,uint256,uint256,uint256,uint256)
+          handler: handleLogMarketCharge
+        - event: LogAggregatedPoolCreated(uint256,uint256,uint256,address)
+          handler: handleLogAggregatedPoolCreated
+        - event: LogCapacityAllowanceLimitUpdated(address,uint256)
+          handler: handleLogCapacityAllowanceLimitUpdated
+        - event: LogAggregatedPoolCapacityAllowanceUpdated(uint256,address,uint256)
+          handler: handleLogAggregatedPoolCapacityAllowanceUpdated
+        - event: LogAggregatedPoolRiskPoolCapacityLimitUpdated(uint256,address,uint256)
+          handler: handleLogAggregatedPoolRiskPoolCapacityLimitUpdated
+        - event: LogAggregatedPoolMarketCapacityLimitUpdated(uint256,address,uint256)
+          handler: handleLogAggregatedPoolMarketCapacityLimitUpdated
+        - event: LogRebalance(uint256,address,uint256,uint256)
+          handler: handleLogRebalance
+        - event: LogRiskPoolRemovedFromAggregatedPool(uint256,address)
+          handler: handleLogRiskPoolRemovedFromAggregatedPool
+        - event: LogRiskPoolAddedToAggregatedPool(uint256,address)
+          handler: handleLogRiskPoolAddedToAggregatedPool
+        - event: LogRiskPoolManagerChanged(address,address)
+          handler: handleLogRiskPoolManagerChanged
+        - event: LogRiskPoolManagerFeeChanged(address,uint256)
+          handler: handleLogRiskPoolManagerFeeChanged
+        - event: LogRiskPoolManagerFeeRecipientChanged(address,address)
+          handler: handleLogRiskPoolManagerFeeRecipientChanged
+        - event: LogRiskTowerLevelCreated(uint256,uint256,uint256)
+          handler: handleLogRiskTowerLevelCreated
+        - event: LogRiskTowerLevelRemoved(uint256,uint256,uint256)
+          handler: handleLogRiskTowerLevelRemoved
+        - event: LogAggregatedPoolRemoved(uint256,uint256,uint256)
+          handler: handleLogAggregatedPoolRemoved
       file: ./src/risk-pools-controller.ts
 templates:
   - kind: ethereum/contract
@@ -115,12 +139,12 @@ templates:
       entities:
         - AdjustmentConfiguration
       abis:
+        - name: CoverAdjuster
+          file: ./abis/CoverAdjuster.json
         - name: Product
           file: ./abis/Product.json
         - name: RiskPoolsController
           file: ./abis/RiskPoolsController.json
-        - name: CoverAdjuster
-          file: ./abis/CoverAdjuster.json
       eventHandlers:
         - event: LogConfigurationCreated(uint256)
           handler: handleLogConfigurationCreated
@@ -170,6 +194,7 @@ templates:
         - Pool
         - Charge
         - PoolMarketRelation
+        - RiskTowerLevel
       abis:
         - name: Product
           file: ./abis/Product.json
@@ -258,6 +283,7 @@ templates:
         - IncomingLoss
         - OutgoingLoss
         - PoolOwnLoss
+        - AggregatedPool
       abis:
         - name: Pool
           file: ./abis/RiskPool.json
@@ -300,8 +326,6 @@ templates:
           handler: handleLogWithdrawRequestCancelled
         - event: LogWithdrawRequestProcessed(address,uint256)
           handler: handleLogWithdrawRequestProcessed
-        - event: LogMcrUpdated(uint256)
-          handler: handleLogMcrUpdated
         - event: LogWithdrawDelayUpdated(uint256)
           handler: handleLogWithdrawDelayUpdated
         - event: LogWithdrawRequestExpirationUpdated(uint256)
@@ -332,12 +356,6 @@ templates:
           handler: handleLogCapitalReleased
         - event: LogManageFeeWithdrawn(address,uint256)
           handler: handleLogManageFeeWithdrawn
-        - event: LogManagerFeeChanged(uint256)
-          handler: handleLogManagerFeeChanged
-        - event: LogManagerChanged(address)
-          handler: handleLogManagerChanged
-        - event: LogManagerFeeRecipientChanged(address)
-          handler: handleLogManagerFeeRecipientChanged
   - kind: ethereum/contract
     name: RateOracle
     network: ganache

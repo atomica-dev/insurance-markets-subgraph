@@ -1,6 +1,7 @@
 export enum GovernanceLogType {
   // General
   NewOperator,
+  NewAllowanceManager,
   Treasury,
   DefaultPayoutRequester,
   DefaultPayoutApprover,

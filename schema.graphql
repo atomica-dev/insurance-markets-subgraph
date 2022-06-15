@@ -6,8 +6,9 @@ type System @entity {
   externalProductList: [String!]!
   syncOracleList: [String!]!
   governanceFee: BigInt
-  operator: Bytes
-  treasury: Bytes
+  operator: Bytes!
+  allowanceManager: Bytes!
+  treasury: Bytes!
   defaultPayoutRequester: Bytes
   defaultPayoutApprover: Bytes
   productCreatorsAllowlistId: BigInt
@@ -103,8 +104,30 @@ type Market @entity {
   status: Int
   premiumMulAccumulator: BigInt
   settlementDiscount: BigInt
+  riskTowerRoot: BigInt
 
   rewards: [CoverMiningReward!]!  @derivedFrom(field: "market")
+  riskTower: [RiskTowerLevel!]! @derivedFrom(field: "market")
+}
+
+type RiskTowerLevel @entity {
+  id: ID!
+  market: Market!
+  levelNo: Int
+  aggregatedPools: [AggregatedPool!]! @derivedFrom(field: "riskTowerLevel")
+  nextLevel: RiskTowerLevel
+  prevLevel: RiskTowerLevel
+}
+
+type AggregatedPool @entity {
+  id: ID!
+  riskTowerLevel: RiskTowerLevel!
+  premiumRateModel: Bytes!
+  market: Market!
+  poolMarketRelations: [PoolMarketRelation!]! @derivedFrom(field: "aggregatedPool")
+  rate: BigInt!
+  totalCapacity: BigInt!
+  coverage: BigInt!
 }
 
 type CoverMiningReward @entity {
@@ -203,14 +226,14 @@ type Policy @entity {
 
 type PoolMarketRelation @entity {
   id: ID!
-  poolId: String!
-  market: String
-  exposure: BigInt
-  allowance: BigInt
-  rate: BigInt
-  levelNo: Int
-  levelId: BigInt
+  poolId: Bytes!
+  market: Market!
+  balance: BigInt
+  capacityAllowance: BigInt
+  poolCapacityLimit: BigInt
+  marketCapacityLimit: BigInt
   pool: Pool
+  aggregatedPool: AggregatedPool!
 }
 
 type Pool @entity {
@@ -218,9 +241,7 @@ type Pool @entity {
   productId: String
   capitalTokenAddress: Bytes!
   name: String
-  market: String
   riskPoolsControllerAddress: Bytes!
-  num: Int
   capitalTokenBalance: BigInt!
   poolTokenBalance: BigInt!
   participants: BigInt!
@@ -230,16 +251,13 @@ type Pool @entity {
   poolTokenSymbol: String
   capitalTokenDecimals: Int
   capitalTokenSymbol: String
-  premiumRate: BigInt!
-  exposure: BigInt!
-  mcr: BigInt
+  capacityAllowanceLimit: BigInt!
+  totalCapacityAllowance: BigInt!
   markets: [Market!]!
   updatedAt: BigInt
   withdrawDelay: BigInt
   withdrawRequestExpiration: BigInt
   capitalRequirement: BigInt
-  capacity: BigInt!
-  premiumRateModel: Bytes
   lpAllowListId: BigInt
   rewards: [Reward!]!
   premiums: [PoolPremium!] @derivedFrom(field: "pool")
@@ -350,7 +368,6 @@ type PoolParticipant @entity {
   id: ID!
   user: String!
   poolId: String
-  market: String
   depositSum: BigInt!
   withdrawSum: BigInt!
   tokenBalance: BigInt!

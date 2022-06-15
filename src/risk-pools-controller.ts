@@ -7,14 +7,10 @@ import {
   LogNewProduct,
   LogNewProductStatus,
   LogNewSystemStatus,
-  LogNextLevelAdded,
-  LogNextLevelRemoved,
   LogPolicyCoverChanged,
   LogPermissionTokenIssued,
   LogPolicyDeposit,
   LogPolicyWithdraw,
-  LogRiskPoolAddedToLevel,
-  LogRiskPoolRemovedFromLevel,
   LogWithdrawFee,
   LogFeeAccrued,
   RiskPoolsController,
@@ -27,6 +23,21 @@ import {
   LogRewardClaimed,
   LogIncreaseRewardAmount,
   LogNewReward,
+  LogMarketCharge,
+  LogAggregatedPoolCreated,
+  LogAggregatedPoolRemoved,
+  LogRiskTowerLevelCreated1,
+  LogRiskTowerLevelRemoved,
+  LogRiskPoolAddedToAggregatedPool,
+  LogRiskPoolRemovedFromAggregatedPool,
+  LogRebalance,
+  LogAggregatedPoolMarketCapacityLimitUpdated,
+  LogAggregatedPoolRiskPoolCapacityLimitUpdated,
+  LogAggregatedPoolCapacityAllowanceUpdated,
+  LogRiskPoolManagerChanged,
+  LogRiskPoolManagerFeeChanged,
+  LogRiskPoolManagerFeeRecipientChanged,
+  LogCapacityAllowanceLimitUpdated,
 } from "../generated/RiskPoolsController/RiskPoolsController";
 import { RiskPoolsController as RiskPoolsControllerContract } from "../generated/templates/Product/RiskPoolsController";
 import {
@@ -52,8 +63,11 @@ import {
   IncomingPayoutRequest,
   CoverMiningReward,
   CoverMiningRewardClaim,
+  RiskTowerLevel,
+  AggregatedPool,
 } from "../generated/schema";
 import {
+  addEvent,
   EventType,
   getState,
   updateAndLogState,
@@ -67,13 +81,12 @@ import {
   Bytes,
   ethereum,
   log,
+  store,
 } from "@graphprotocol/graph-ts";
 import {
-  addPoolToMarket,
   createPool,
   ETH_ADDRESS,
   filterNotEqual,
-  removePoolsAtLevel,
 } from "./product";
 import { Product as ProductContract } from "../generated/RiskPoolsController/Product";
 import { CoverAdjuster as CoverAdjusterTemplate } from "../generated/templates";
@@ -85,6 +98,7 @@ import { addOraclePair } from "./rate-oracle";
 import { GovernanceLogType } from "./governance-type.enum";
 import {
   CPolicy,
+  getAggregatedPool,
   getCoverReward,
   getForwardedPayoutRequest,
   getMarketMeta,
@@ -92,6 +106,8 @@ import {
   getPolicy,
   getPolicyDeposit,
 } from "./contract-mapper";
+import { PremiumRateModelDynamic as PremiumRateModelContract } from "../generated/templates/Pool/PremiumRateModelDynamic";
+
 
 export function handleLogNewProduct(event: LogNewProduct): void {
   getState(EventType.SystemStatus).save();
@@ -317,88 +333,17 @@ function updatePolicyBalances(
   );
 }
 
-export function handleLogRiskPoolAddedToLevel(
-  event: LogRiskPoolAddedToLevel
-): void {
-  let rpcContract = RiskPoolsControllerContract.bind(event.address);
-  let marketId = event.params.marketId;
-  let poolId = event.params.riskPool;
-  let levelId = event.params.levelId;
-
-  let currentLevel = rpcContract.riskTowerBase(marketId);
-  let levelNo: i32 = 1;
-
-  while (!currentLevel.isZero() && currentLevel != levelId) {
-    levelNo++;
-    currentLevel = rpcContract.nextLevelId(marketId, currentLevel);
-  }
-
-  addPoolToMarket(
-    poolId,
-    event.address.toHexString() + "-" + marketId.toString(),
-    event,
-    levelId,
-    levelNo,
-    event.address
-  );
-}
-
-export function handleLogRiskPoolRemovedFromLevel(
-  event: LogRiskPoolRemovedFromLevel
-): void {
-  event.params.levelId;
-  event.params.marketId;
-  event.params.riskPool;
-
-  removePoolsAtLevel(
-    event.params.levelId,
-    event.address.toHexString() + "-" + event.params.marketId.toString(),
-    event,
-    [event.params.riskPool.toHexString()]
-  );
-}
-
-export function handleLogNextLevelRemoved(event: LogNextLevelRemoved): void {
-  let marketId = event.params.marketId;
-
-  removePoolsAtLevel(
-    event.params.levelIdToRemove,
-    event.address.toHexString() + "-" + marketId.toString(),
-    event
-  );
-}
-
-export function handleLogNextLevelAdded(event: LogNextLevelAdded): void {
-  let rpcContract = RiskPoolsControllerContract.bind(event.address);
-  let marketId = event.params.marketId;
-  let levelId = event.params.levelIdToAdd;
-
-  let currentLevel = rpcContract.riskTowerBase(marketId);
-  let levelNo: i32 = 1;
-
-  while (!currentLevel.isZero() && currentLevel != levelId) {
-    levelNo++;
-    currentLevel = rpcContract.nextLevelId(marketId, currentLevel);
-  }
-
-  let pools = rpcContract.riskPoolsAtLevel(marketId, currentLevel);
-
-  for (let i = 0; i < pools.length; i++) {
-    addPoolToMarket(
-      pools[i],
-      event.address.toHexString() + "-" + marketId.toString(),
-      event,
-      levelId,
-      levelNo,
-      event.address
-    );
-  }
-}
-
 function handleUpdateNewOperator(event: LogGovernance): void {
   let config = getSystemConfig(event.address.toHexString());
 
   config.operator = event.params.param1;
+  config.save();
+}
+
+function handleUpdateNewAllowanceManager(event: LogGovernance): void {
+  let config = getSystemConfig(event.address.toHexString());
+
+  config.allowanceManager = event.params.param1;
   config.save();
 }
 
@@ -587,19 +532,19 @@ function handleUpdateExternalProduct(event: LogGovernance): void {
 function handleUpdateRiskPoolMarketCapacityAllowance(
   event: LogGovernance
 ): void {
-  let pmrId =
-    event.params.param1.toHexString() +
-    "-" +
-    event.address.toHexString() +
-    "-" +
-    event.params.param3.toString();
-  let marketRelation = PoolMarketRelation.load(pmrId);
+  // let pmrId =
+  //   event.params.param1.toHexString() +
+  //   "-" +
+  //   event.address.toHexString() +
+  //   "-" +
+  //   event.params.param3.toString();
+  // let marketRelation = PoolMarketRelation.load(pmrId);
 
-  if (marketRelation) {
-    marketRelation.allowance = event.params.param4;
+  // if (marketRelation) {
+  //   marketRelation.allowance = event.params.param4;
 
-    marketRelation.save();
-  }
+  //   marketRelation.save();
+  // }
 }
 
 function handleUpdateMarketExchangeRateOracle(event: LogGovernance): void {
@@ -628,18 +573,6 @@ function handleUpdateMarketExchangeRateOracle(event: LogGovernance): void {
   );
 }
 
-function handleUpdateRiskPoolMcr(event: LogGovernance): void {
-  let pool = Pool.load(event.params.param1.toHexString());
-
-  if (!pool) {
-    return;
-  }
-
-  pool.mcr = event.params.param3;
-
-  pool.save();
-}
-
 function handleUpdateRiskPoolWithdrawDelay(event: LogGovernance): void {
   let pool = Pool.load(event.params.param1.toHexString());
 
@@ -663,17 +596,6 @@ function handleUpdateRiskPoolWithdrawRequestExpiration(
 
   pool.withdrawRequestExpiration = event.params.param3;
 
-  pool.save();
-}
-
-function handleUpdateRiskPoolPremiumRateModel(event: LogGovernance): void {
-  let pool = Pool.load(event.params.param1.toHexString());
-
-  if (!pool) {
-    return;
-  }
-
-  pool.premiumRateModel = event.params.param2;
   pool.save();
 }
 
@@ -901,6 +823,7 @@ function handleFrontendOperatorPenalty(event: LogGovernance): void {
 let map = new Map<GovernanceLogType, (event: LogGovernance) => void>();
 
 map.set(GovernanceLogType.NewOperator, handleUpdateNewOperator);
+map.set(GovernanceLogType.NewAllowanceManager, handleUpdateNewAllowanceManager);
 map.set(GovernanceLogType.Treasury, handleUpdateTreasury);
 map.set(
   GovernanceLogType.DefaultPayoutRequester,
@@ -943,7 +866,6 @@ map.set(
   GovernanceLogType.MarketExchangeRateOracle,
   handleUpdateMarketExchangeRateOracle
 );
-map.set(GovernanceLogType.RiskPoolMcr, handleUpdateRiskPoolMcr);
 map.set(
   GovernanceLogType.RiskPoolWithdrawDelay,
   handleUpdateRiskPoolWithdrawDelay
@@ -951,10 +873,6 @@ map.set(
 map.set(
   GovernanceLogType.RiskPoolWithdrawRequestExpiration,
   handleUpdateRiskPoolWithdrawRequestExpiration
-);
-map.set(
-  GovernanceLogType.RiskPoolPremiumRateModel,
-  handleUpdateRiskPoolPremiumRateModel
 );
 map.set(
   GovernanceLogType.MarketPolicyBuyerAllowlistId,
@@ -1546,4 +1464,336 @@ export function handleLogRewardClaimed(event: LogRewardClaimed): void {
   cmRewardClaim.amount = cmRewardClaim.amount.plus(event.params.rewardAmount);
 
   cmRewardClaim.save();
+}
+
+export function handleLogMarketCharge(event: LogMarketCharge): void {
+  let aggPool = AggregatedPool.load(event.params.addregatedPoolId.toString());
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+
+  if (!aggPool) {
+    return;
+  }
+
+  let aggPoolData = getAggregatedPool(rpcContract, event.params.addregatedPoolId);
+  let market = Market.load(aggPool.market)!;
+  let oldCapacity = aggPool.totalCapacity;
+
+  aggPool.totalCapacity = aggPoolData.totalCapacity;
+  aggPool.coverage = aggPoolData.distributedCover;
+
+  let premiumRateModel = PremiumRateModelContract.bind(aggPoolData.premiumRateModel);
+  let rate = premiumRateModel.try_getPremiumRate(aggPool.totalCapacity, aggPool.coverage);
+  let oldCoverage = aggPool.coverage;
+
+  aggPool.rate = rate.reverted ? BigInt.fromI32(0) : rate.value;
+
+  aggPool.save();
+
+  updateAndLogState(
+    EventType.MarketCapacity,
+    event,
+    aggPool.totalCapacity.minus(oldCapacity),
+    aggPool.market,
+    market.capitalToken.toHexString()
+  );
+
+  addEvent(
+    EventType.PoolExposure,
+    event,
+    null,
+    aggPool.id,
+    aggPool.coverage.toString()
+  );
+
+  updateState(
+    EventType.SystemExposure,
+    aggPool.coverage.minus(oldCoverage),
+    null,
+    market.capitalToken.toHexString()
+  );
+}
+
+export function handleLogAggregatedPoolCapacityAllowanceUpdated(event: LogAggregatedPoolCapacityAllowanceUpdated): void {
+  let aggPool = AggregatedPool.load(event.params.aggregatedPoolId.toString());
+
+  if (!aggPool) {
+    return;
+  }
+  // ? pool.totalCapacityAllowance = riskPoolData.totalCapacityAllowance;
+  let id = event.params.riskPool.toHexString() + "-" + aggPool.market;
+  let pmRelation = PoolMarketRelation.load(id);
+
+  if (!pmRelation) {
+    pmRelation = new PoolMarketRelation(id);
+
+    pmRelation.poolId = event.params.riskPool;
+    pmRelation.pool = event.params.riskPool.toHexString();
+    pmRelation.market = aggPool.market;
+    pmRelation.aggregatedPool = aggPool.id;
+
+    pmRelation.balance = BigInt.fromI32(0);
+    pmRelation.capacityAllowance = BigInt.fromI32(0);
+    pmRelation.poolCapacityLimit = BigInt.fromI32(0);
+    pmRelation.marketCapacityLimit = BigInt.fromI32(0);
+  }
+
+  pmRelation.capacityAllowance = event.params.capacityAllowance;
+
+  pmRelation.save();
+}
+
+export function handleLogAggregatedPoolRiskPoolCapacityLimitUpdated(event: LogAggregatedPoolRiskPoolCapacityLimitUpdated): void {
+  let aggPool = AggregatedPool.load(event.params.aggregatedPoolId.toString());
+
+  if (!aggPool) {
+    return;
+  }
+
+  let id = event.params.riskPool.toHexString() + "-" + aggPool.market;
+  let pmRelation = PoolMarketRelation.load(id);
+
+  if (!pmRelation) {
+    pmRelation = new PoolMarketRelation(id);
+
+    pmRelation.poolId = event.params.riskPool;
+    pmRelation.pool = event.params.riskPool.toHexString();
+    pmRelation.market = aggPool.market;
+    pmRelation.aggregatedPool = aggPool.id;
+
+    pmRelation.balance = BigInt.fromI32(0);
+    pmRelation.capacityAllowance = BigInt.fromI32(0);
+    pmRelation.poolCapacityLimit = BigInt.fromI32(0);
+    pmRelation.marketCapacityLimit = BigInt.fromI32(0);
+  }
+
+  pmRelation.poolCapacityLimit = event.params.capacityLimit;
+
+  pmRelation.save();
+}
+
+export function handleLogCapacityAllowanceLimitUpdated(event: LogCapacityAllowanceLimitUpdated): void {
+  let pool = Pool.load(event.params.riskPool.toHexString());
+
+  if (!pool) {
+    return;
+  }
+
+  pool.capacityAllowanceLimit = event.params.capacityAllowanceLimit;
+
+  pool.save();
+}
+
+export function handleLogAggregatedPoolMarketCapacityLimitUpdated(event: LogAggregatedPoolMarketCapacityLimitUpdated): void {
+  let aggPool = AggregatedPool.load(event.params.aggregatedPoolId.toString());
+
+  if (!aggPool) {
+    return;
+  }
+
+  let id = event.params.riskPool.toHexString() + "-" + aggPool.market;
+  let pmRelation = PoolMarketRelation.load(id);
+
+  if (!pmRelation) {
+    pmRelation = new PoolMarketRelation(id);
+
+    pmRelation.poolId = event.params.riskPool;
+    pmRelation.pool = event.params.riskPool.toHexString();
+    pmRelation.market = aggPool.market;
+    pmRelation.aggregatedPool = aggPool.id;
+
+    pmRelation.balance = BigInt.fromI32(0);
+    pmRelation.capacityAllowance = BigInt.fromI32(0);
+    pmRelation.poolCapacityLimit = BigInt.fromI32(0);
+    pmRelation.marketCapacityLimit = BigInt.fromI32(0);
+  }
+
+  pmRelation.marketCapacityLimit = event.params.capacityLimit;
+
+  pmRelation.save();
+}
+
+export function handleLogRebalance(event: LogRebalance): void {
+  let aggPool = AggregatedPool.load(event.params.aggregatedPoolId.toString());
+
+  if (!aggPool) {
+    return;
+  }
+
+  let id = event.params.riskPool.toHexString() + "-" + aggPool.market;
+
+  let pmRelation = PoolMarketRelation.load(id);
+
+  if (!pmRelation) {
+    pmRelation = new PoolMarketRelation(id);
+
+    pmRelation.poolId = event.params.riskPool;
+    pmRelation.pool = event.params.riskPool.toHexString();
+    pmRelation.market = aggPool.market;
+    pmRelation.aggregatedPool = aggPool.id;
+
+    pmRelation.balance = BigInt.fromI32(0);
+    pmRelation.capacityAllowance = BigInt.fromI32(0);
+    pmRelation.poolCapacityLimit = BigInt.fromI32(0);
+    pmRelation.marketCapacityLimit = BigInt.fromI32(0);
+  }
+
+  pmRelation.balance = event.params.riskPoolCapacity;
+  pmRelation.save();
+
+  aggPool.totalCapacity = event.params.totalAggregatedPoolCapacity;
+  aggPool.save();
+}
+
+export function handleLogRiskPoolRemovedFromAggregatedPool(event: LogRiskPoolRemovedFromAggregatedPool): void {
+  let aggPool = AggregatedPool.load(event.params.aggregatedPoolId.toString())!;
+
+  let id = event.params.riskPool.toHexString() + "-" + aggPool.market;
+
+  store.remove("PoolMarketRelation", id);
+}
+
+export function handleLogRiskPoolAddedToAggregatedPool(event: LogRiskPoolAddedToAggregatedPool): void {
+  let aggPool = AggregatedPool.load(event.params.aggregatedPoolId.toString());
+
+  if (!aggPool) {
+    return;
+  }
+
+  let id = event.params.riskPool.toHexString() + "-" + aggPool.market;
+  let pmRelation = new PoolMarketRelation(id);
+
+  pmRelation.poolId = event.params.riskPool;
+  pmRelation.pool = event.params.riskPool.toHexString();
+  pmRelation.market = aggPool.market;
+  pmRelation.balance = BigInt.fromI32(0);
+  pmRelation.capacityAllowance = BigInt.fromI32(0);
+  pmRelation.poolCapacityLimit = BigInt.fromI32(0);
+  pmRelation.marketCapacityLimit = BigInt.fromI32(0);
+  pmRelation.aggregatedPool = aggPool.id;
+
+  pmRelation.save();
+}
+
+export function handleLogRiskPoolManagerChanged(event: LogRiskPoolManagerChanged): void {
+  let pool = Pool.load(event.params.riskPool.toHexString())!;
+
+  pool.manager = event.params.manager;
+
+  pool.save();
+}
+
+export function handleLogRiskPoolManagerFeeChanged(event: LogRiskPoolManagerFeeChanged): void {
+  let pool = Pool.load(event.params.riskPool.toHexString())!;
+
+  pool.managerFee = event.params.managerFee;
+
+  pool.save();
+}
+
+export function handleLogRiskPoolManagerFeeRecipientChanged(event: LogRiskPoolManagerFeeRecipientChanged): void {
+  let pool = Pool.load(event.params.riskPool.toHexString())!;
+
+  pool.feeRecipient = event.params.managerFeeRecipient;
+
+  pool.save();
+}
+
+export function handleLogRiskTowerLevelCreated(event: LogRiskTowerLevelCreated1): void {
+  let id = event.params.riskTowerLevelId.toString();
+  let prevId = event.params.priorRiskTowerLevel.toString();
+  let level = new RiskTowerLevel(id);
+  let marketId = event.address.toHexString() + "-" + event.params.marketId.toString();
+  let levelNo = 1;
+
+  level.market = marketId;
+
+  if (prevId !== "0") {
+    level.prevLevel = prevId;
+
+    let prevLevel = RiskTowerLevel.load(prevId);
+
+    if (prevLevel) {
+      let oldNextLevel = prevLevel.nextLevel;
+
+      prevLevel.nextLevel = id;
+
+      levelNo = prevLevel.levelNo + 1;
+
+      prevLevel.save();
+
+      let nextLevel = oldNextLevel ? RiskTowerLevel.load(oldNextLevel) : null;
+
+      if (nextLevel) {
+        nextLevel.prevLevel = id;
+
+        nextLevel.save();
+      }
+    }
+  }
+
+  level.levelNo = levelNo;
+
+  level.save();
+
+  let nextLevel = level.nextLevel ? RiskTowerLevel.load(level.nextLevel!) : null;
+
+  while(nextLevel) {
+    nextLevel.levelNo = nextLevel.levelNo + 1;
+
+    nextLevel.save();
+
+    nextLevel = nextLevel.nextLevel ? RiskTowerLevel.load(nextLevel.nextLevel!) : null;
+  }
+}
+
+export function handleLogRiskTowerLevelRemoved(event: LogRiskTowerLevelRemoved): void {
+  let id = event.params.riskTowerLevelId.toString();
+  let level = RiskTowerLevel.load(id);
+
+  if (!level) {
+    return;
+  }
+
+  let prevLevel = level.prevLevel ? RiskTowerLevel.load(level.prevLevel!) : null;
+  let nextLevel = level.nextLevel ? RiskTowerLevel.load(level.nextLevel!) : null;
+
+  if (prevLevel) {
+    prevLevel.nextLevel = level.nextLevel;
+
+    prevLevel.save();
+  }
+
+  if (nextLevel) {
+    nextLevel.prevLevel = level.prevLevel;
+
+    nextLevel.save();
+  }
+
+  store.remove("RiskTowerLevel", id);
+
+  while(nextLevel) {
+    nextLevel.levelNo = nextLevel.levelNo - 1;
+
+    nextLevel.save();
+
+    nextLevel = nextLevel.nextLevel ? RiskTowerLevel.load(nextLevel.nextLevel!) : null;
+  }
+}
+
+export function handleLogAggregatedPoolCreated(event: LogAggregatedPoolCreated): void {
+  let aggPool = new AggregatedPool(event.params.aggregatedPoolId.toString());
+  let marketId = event.address.toHexString() + "-" + event.params.marketId.toString();
+
+  aggPool.market = marketId;
+  aggPool.riskTowerLevel = event.params.riskTowerLevelId.toString();
+  aggPool.premiumRateModel = event.params.premiumRateModel;
+  aggPool.rate = BigInt.fromI32(0);
+  aggPool.totalCapacity = BigInt.fromI32(0);
+  aggPool.coverage = BigInt.fromI32(0);
+
+  aggPool.save();
+}
+
+export function handleLogAggregatedPoolRemoved(event: LogAggregatedPoolRemoved): void {
+  store.remove("AggregatedPool", event.params.aggregatedPoolId.toString());
 }
