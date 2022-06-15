@@ -3523,6 +3523,21 @@
     },
     {
         "inputs": [],
+        "name": "maxRiskPoolManagerFee",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x7b5e2b3b"
+    },
+    {
+        "inputs": [],
         "name": "maxSimultaneousRewards",
         "outputs": [
             {
@@ -5398,6 +5413,20 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0xda9b50c0"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "maxRiskPoolManagerFee",
+                "type": "uint256"
+            }
+        ],
+        "name": "setMaxRiskPoolManagerFee",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x906dc56c"
     },
     {
         "inputs": [

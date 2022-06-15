@@ -14,6 +14,7 @@ export enum GovernanceLogType {
   LiquidationGasUsage,
   SolvencyMultiplier,
   MinPolicyDepositMultiplier,
+  MaxRiskPoolManagerFee,
 
   // RiskPools
   RiskPoolPremiumRateModel,

@@ -36,6 +36,7 @@ export function getSystemConfig(id: string): System {
     config.liquidationIncentive = contract.liquidationIncentive();
     config.solvencyMultiplier = contract.solvencyMultiplier();
     config.minPolicyDepositMultiplier = contract.minPolicyDepositMultiplier();
+    config.maxRiskPoolManagerFee = contract.maxRiskPoolManagerFee();
     config.bridgeConnector = contract.bridgeConnector();
     config.swapCycleDuration = contract.swapCycleDuration();
     config.swapDuration = contract.swapDuration();

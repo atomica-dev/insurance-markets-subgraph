@@ -5,29 +5,30 @@ type System @entity {
   coverAdjusterOracleList: [String!]!
   externalProductList: [String!]!
   syncOracleList: [String!]!
-  governanceFee: BigInt
+  governanceFee: BigInt!
   operator: Bytes!
   allowanceManager: Bytes!
   treasury: Bytes!
-  defaultPayoutRequester: Bytes
-  defaultPayoutApprover: Bytes
-  productCreatorsAllowlistId: BigInt
-  maxProductOperatorIncentiveFee: BigInt
-  maxMarketOperatorIncentiveFee: BigInt
-  policyTokenIssuer: Bytes
-  policyTokenPermissionIssuer: Bytes
-  allowListAddress: Bytes
-  liquidationGasUsage: BigInt
-  liquidationIncentive: BigInt
-  solvencyMultiplier: BigInt
-  minPolicyDepositMultiplier: BigInt
-  extPoolDetailsConfidenceInterval: BigInt
-  bridgeConnector: Bytes
-  swapCycleDuration: BigInt
-  swapDuration: BigInt
-  idleDuration: BigInt
+  defaultPayoutRequester: Bytes!
+  defaultPayoutApprover: Bytes!
+  productCreatorsAllowlistId: BigInt!
+  maxProductOperatorIncentiveFee: BigInt!
+  maxMarketOperatorIncentiveFee: BigInt!
+  policyTokenIssuer: Bytes!
+  policyTokenPermissionIssuer: Bytes!
+  allowListAddress: Bytes!
+  liquidationGasUsage: BigInt!
+  liquidationIncentive: BigInt!
+  solvencyMultiplier: BigInt!
+  minPolicyDepositMultiplier: BigInt!
+  maxRiskPoolManagerFee: BigInt!
+  extPoolDetailsConfidenceInterval: BigInt!
+  bridgeConnector: Bytes!
+  swapCycleDuration: BigInt!
+  swapDuration: BigInt!
+  idleDuration: BigInt!
 
-  status: Int
+  status: Int!
 }
 
 type PolicyPermissionToken @entity {

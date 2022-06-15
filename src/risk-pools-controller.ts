@@ -908,6 +908,7 @@ map.set(
   GovernanceLogType.MinPolicyDepositMultiplier,
   handleUpdateMinPolicyDepositMultiplier
 );
+map.set(GovernanceLogType.MaxRiskPoolManagerFee, handleUpdateMaxRiskPoolManagerFee);
 map.set(GovernanceLogType.NewFrontendOperator, handleNewFrontendOperator);
 map.set(
   GovernanceLogType.FrontendOperatorDisabled,
@@ -949,6 +950,16 @@ export function handleExternalRiskPoolsConfidenceInterval(
   let config = getSystemConfig(event.address.toHexString());
 
   config.extPoolDetailsConfidenceInterval = event.params.param3;
+
+  config.save();
+}
+
+export function handleUpdateMaxRiskPoolManagerFee(
+  event: LogGovernance
+): void {
+  let config = getSystemConfig(event.address.toHexString());
+
+  config.maxRiskPoolManagerFee = event.params.param3;
 
   config.save();
 }
