@@ -57,8 +57,6 @@ type Product @entity {
   defaultPremiumToken: Bytes
   defaultCapitalToken: Bytes
   defaultCoverAdjusterOracle: Bytes
-  productType: Int
-  policyType: Int
   claimProcessor: Bytes
   defaultPremiumRateModels: [Bytes!]!
   defaultRatesOracle: Bytes
@@ -137,12 +135,14 @@ type CoverMiningReward @entity {
   amount: BigInt!
   creator: Bytes!
   rewardToken: Bytes!
-  startedAt: BigInt
-  endedAt: BigInt
-  ratePerSecond: BigInt
-  updatedAt: BigInt
-  rewardPerToken: BigInt
+  startedAt: BigInt!
+  endedAt: BigInt!
+  ratePerSecond: BigInt!
+  updatedAt: BigInt!
+  rewardPerToken: BigInt!
+  isArchived: Boolean!
   cid: String
+  rootHash: Bytes
 }
 
 type CoverMiningRewardClaim @entity {
@@ -151,6 +151,7 @@ type CoverMiningRewardClaim @entity {
   policyId: BigInt!
   account: Bytes!
   amount: BigInt!
+  updatedAt: BigInt!
 }
 
 type AccruedFee @entity {

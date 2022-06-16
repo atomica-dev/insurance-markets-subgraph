@@ -95,6 +95,10 @@ dataSources:
           handler: handleLogIncreaseRewardAmount
         - event: LogRewardClaimed(uint256,uint256,uint256)
           handler: handleLogRewardClaimed
+        - event: LogCoverMiningRewardArchived(uint256,bytes32)
+          handler: handleLogCoverMiningRewardArchived
+        - event: LogArchivedRewardClaimed(uint256,uint256,uint256)
+          handler: handleLogArchivedRewardClaimed
         - event: LogMarketCharge(uint256,uint256,uint256,uint256,uint256,uint256,uint256)
           handler: handleLogMarketCharge
         - event: LogAggregatedPoolCreated(uint256,uint256,uint256,address)

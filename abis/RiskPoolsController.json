@@ -140,6 +140,32 @@
         "inputs": [
             {
                 "indexed": false,
+                "internalType": "uint256",
+                "name": "rewardId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "policyId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "LogArchivedRewardClaimed",
+        "type": "event",
+        "signature": "0x0fc58bd3f75d947eb5946f329a19e8e3d46fb45b483a6ceef3fceb344f511b09"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
                 "internalType": "address",
                 "name": "riskPool",
                 "type": "address"
@@ -154,6 +180,26 @@
         "name": "LogCapacityAllowanceLimitUpdated",
         "type": "event",
         "signature": "0x1925142a47b4ee3168327e347d0e46b771d73d3fa1d7b71d8d543207b8a56efc"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "rewardId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "bytes32",
+                "name": "rootHash",
+                "type": "bytes32"
+            }
+        ],
+        "name": "LogCoverMiningRewardArchived",
+        "type": "event",
+        "signature": "0x7ddc0a46aa218fbca8807ca96db6aa4beb13fc718a7931d647ff3cf2aaf1a994"
     },
     {
         "anonymous": false,
@@ -1815,6 +1861,20 @@
         "inputs": [
             {
                 "internalType": "uint256",
+                "name": "policyId",
+                "type": "uint256"
+            }
+        ],
+        "name": "claimAllRewards",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x7ebd739f"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
                 "name": "rewardId",
                 "type": "uint256"
             },
@@ -2236,16 +2296,6 @@
                         "type": "address"
                     },
                     {
-                        "internalType": "enum IProductStorageModel.ProductType",
-                        "name": "productType",
-                        "type": "uint8"
-                    },
-                    {
-                        "internalType": "enum IProductStorageModel.PolicyType",
-                        "name": "policyType",
-                        "type": "uint8"
-                    },
-                    {
                         "internalType": "address",
                         "name": "claimProcessor",
                         "type": "address"
@@ -2310,7 +2360,7 @@
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x700d51af"
+        "signature": "0xa574c1da"
     },
     {
         "inputs": [

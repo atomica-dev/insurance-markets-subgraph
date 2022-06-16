@@ -38,6 +38,8 @@ import {
   LogRiskPoolManagerFeeChanged,
   LogRiskPoolManagerFeeRecipientChanged,
   LogCapacityAllowanceLimitUpdated,
+  LogCoverMiningRewardArchived,
+  LogArchivedRewardClaimed,
 } from "../generated/RiskPoolsController/RiskPoolsController";
 import { RiskPoolsController as RiskPoolsControllerContract } from "../generated/templates/Product/RiskPoolsController";
 import {
@@ -139,8 +141,6 @@ export function handleLogNewProduct(event: LogNewProduct): void {
   product.defaultCapitalToken = productContract.defaultCapitalToken();
   product.defaultCoverAdjusterOracle =
     productContract.defaultCoverAdjusterOracle();
-  product.productType = productContract.productType();
-  product.policyType = productContract.policyType();
   product.payoutApprover = productContract.payoutApprover();
   product.payoutRequester = productContract.payoutRequester();
   product.productIncentiveFee = productInfo.value2;
@@ -1433,6 +1433,7 @@ export function handleLogNewReward(event: LogNewReward): void {
   cmReward.updatedAt = event.block.timestamp;
   cmReward.rewardPerToken = reward.rewardPerShareStored;
   cmReward.cid = reward.sid;
+  cmReward.rootHash = reward.rootHash;
 
   cmReward.save();
 }
@@ -1449,32 +1450,73 @@ export function handleLogIncreaseRewardAmount(event: LogIncreaseRewardAmount): v
   cmReward.save();
 }
 
+function _claimReward(
+  rewardId: BigInt,
+  amount: BigInt,
+  policyId: BigInt,
+  from: Address,
+  timestamp: BigInt
+): void {
+  let cmReward = CoverMiningReward.load(rewardId.toString());
+
+  if (!cmReward) {
+    return;
+  }
+
+  cmReward.amount = cmReward.amount.minus(amount);
+
+  cmReward.save();
+
+  let id =
+    from.toHexString() + "-" + rewardId.toString() + "-" + policyId.toString();
+  let cmRewardClaim = CoverMiningRewardClaim.load(id);
+
+  if (!cmRewardClaim) {
+    cmRewardClaim = new CoverMiningRewardClaim(id);
+
+    cmRewardClaim.rewardId = rewardId;
+    cmRewardClaim.policyId = policyId;
+    cmRewardClaim.account = from;
+    cmRewardClaim.amount = BigInt.fromI32(0);
+  }
+
+  cmRewardClaim.amount = cmRewardClaim.amount.plus(amount);
+  cmRewardClaim.updatedAt = timestamp;
+
+  cmRewardClaim.save();
+}
+
 export function handleLogRewardClaimed(event: LogRewardClaimed): void {
+  _claimReward(
+    event.params.rewardId,
+    event.params.rewardAmount,
+    event.params.policyId,
+    event.transaction.from,
+    event.block.timestamp
+  );
+}
+
+export function handleLogArchivedRewardClaimed(event: LogArchivedRewardClaimed): void {
+  _claimReward(
+    event.params.rewardId,
+    event.params.amount,
+    event.params.policyId,
+    event.transaction.from,
+    event.block.timestamp
+  );
+}
+
+export function handleLogCoverMiningRewardArchived(event: LogCoverMiningRewardArchived): void {
   let cmReward = CoverMiningReward.load(event.params.rewardId.toString());
 
   if (!cmReward) {
     return;
   }
 
-  cmReward.amount = cmReward.amount.minus(event.params.rewardAmount);
+  cmReward.isArchived = true;
+  cmReward.rootHash = event.params.rootHash;
 
   cmReward.save();
-
-  let id = event.transaction.from.toHexString() + "-" + event.params.rewardId.toString() + "-" + event.params.policyId.toString();
-  let cmRewardClaim = CoverMiningRewardClaim.load(id);
-
-  if (!cmRewardClaim) {
-    cmRewardClaim = new CoverMiningRewardClaim(id);
-
-    cmRewardClaim.rewardId = event.params.rewardId;
-    cmRewardClaim.policyId = event.params.policyId;
-    cmRewardClaim.account = event.transaction.from;
-    cmRewardClaim.amount = BigInt.fromI32(0);
-  }
-
-  cmRewardClaim.amount = cmRewardClaim.amount.plus(event.params.rewardAmount);
-
-  cmRewardClaim.save();
 }
 
 export function handleLogMarketCharge(event: LogMarketCharge): void {

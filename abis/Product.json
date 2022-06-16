@@ -505,32 +505,6 @@
     },
     {
         "inputs": [],
-        "name": "policyType",
-        "outputs": [
-            {
-                "internalType": "enum IProductStorageModel.PolicyType",
-                "name": "",
-                "type": "uint8"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "productType",
-        "outputs": [
-            {
-                "internalType": "enum IProductStorageModel.ProductType",
-                "name": "",
-                "type": "uint8"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
         "name": "riskPoolsController",
         "outputs": [
             {
