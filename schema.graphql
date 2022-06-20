@@ -92,7 +92,6 @@ type Market @entity {
   premiumToken: Bytes!
   capitalToken: Bytes!
   insuredToken: Bytes!
-  pools: [Pool!]!
   poolMarketRelations: [PoolMarketRelation!]! @derivedFrom(field: "market")
   latestAccruedTimestamp: BigInt
   coverAdjusterOracle: Bytes
