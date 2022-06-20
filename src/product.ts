@@ -90,7 +90,6 @@ export function handleLogNewMarket(event: LogNewMarket): void {
   market.createdAt = event.block.timestamp;
 
   market.pools = [];
-  market.poolMarketRelations = [];
   market.status = StatusEnum.Opened;
   market.riskTowerRoot = marketMeta.riskTowerRootLevel;
 
