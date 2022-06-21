@@ -291,16 +291,6 @@ function updatePolicyBalances(
 
   let policyCount = ptiContract.lastPolicyId().toI32();
 
-  market.premiumMulAccumulator = rpcContract.marketsPremiumMulAccumulators(
-    market.marketId
-  );
-  market.latestAccruedTimestamp = getMarketMeta(
-    rpcContract,
-    market.marketId
-  ).accrualBlockNumberPrior;
-
-  market.save();
-
   let totalCharged = BigInt.fromI32(0);
 
   for (let i = 1; i <= policyCount; i++) {
@@ -1541,6 +1531,9 @@ export function handleLogMarketCharge(event: LogMarketCharge): void {
   aggPool.rate = rate.reverted ? BigInt.fromI32(0) : rate.value;
 
   aggPool.save();
+
+  market.premiumMulAccumulator = rpcContract.marketsPremiumMulAccumulators(market.marketId);
+  market.latestAccruedTimestamp = getMarketMeta(rpcContract, market.marketId).accrualBlockNumberPrior;
 
   updateAndLogState(
     EventType.MarketCapacity,
