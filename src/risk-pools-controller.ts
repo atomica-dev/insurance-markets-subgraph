@@ -1696,6 +1696,17 @@ export function handleLogRiskPoolRemovedFromAggregatedPool(event: LogRiskPoolRem
   let id = event.params.riskPool.toHexString() + "-" + aggPool.market;
 
   store.remove("PoolMarketRelation", id);
+
+  let pool = Pool.load(event.params.riskPool.toHexString());
+
+  if (!pool) {
+    return;
+  }
+
+  pool.markets = filterNotEqual(pool.markets, aggPool.market);
+
+  pool.save();
+
 }
 
 export function handleLogRiskPoolAddedToAggregatedPool(event: LogRiskPoolAddedToAggregatedPool): void {
@@ -1718,6 +1729,20 @@ export function handleLogRiskPoolAddedToAggregatedPool(event: LogRiskPoolAddedTo
   pmRelation.aggregatedPool = aggPool.id;
 
   pmRelation.save();
+
+  let pool = Pool.load(event.params.riskPool.toHexString());
+
+  if (!pool) {
+    return;
+  }
+
+  let markets = pool.markets;
+
+  markets.push(aggPool.market);
+
+  pool.markets = markets;
+
+  pool.save();
 }
 
 export function handleLogRiskPoolManagerChanged(event: LogRiskPoolManagerChanged): void {
