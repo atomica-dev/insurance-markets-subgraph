@@ -2386,11 +2386,6 @@
             },
             {
                 "internalType": "uint256",
-                "name": "capacityAllowanceLimit",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
                 "name": "cap",
                 "type": "uint256"
             },
@@ -2420,7 +2415,7 @@
         ],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x5917193d"
+        "signature": "0xb7ca24cb"
     },
     {
         "inputs": [
@@ -4956,16 +4951,6 @@
                 "internalType": "uint256",
                 "name": "managerFee",
                 "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "capacityAllowanceLimit",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "totalCapacityAllowance",
-                "type": "uint256"
             }
         ],
         "stateMutability": "view",
@@ -5690,25 +5675,6 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0x713494d7"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "riskPool",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "capacityAllowanceLimit",
-                "type": "uint256"
-            }
-        ],
-        "name": "setRiskPoolCapacityAllowanceLimit",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x3cb272c7"
     },
     {
         "inputs": [

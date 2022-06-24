@@ -103,8 +103,6 @@ dataSources:
           handler: handleLogMarketCharge
         - event: LogAggregatedPoolCreated(uint256,uint256,uint256,address)
           handler: handleLogAggregatedPoolCreated
-        - event: LogCapacityAllowanceLimitUpdated(address,uint256)
-          handler: handleLogCapacityAllowanceLimitUpdated
         - event: LogAggregatedPoolCapacityAllowanceUpdated(uint256,address,uint256)
           handler: handleLogAggregatedPoolCapacityAllowanceUpdated
         - event: LogAggregatedPoolRiskPoolCapacityLimitUpdated(uint256,address,uint256)

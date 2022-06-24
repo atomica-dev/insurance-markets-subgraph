@@ -252,8 +252,6 @@ type Pool @entity {
   poolTokenSymbol: String
   capitalTokenDecimals: Int
   capitalTokenSymbol: String
-  capacityAllowanceLimit: BigInt!
-  totalCapacityAllowance: BigInt!
   markets: [Market!]!
   updatedAt: BigInt
   withdrawDelay: BigInt

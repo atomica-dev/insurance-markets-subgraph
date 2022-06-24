@@ -37,7 +37,6 @@ import {
   LogRiskPoolManagerChanged,
   LogRiskPoolManagerFeeChanged,
   LogRiskPoolManagerFeeRecipientChanged,
-  LogCapacityAllowanceLimitUpdated,
   LogCoverMiningRewardArchived,
   LogArchivedRewardClaimed,
 } from "../generated/RiskPoolsController/RiskPoolsController";
@@ -1615,18 +1614,6 @@ export function handleLogAggregatedPoolRiskPoolCapacityLimitUpdated(event: LogAg
   pmRelation.poolCapacityLimit = event.params.capacityLimit;
 
   pmRelation.save();
-}
-
-export function handleLogCapacityAllowanceLimitUpdated(event: LogCapacityAllowanceLimitUpdated): void {
-  let pool = Pool.load(event.params.riskPool.toHexString());
-
-  if (!pool) {
-    return;
-  }
-
-  pool.capacityAllowanceLimit = event.params.capacityAllowanceLimit;
-
-  pool.save();
 }
 
 export function handleLogAggregatedPoolMarketCapacityLimitUpdated(event: LogAggregatedPoolMarketCapacityLimitUpdated): void {

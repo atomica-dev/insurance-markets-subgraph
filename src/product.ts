@@ -169,8 +169,6 @@ export function createPool(
     ? btContract.try_symbol().value
     : "";
   pool.capitalRequirement = pContract.cap();
-  pool.capacityAllowanceLimit = riskPoolData.capacityAllowanceLimit;
-  pool.totalCapacityAllowance = riskPoolData.totalCapacityAllowance;
   pool.markets = [];
   pool.withdrawRequestExpiration = pContract.withdrawRequestExpiration();
   pool.withdrawDelay = pContract.withdrawDelay();

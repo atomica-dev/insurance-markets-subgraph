@@ -64,7 +64,6 @@ export class PoolBucket {
   settlementAccumulator: BigInt;
   premiumTotalBalance: BigInt;
   settlementTotalBalance: BigInt;
-  managerFeeBalance: BigInt;
 }
 
 export function getPoolBucket(
@@ -77,8 +76,7 @@ export function getPoolBucket(
     premiumAccumulator: b.value0,
     settlementAccumulator: b.value1,
     premiumTotalBalance: b.value2,
-    settlementTotalBalance: b.value3,
-    managerFeeBalance: b.value4,
+    settlementTotalBalance: b.value3
   };
 }
 
@@ -156,8 +154,6 @@ export class CRiskPoolData {
   manager: Address;
   managerFeeRecipient: Address;
   managerFee: BigInt;
-  capacityAllowanceLimit: BigInt;
-  totalCapacityAllowance: BigInt;
 }
 
 export function getRiskPoolData(
@@ -169,9 +165,7 @@ export function getRiskPoolData(
   return {
     manager: d.value0,
     managerFeeRecipient: d.value1,
-    managerFee: d.value2,
-    capacityAllowanceLimit: d.value3,
-    totalCapacityAllowance: d.value4,
+    managerFee: d.value2
   };
 }
 
