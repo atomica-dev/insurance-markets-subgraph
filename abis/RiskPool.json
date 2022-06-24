@@ -214,12 +214,6 @@
                 "internalType": "uint256",
                 "name": "capacity",
                 "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "cover",
-                "type": "uint256"
             }
         ],
         "name": "LogConnectedRiskPoolsDataUpdated",
@@ -285,31 +279,6 @@
             }
         ],
         "name": "LogContributeSettlement",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "marketId",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "internalCover",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "totalCover",
-                "type": "uint256"
-            }
-        ],
-        "name": "LogCoverChanged",
         "type": "event"
     },
     {
@@ -1598,19 +1567,6 @@
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "externalCover",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -1729,38 +1685,6 @@
     {
         "inputs": [],
         "name": "internalAssetBalance",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "internalCover",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "marketId",
-                "type": "uint256"
-            }
-        ],
-        "name": "internalCoverPerMarket",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -2217,32 +2141,9 @@
                 "internalType": "uint256",
                 "name": "capacity",
                 "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "cover",
-                "type": "uint256"
             }
         ],
         "name": "setConnectedRiskPoolsData",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "marketId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "cover",
-                "type": "uint256"
-            }
-        ],
-        "name": "setCover",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -2401,19 +2302,6 @@
     {
         "inputs": [],
         "name": "totalAssetBalance",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "totalCover",
         "outputs": [
             {
                 "internalType": "uint256",

@@ -314,8 +314,6 @@ templates:
           handler: handleLogContributeSettlement
         - event: LogForwardPayoutRequest(uint256,uint256,address,uint256,address)
           handler: handleLogForwardPayoutRequest
-        - event: LogCoverChanged(uint256,uint256,uint256)
-          handler: handleLogCoverChanged
         - event: LogCapacityChanged(uint256)
           handler: handleLogCapacityChanged
         - event: LogNewRewardDistribution(uint256,address,uint256,uint256,uint256)
@@ -332,7 +330,7 @@ templates:
           handler: handleLogWithdrawDelayUpdated
         - event: LogWithdrawRequestExpirationUpdated(uint256)
           handler: handleLogWithdrawRequestExpirationUpdated
-        - event: LogConnectedRiskPoolsDataUpdated(uint256,uint256)
+        - event: LogConnectedRiskPoolsDataUpdated(uint256)
           handler: handleLogConnectedRiskPoolsDataUpdated
         - event: LogPremiumDistributionUpdated(bytes32)
           handler: handleLogPremiumDistributionUpdated

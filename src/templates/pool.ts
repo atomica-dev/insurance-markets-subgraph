@@ -3,7 +3,6 @@ import {
   LogDeposit,
   LogWithdraw,
   Pool as PoolContract,
-  LogCoverChanged,
   LogCapacityChanged,
   LogNewRewardDistribution,
   LogAddRewardAmount,
@@ -48,7 +47,7 @@ import {
   AggregatedPool,
 } from "../../generated/schema";
 import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
-import { EventType, addEvent, updateAndLogState, updateState } from "../event";
+import { EventType, addEvent, updateState } from "../event";
 import { marketPremiumEarned, WEI_BIGINT } from "../risk-pools-controller";
 import { filterNotEqual } from "../product";
 import { getRiskPoolConnection } from "../contract-mapper";
@@ -401,68 +400,15 @@ function addPoolParticipant(
   return account;
 }
 
-export function handleLogCoverChanged(event: LogCoverChanged): void {
-  let pool = Pool.load(event.address.toHexString())!;
-  let marketId =
-    pool.riskPoolsControllerAddress.toHexString() +
-    "-" +
-    event.params.marketId.toString();
-  let id = pool.id + "-" + marketId;
-  let marketRelation = PoolMarketRelation.load(id);
-
-  if (marketRelation != null) {
-    let aggPool = AggregatedPool.load(marketRelation.aggregatedPool)!;
-    let premiumRateModel = PremiumRateModelContract.bind(changetype<Address>(aggPool.premiumRateModel));
-    let rate = premiumRateModel.try_getPremiumRate(aggPool.totalCapacity, aggPool.coverage);
-    let oldExposure = aggPool.coverage;
-
-    aggPool.rate = rate.reverted ? BigInt.fromI32(0) : rate.value;
-    aggPool.coverage = event.params.internalCover;
-
-    aggPool.save();
-
-    addEvent(
-      EventType.PoolPremiumRate,
-      event,
-      null,
-      aggPool.id,
-      aggPool.rate.toString(),
-    );
-    addEvent(
-      EventType.PoolExposure,
-      event,
-      null,
-      aggPool.id,
-      aggPool.coverage.toString()
-    );
-
-    updateState(
-      EventType.SystemExposure,
-      event.params.totalCover.minus(oldExposure),
-      null,
-      pool.capitalTokenAddress.toHexString()
-    );
-  }
-
-  pool.updatedAt = event.block.timestamp;
-
-  pool.save();
-}
-
 export function handleLogConnectedRiskPoolsDataUpdated(
   event: LogConnectedRiskPoolsDataUpdated
 ): void {
   let pool = Pool.load(event.address.toHexString())!;
   let pContract = PoolContract.bind(event.address);
 
-  pool.externalStatLastUpdated =
-    pool.externalCapacity != event.params.capacity ||
-    pool.externalCoverage != event.params.cover
-      ? event.block.timestamp
-      : pool.externalStatLastUpdated;
+  pool.externalStatLastUpdated = event.block.timestamp
 
   pool.externalCapacity = event.params.capacity;
-  pool.externalCoverage = event.params.cover;
   pool.poolTokenBalance = pContract.totalSupply();
 
   pool.save();
@@ -473,7 +419,6 @@ export function handleLogConnectedRiskPoolsDataUpdated(
     null,
     pool.id,
     event.params.capacity.toString(),
-    event.params.cover.toString()
   );
 }
 

@@ -176,7 +176,6 @@ export function createPool(
   pool.rewards = [];
   pool.externalPoolList = [];
   pool.externalCapacity = BigInt.fromI32(0);
-  pool.externalCoverage = BigInt.fromI32(0);
   pool.totalTransferredOut = BigInt.fromI32(0);
   pool.physicalSettlementMarketCount = 0;
 

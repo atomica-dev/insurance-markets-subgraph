@@ -4342,6 +4342,20 @@
         "inputs": [
             {
                 "internalType": "address",
+                "name": "riskPool_",
+                "type": "address"
+            }
+        ],
+        "name": "rebalanceAggregatedPools",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x7ee081fc"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
                 "name": "frontendOperator",
                 "type": "address"
             },
@@ -4664,6 +4678,32 @@
     {
         "inputs": [
             {
+                "internalType": "address",
+                "name": "riskPool",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            }
+        ],
+        "name": "riskPoolAggregatedPoolAtMarket",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x954f9a7a"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "uint256",
                 "name": "aggregatedPoolId",
                 "type": "uint256"
@@ -4845,17 +4885,17 @@
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "aggregatedPoolId_",
+                "name": "aggregatedPoolId",
                 "type": "uint256"
             },
             {
                 "internalType": "address",
-                "name": "riskPool_",
+                "name": "riskPool",
                 "type": "address"
             },
             {
                 "internalType": "address",
-                "name": "erc20_",
+                "name": "erc20",
                 "type": "address"
             }
         ],
@@ -5172,18 +5212,13 @@
                 "internalType": "uint256",
                 "name": "capacity",
                 "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "cover",
-                "type": "uint256"
             }
         ],
         "name": "setConnectedRiskPoolsData",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x6daeb6a6"
+        "signature": "0x13887f1c"
     },
     {
         "inputs": [

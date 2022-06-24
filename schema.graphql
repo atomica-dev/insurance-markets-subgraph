@@ -267,7 +267,6 @@ type Pool @entity {
   externalPoolList: [String!]!
   externalWalletList: [ExternalWallet!] @derivedFrom(field: "pool")
   externalCapacity: BigInt
-  externalCoverage: BigInt
   externalStatLastUpdated: BigInt
   totalTransferredOut: BigInt
   premiumRootHash: String
