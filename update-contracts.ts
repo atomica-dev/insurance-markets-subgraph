@@ -10,16 +10,19 @@ const ENV_TO_NETWORK: any = {
   "ganache": "7777",
   "srm-staging": "4",
   "local-kovan": "42",
+  "local-goerli": "5",
   "srm-production": "4",
 };
 const NETWORK_NAMES: any = {
   "7777": "ganache",
   "4": "rinkeby",
+  "5": "goerli",
   "42": "kovan",
   "1": "mainnet",
 };
 const MANUAL_FILE_UPDATES: string[] = [];
 const ENV = process.argv[2] || "srm-dev";
+const NETWORK = process.argv[3];
 
 updateSubgraphYaml();
 
@@ -51,11 +54,12 @@ function getConfigValue(name: string, networkId: string, value: string = "addres
 
 function updateSubgraphYaml() {
   const yaml = YAML.parse(fs.readFileSync(YAML_PATH, "utf8"));
+  const targetNetwork = NETWORK_NAMES[NETWORK || ENV_TO_NETWORK[ENV] || DEFAULT_NETWORK];
 
   for (const source of yaml.dataSources) {
     const name = source.source.abi;
 
-    source.network = NETWORK_NAMES[ENV_TO_NETWORK[ENV] || DEFAULT_NETWORK];
+    source.network = targetNetwork;
     source.source.address = getConfigValue(name, ENV);
 
     source.source.startBlock = getConfigValue(name, ENV, "defaultStartBlock");
@@ -63,7 +67,7 @@ function updateSubgraphYaml() {
 
   if (yaml.templates) {
     for (const template of yaml.templates) {
-      template.network = NETWORK_NAMES[ENV_TO_NETWORK[ENV] || DEFAULT_NETWORK];
+      template.network = targetNetwork;
     }
   }
 
@@ -71,13 +75,15 @@ function updateSubgraphYaml() {
 }
 
 function updateManualFiles() {
+  const targetNetworkId = NETWORK || ENV_TO_NETWORK[ENV] || DEFAULT_NETWORK;
+
   for (const file of MANUAL_FILE_UPDATES) {
     let source = fs.readFileSync(file, "utf8");
 
     for (const contract of getContractNames(ENV)) {
       source = source.replace(
         new RegExp(`__${contract}__`, "g"),
-        getConfigValue(contract, ENV_TO_NETWORK[ENV] || DEFAULT_NETWORK)
+        getConfigValue(contract, targetNetworkId)
       );
     }
 
