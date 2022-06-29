@@ -55,6 +55,10 @@
       "defaultStartBlock": 10304670,
       "RiskPoolsController": "0xB54b3b425f6A3E126f6D7e7d031CD4193Baa11b5"
     },
+    "local-goerli": {
+      "defaultStartBlock": 7137990,
+      "RiskPoolsController": "0x9cDF3dc0e134739862CE3570b949D545416d4Ad9"
+    },
     "local-kovan": {
       "defaultStartBlock": 28779970,
       "Registry": "0x56e6A859FecCf3D9AD788545b63Bd31D677aC4Bc",
