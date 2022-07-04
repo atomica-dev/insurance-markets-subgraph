@@ -1694,6 +1694,7 @@ export function handleLogRiskPoolRemovedFromAggregatedPool(event: LogRiskPoolRem
 
   pool.save();
 
+  addEvent(EventType.PoolMarketCount, event, null, pool.id, pool.markets.length.toString());
 }
 
 export function handleLogRiskPoolAddedToAggregatedPool(event: LogRiskPoolAddedToAggregatedPool): void {
@@ -1730,6 +1731,8 @@ export function handleLogRiskPoolAddedToAggregatedPool(event: LogRiskPoolAddedTo
   pool.markets = markets;
 
   pool.save();
+
+  addEvent(EventType.PoolMarketCount, event, null, pool.id, markets.length.toString());
 }
 
 export function handleLogRiskPoolManagerChanged(event: LogRiskPoolManagerChanged): void {
