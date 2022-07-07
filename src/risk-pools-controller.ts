@@ -1545,7 +1545,7 @@ export function handleLogMarketCharge(event: LogMarketCharge): void {
   addEvent(
     EventType.PoolExposure,
     event,
-    null,
+    market.id,
     aggPool.id,
     aggPool.coverage.toString()
   );
