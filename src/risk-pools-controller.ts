@@ -1675,6 +1675,17 @@ export function handleLogRebalance(event: LogRebalance): void {
 
   aggPool.totalCapacity = event.params.totalAggregatedPoolCapacity;
   aggPool.save();
+
+  addEvent(
+    EventType.PoolReBalance,
+    event,
+    aggPool.market,
+    aggPool.id,
+    pmRelation.pool,
+    aggPool.coverage.toString(),
+    pmRelation.balance!.toString(),
+    aggPool.totalCapacity.toString(),
+  );
 }
 
 export function handleLogRiskPoolRemovedFromAggregatedPool(event: LogRiskPoolRemovedFromAggregatedPool): void {

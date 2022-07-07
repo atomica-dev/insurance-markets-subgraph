@@ -32,6 +32,7 @@ export enum EventType {
   PayoutCount,
   PoolReceivedSettlement,
   PoolMarketCount,
+  PoolReBalance,
 }
 
 function getEventTypeString(eventType: EventType): string {
@@ -96,6 +97,8 @@ function getEventTypeString(eventType: EventType): string {
       return "PoolReceivedSettlement";
     case EventType.PoolMarketCount:
       return "PoolMarketCount";
+    case EventType.PoolReBalance:
+      return "PoolReBalance";
   }
 
   return eventType.toString();
