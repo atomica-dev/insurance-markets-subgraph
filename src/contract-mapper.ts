@@ -153,6 +153,7 @@ export function getAggregatedPool(
 export class CRiskPoolData {
   manager: Address;
   managerFeeRecipient: Address;
+  nominatedToken: Address;
   managerFee: BigInt;
 }
 
@@ -165,7 +166,8 @@ export function getRiskPoolData(
   return {
     manager: d.value0,
     managerFeeRecipient: d.value1,
-    managerFee: d.value2
+    nominatedToken: d.value2,
+    managerFee: d.value3
   };
 }
 

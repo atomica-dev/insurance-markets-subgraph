@@ -147,6 +147,7 @@ export function createPool(
   pool.riskPoolsControllerAddress = pContract.controller();
   pool.name = pContract.name();
   pool.capitalTokenAddress = pContract.assetToken();
+  pool.nominatedTokenAddress = riskPoolData.nominatedToken;
   pool.capitalTokenBalance = BigInt.fromI32(1);
   pool.poolTokenBalance = BigInt.fromI32(1);
   pool.participants = BigInt.fromI32(0);
