@@ -1606,9 +1606,9 @@ export function handleLogAggregatedPoolRiskPoolCapacityLimitUpdated(event: LogAg
     pmRelation.aggregatedPool = aggPool.id;
 
     pmRelation.balance = BigInt.fromI32(0);
-    pmRelation.capacityAllowance = WEI_BIGINT;
-    pmRelation.poolCapacityLimit = BigInt.fromI32(-1);
-    pmRelation.marketCapacityLimit = BigInt.fromI32(-1);
+    pmRelation.capacityAllowance = BigInt.fromI32(0);
+    pmRelation.poolCapacityLimit = BigInt.fromI32(0);
+    pmRelation.marketCapacityLimit = BigInt.fromI32(0);
   }
 
   pmRelation.poolCapacityLimit = event.params.capacityLimit;
@@ -1635,9 +1635,9 @@ export function handleLogAggregatedPoolMarketCapacityLimitUpdated(event: LogAggr
     pmRelation.aggregatedPool = aggPool.id;
 
     pmRelation.balance = BigInt.fromI32(0);
-    pmRelation.capacityAllowance = WEI_BIGINT;
-    pmRelation.poolCapacityLimit = BigInt.fromI32(-1);
-    pmRelation.marketCapacityLimit = BigInt.fromI32(-1);
+    pmRelation.capacityAllowance = BigInt.fromI32(0);
+    pmRelation.poolCapacityLimit = BigInt.fromI32(0);
+    pmRelation.marketCapacityLimit = BigInt.fromI32(0);
   }
 
   pmRelation.marketCapacityLimit = event.params.capacityLimit;
@@ -1664,9 +1664,9 @@ export function handleLogRebalance(event: LogRebalance): void {
     pmRelation.aggregatedPool = aggPool.id;
 
     pmRelation.balance = BigInt.fromI32(0);
-    pmRelation.capacityAllowance = WEI_BIGINT;
-    pmRelation.poolCapacityLimit = BigInt.fromI32(-1);
-    pmRelation.marketCapacityLimit = BigInt.fromI32(-1);
+    pmRelation.capacityAllowance = BigInt.fromI32(0);
+    pmRelation.poolCapacityLimit = BigInt.fromI32(0);
+    pmRelation.marketCapacityLimit = BigInt.fromI32(0);
   }
 
   pmRelation.balance = event.params.riskPoolCapacity;
@@ -1715,18 +1715,22 @@ export function handleLogRiskPoolAddedToAggregatedPool(event: LogRiskPoolAddedTo
   }
 
   let id = event.params.riskPool.toHexString() + "-" + aggPool.market;
-  let pmRelation = new PoolMarketRelation(id);
+  let pmRelation = PoolMarketRelation.load(id);
 
-  pmRelation.poolId = event.params.riskPool;
-  pmRelation.pool = event.params.riskPool.toHexString();
-  pmRelation.market = aggPool.market;
-  pmRelation.balance = BigInt.fromI32(0);
-  pmRelation.capacityAllowance = WEI_BIGINT;
-  pmRelation.poolCapacityLimit = BigInt.fromI32(-1);
-  pmRelation.marketCapacityLimit = BigInt.fromI32(-1);
-  pmRelation.aggregatedPool = aggPool.id;
+  if (!pmRelation) {
+    pmRelation = new PoolMarketRelation(id);
 
-  pmRelation.save();
+    pmRelation.poolId = event.params.riskPool;
+    pmRelation.pool = event.params.riskPool.toHexString();
+    pmRelation.market = aggPool.market;
+    pmRelation.balance = BigInt.fromI32(0);
+    pmRelation.capacityAllowance = BigInt.fromI32(0);
+    pmRelation.poolCapacityLimit = BigInt.fromI32(0);
+    pmRelation.marketCapacityLimit = BigInt.fromI32(0);
+    pmRelation.aggregatedPool = aggPool.id;
+
+    pmRelation.save();
+  }
 
   let pool = Pool.load(event.params.riskPool.toHexString());
 
