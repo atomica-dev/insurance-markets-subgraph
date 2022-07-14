@@ -1577,9 +1577,9 @@ export function handleLogAggregatedPoolCapacityAllowanceUpdated(event: LogAggreg
     pmRelation.aggregatedPool = aggPool.id;
 
     pmRelation.balance = BigInt.fromI32(0);
-    pmRelation.capacityAllowance = WEI_BIGINT;
-    pmRelation.poolCapacityLimit = BigInt.fromI32(-1);
-    pmRelation.marketCapacityLimit = BigInt.fromI32(-1);
+    pmRelation.capacityAllowance = BigInt.fromI32(0);
+    pmRelation.poolCapacityLimit = BigInt.fromI32(0);
+    pmRelation.marketCapacityLimit = BigInt.fromI32(0);
   }
 
   pmRelation.capacityAllowance = event.params.capacityAllowance;
