@@ -1534,6 +1534,8 @@ export function handleLogMarketCharge(event: LogMarketCharge): void {
   market.premiumMulAccumulator = rpcContract.marketsPremiumMulAccumulators(market.marketId);
   market.latestAccruedTimestamp = getMarketMeta(rpcContract, market.marketId).accrualBlockNumberPrior;
 
+  market.save();
+
   updateAndLogState(
     EventType.MarketCapacity,
     event,
