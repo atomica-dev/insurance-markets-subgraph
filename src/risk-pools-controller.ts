@@ -24,6 +24,7 @@ import {
   LogIncreaseRewardAmount,
   LogNewReward,
   LogMarketCharge,
+  LogCoverDistributed,
   LogAggregatedPoolCreated,
   LogAggregatedPoolRemoved,
   LogRiskTowerLevelCreated1,
@@ -1508,46 +1509,26 @@ export function handleLogCoverMiningRewardArchived(event: LogCoverMiningRewardAr
   cmReward.save();
 }
 
-export function handleLogMarketCharge(event: LogMarketCharge): void {
-  let aggPool = AggregatedPool.load(event.params.addregatedPoolId.toString());
-  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+export function handleLogCoverDistributed(event: LogCoverDistributed): void {
+  let aggPool = AggregatedPool.load(event.params.aggregatedPoolId.toString());
 
   if (!aggPool) {
     return;
   }
 
-  let aggPoolData = getAggregatedPool(rpcContract, event.params.addregatedPoolId);
-  let market = Market.load(aggPool.market)!;
-  let oldCapacity = aggPool.totalCapacity;
-
-  aggPool.totalCapacity = aggPoolData.totalCapacity;
-  aggPool.coverage = aggPoolData.distributedCover;
-
-  let premiumRateModel = PremiumRateModelContract.bind(aggPoolData.premiumRateModel);
-  let rate = premiumRateModel.try_getPremiumRate(aggPool.totalCapacity, aggPool.coverage);
   let oldCoverage = aggPool.coverage;
 
-  aggPool.rate = rate.reverted ? BigInt.fromI32(0) : rate.value;
+  aggPool.coverage = event.params.cover;
+  aggPool.rate = getAggPoolCurrentRate(aggPool);
 
   aggPool.save();
 
-  market.premiumMulAccumulator = rpcContract.marketsPremiumMulAccumulators(market.marketId);
-  market.latestAccruedTimestamp = getMarketMeta(rpcContract, market.marketId).accrualBlockNumberPrior;
-
-  market.save();
-
-  updateAndLogState(
-    EventType.MarketCapacity,
-    event,
-    aggPool.totalCapacity.minus(oldCapacity),
-    aggPool.market,
-    market.capitalToken.toHexString()
-  );
+  let market = updateMarketChargeState(event.address, aggPool.market);
 
   addEvent(
     EventType.PoolExposure,
     event,
-    market.id,
+    aggPool.market,
     aggPool.id,
     aggPool.coverage.toString()
   );
@@ -1558,6 +1539,16 @@ export function handleLogMarketCharge(event: LogMarketCharge): void {
     null,
     market.capitalToken.toHexString()
   );
+}
+
+export function handleLogMarketCharge(event: LogMarketCharge): void {
+  let aggPool = AggregatedPool.load(event.params.addregatedPoolId.toString());
+
+  if (!aggPool) {
+    return;
+  }
+
+  updateMarketChargeState(event.address, aggPool.market);
 }
 
 export function handleLogAggregatedPoolCapacityAllowanceUpdated(event: LogAggregatedPoolCapacityAllowanceUpdated): void {
@@ -1675,6 +1666,8 @@ export function handleLogRebalance(event: LogRebalance): void {
   pmRelation.save();
 
   aggPool.totalCapacity = event.params.totalAggregatedPoolCapacity;
+  aggPool.rate = getAggPoolCurrentRate(aggPool);
+
   aggPool.save();
 
   addEvent(
@@ -1873,4 +1866,23 @@ export function handleLogAggregatedPoolCreated(event: LogAggregatedPoolCreated):
 
 export function handleLogAggregatedPoolRemoved(event: LogAggregatedPoolRemoved): void {
   store.remove("AggregatedPool", event.params.aggregatedPoolId.toString());
+}
+
+function getAggPoolCurrentRate(aggPool: AggregatedPool): BigInt {
+  let premiumRateModel = PremiumRateModelContract.bind(changetype<Address>(aggPool.premiumRateModel));
+  let rate = premiumRateModel.try_getPremiumRate(aggPool.totalCapacity, aggPool.coverage);
+
+  return rate.reverted ? BigInt.fromI32(0) : rate.value;
+}
+
+function updateMarketChargeState(rpcContractAddress: Address, marketId: string): Market {
+  let rpcContract = RiskPoolsControllerContract.bind(rpcContractAddress);
+  let market = Market.load(marketId)!;
+
+  market.premiumMulAccumulator = rpcContract.marketsPremiumMulAccumulators(market.marketId);
+  market.latestAccruedTimestamp = getMarketMeta(rpcContract, market.marketId).accrualBlockNumberPrior;
+
+  market.save();
+
+  return market;
 }

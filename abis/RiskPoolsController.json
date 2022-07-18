@@ -187,6 +187,26 @@
             {
                 "indexed": false,
                 "internalType": "uint256",
+                "name": "aggregatedPoolId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "cover",
+                "type": "uint256"
+            }
+        ],
+        "name": "LogCoverDistributed",
+        "type": "event",
+        "signature": "0xb3d63713c844aa33ec14db2bb6b2b4d69979465a0ce2589ec8a163cedbd93271"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
                 "name": "rewardId",
                 "type": "uint256"
             },
@@ -4614,12 +4634,12 @@
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "policyId_",
+                "name": "policyId",
                 "type": "uint256"
             },
             {
                 "internalType": "uint256",
-                "name": "permissionId_",
+                "name": "permissionId",
                 "type": "uint256"
             }
         ],
