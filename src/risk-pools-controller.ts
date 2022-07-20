@@ -1578,6 +1578,14 @@ export function handleLogAggregatedPoolCapacityAllowanceUpdated(event: LogAggreg
   pmRelation.capacityAllowance = event.params.capacityAllowance;
 
   pmRelation.save();
+
+  if (
+    pmRelation.capacityAllowance == BigInt.fromI32(0) &&
+    pmRelation.poolCapacityLimit == BigInt.fromI32(0) &&
+    pmRelation.marketCapacityLimit == BigInt.fromI32(0)
+  ) {
+    store.remove("PoolMarketRelation", id);
+  }
 }
 
 export function handleLogAggregatedPoolRiskPoolCapacityLimitUpdated(event: LogAggregatedPoolRiskPoolCapacityLimitUpdated): void {
@@ -1607,6 +1615,14 @@ export function handleLogAggregatedPoolRiskPoolCapacityLimitUpdated(event: LogAg
   pmRelation.poolCapacityLimit = event.params.capacityLimit;
 
   pmRelation.save();
+
+  if (
+    pmRelation.capacityAllowance == BigInt.fromI32(0) &&
+    pmRelation.poolCapacityLimit == BigInt.fromI32(0) &&
+    pmRelation.marketCapacityLimit == BigInt.fromI32(0)
+  ) {
+    store.remove("PoolMarketRelation", id);
+  }
 }
 
 export function handleLogAggregatedPoolMarketCapacityLimitUpdated(event: LogAggregatedPoolMarketCapacityLimitUpdated): void {
@@ -1636,6 +1652,14 @@ export function handleLogAggregatedPoolMarketCapacityLimitUpdated(event: LogAggr
   pmRelation.marketCapacityLimit = event.params.capacityLimit;
 
   pmRelation.save();
+
+  if (
+    pmRelation.capacityAllowance == BigInt.fromI32(0) &&
+    pmRelation.poolCapacityLimit == BigInt.fromI32(0) &&
+    pmRelation.marketCapacityLimit == BigInt.fromI32(0)
+  ) {
+    store.remove("PoolMarketRelation", id);
+  }
 }
 
 export function handleLogRebalance(event: LogRebalance): void {
@@ -1684,10 +1708,6 @@ export function handleLogRebalance(event: LogRebalance): void {
 
 export function handleLogRiskPoolRemovedFromAggregatedPool(event: LogRiskPoolRemovedFromAggregatedPool): void {
   let aggPool = AggregatedPool.load(event.params.aggregatedPoolId.toString())!;
-
-  let id = event.params.riskPool.toHexString() + "-" + aggPool.market;
-
-  store.remove("PoolMarketRelation", id);
 
   let pool = Pool.load(event.params.riskPool.toHexString());
 
