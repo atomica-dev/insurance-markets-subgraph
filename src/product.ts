@@ -9,6 +9,7 @@ import { RiskPoolsController as RiskPoolsControllerContract } from "../generated
 import { PolicyTokenIssuer as PolicyTokenIssuerContract } from "../generated/templates/Product/PolicyTokenIssuer";
 import { Pool as PoolContract } from "../generated/templates/Product/Pool";
 import {
+  FeeRecipientPool,
   Market,
   Policy,
   Pool,
@@ -26,6 +27,7 @@ import {
 import {
   Address,
   BigInt,
+  Bytes,
   ethereum,
   log,
 } from "@graphprotocol/graph-ts";
@@ -182,6 +184,8 @@ export function createPool(
 
   pool.save();
 
+  updateFeeRecipientRelation(pool.feeRecipient, poolId);
+
   PoolTemplate.create(poolId);
 
   addEvent(
@@ -196,6 +200,35 @@ export function createPool(
   updateState(EventType.SystemPoolCount, BigInt.fromI32(1), null);
 }
 
+export function updateFeeRecipientRelation(feeRecipientId: Bytes, riskPoolId: Bytes, oldFeeRecipient: Bytes | null = null): void {
+  let id = feeRecipientId.toHexString();
+  let frp = FeeRecipientPool.load(id);
+
+  if (!frp) {
+    frp = new FeeRecipientPool(id);
+    frp.poolList = [];
+  }
+
+  let list = frp.poolList;
+
+  list.push(riskPoolId.toHexString());
+
+  frp.poolList = list;
+
+  frp.save();
+
+  if (oldFeeRecipient) {
+    let frp = FeeRecipientPool.load(oldFeeRecipient.toHexString());
+
+    if (!frp) {
+      return;
+    }
+
+    frp.poolList = filterNotEqual(frp.poolList, riskPoolId.toHexString());
+
+    frp.save();
+  }
+}
 
 export function filterNotEqual(array: string[], item: string): string[] {
   let res: string[] = [];

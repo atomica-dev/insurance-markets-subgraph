@@ -31,6 +31,9 @@ dataSources:
         - CoverMiningRewardClaim
         - RiskTowerLevel
         - AggregatedPool
+        - FeeRecipientPool
+        - PoolFee
+        - MarketPoolFee
       abis:
         - name: RiskPoolsController
           file: ./abis/RiskPoolsController.json
@@ -129,6 +132,8 @@ dataSources:
           handler: handleLogRiskTowerLevelRemoved
         - event: LogAggregatedPoolRemoved(uint256,uint256,uint256)
           handler: handleLogAggregatedPoolRemoved
+        - event: LogWithdrawAccruedMarketFee(address,address,uint256)
+          handler: handleLogWithdrawAccruedMarketFee
       file: ./src/risk-pools-controller.ts
 templates:
   - kind: ethereum/contract
@@ -280,8 +285,6 @@ templates:
         - PoolMarketRelation
         - PoolPremium
         - PoolSettlement
-        - PoolFee
-        - MarketPoolFee
         - ExternalWallet
         - OutgoingPayoutRequest
         - IncomingLoss
@@ -356,8 +359,6 @@ templates:
           handler: handleLogForwardCommitLoss
         - event: LogCapitalReleased(address,uint256)
           handler: handleLogCapitalReleased
-        - event: LogManageFeeWithdrawn(address,uint256)
-          handler: handleLogManageFeeWithdrawn
   - kind: ethereum/contract
     name: RateOracle
     network: ganache

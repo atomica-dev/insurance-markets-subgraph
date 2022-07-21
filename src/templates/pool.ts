@@ -14,7 +14,6 @@ import {
   LogCancelRiskPoolSync,
   LogConnectedRiskPoolsDataUpdated,
   LogCapitalReleased,
-  LogManageFeeWithdrawn,
   LogPremiumDistributionUpdated,
   LogSettlementDistributionUpdated,
   LogRequestRiskPoolSync,
@@ -37,13 +36,11 @@ import {
   WithdrawRequest,
   PoolPremium,
   PoolSettlement,
-  PoolFee,
   ExternalWallet,
   OutgoingPayoutRequest,
   OutgoingLoss,
   IncomingLoss,
   PoolOwnLoss,
-  MarketPoolFee,
   AggregatedPool,
 } from "../../generated/schema";
 import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
@@ -247,47 +244,6 @@ export function handleLogContributePremium(event: LogContributePremium): void {
   pp.amount = pp.amount.plus(event.params.amount);
 
   pp.save();
-
-  let pf = PoolFee.load(id);
-
-  if (!pf) {
-    pf = new PoolFee(id);
-
-    pf.poolId = event.address;
-    pf.tokenId = event.params.token;
-    pf.pool = pool.id;
-    pf.amount = BigInt.fromI32(0);
-    pf.claimedAmount = BigInt.fromI32(0);
-  }
-
-  let amount = event.params.amount.times(pool.managerFee).div(WEI_BIGINT);
-
-  pf.amount = pf.amount.plus(amount);
-
-  pf.save();
-
-  let mid = id + event.params.marketId.toString();
-  let mpf = MarketPoolFee.load(mid);
-
-  if (!mpf) {
-    mpf = new MarketPoolFee(mid);
-
-    mpf.poolId = event.address;
-    mpf.marketId = event.params.marketId;
-    mpf.tokenId = event.params.token;
-    mpf.pool = pool.id;
-    mpf.amount = BigInt.fromI32(0);
-    mpf.claimedAmount = BigInt.fromI32(0);
-  }
-
-  if (mpf.claimedAmount != pf.claimedAmount) {
-    mpf.amount = amount;
-    mpf.claimedAmount = pf.claimedAmount;
-  } else {
-    mpf.amount = mpf.amount.plus(amount);
-  }
-
-  mpf.save();
 
   let marketId = pool.riskPoolsControllerAddress.toHexString() + "-" + event.params.marketId.toString();
 
@@ -628,21 +584,6 @@ export function handleLogCommitLoss(event: LogCommitLoss): void {
     event.params.fromRiskPool,
     event.address
   );
-}
-
-export function handleLogManageFeeWithdrawn(event: LogManageFeeWithdrawn): void {
-  let id = event.address.toHexString() + "-" + event.params.erc20.toHexString();
-
-  let pf = PoolFee.load(id);
-
-  if (!pf) {
-    return;
-  }
-
-  pf.amount = pf.amount.minus(event.params.amount);
-  pf.claimedAmount = pf.claimedAmount.plus(event.params.amount);
-
-  pf.save();
 }
 
 export function handleLogCapitalReleased(event: LogCapitalReleased): void {

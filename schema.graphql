@@ -123,6 +123,7 @@ type AggregatedPool @entity {
   premiumRateModel: Bytes!
   market: Market!
   poolMarketRelations: [PoolMarketRelation!]! @derivedFrom(field: "aggregatedPool")
+  poolList: [String!]!
   rate: BigInt!
   totalCapacity: BigInt!
   coverage: BigInt!
@@ -229,7 +230,7 @@ type PoolMarketRelation @entity {
   id: ID!
   poolId: Bytes!
   market: Market!
-  balance: BigInt
+  balance: BigInt!
   capacityAllowance: BigInt
   poolCapacityLimit: BigInt
   marketCapacityLimit: BigInt
@@ -280,6 +281,14 @@ type Pool @entity {
   manager: Bytes!
   managerFee: BigInt!
   feeRecipient: Bytes!
+}
+
+type FeeRecipientPool @entity {
+  """
+    id is feeRecipientAddress
+  """
+  id: ID!
+  poolList: [String!]!
 }
 
 type ExternalWallet @entity {
