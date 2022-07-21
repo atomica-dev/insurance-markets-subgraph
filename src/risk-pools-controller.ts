@@ -1556,7 +1556,7 @@ export function handleLogMarketCharge(event: LogMarketCharge): void {
     if (!pf) {
       pf = new PoolFee(id);
 
-      pf.poolId = event.address;
+      pf.poolId = Address.fromHexString(poolId);
       pf.tokenId = token;
       pf.pool = poolId;
       pf.amount = BigInt.fromI32(0);
@@ -1575,10 +1575,10 @@ export function handleLogMarketCharge(event: LogMarketCharge): void {
     if (!mpf) {
       mpf = new MarketPoolFee(mid);
 
-      mpf.poolId = event.address;
+      mpf.poolId = Address.fromHexString(poolId);
       mpf.marketId = event.params.marketId;
       mpf.tokenId = token;
-      mpf.pool = pool.id;
+      mpf.pool = poolId;
       mpf.amount = BigInt.fromI32(0);
       mpf.claimedAmount = BigInt.fromI32(0);
     }
