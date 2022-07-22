@@ -45,7 +45,7 @@ import {
 } from "../../generated/schema";
 import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import { EventType, addEvent, updateState } from "../event";
-import { marketPremiumEarned, WEI_BIGINT } from "../risk-pools-controller";
+import { marketPremiumEarned } from "../risk-pools-controller";
 import { filterNotEqual } from "../product";
 import { getRiskPoolConnection } from "../contract-mapper";
 import { PremiumRateModelDynamic as PremiumRateModelContract } from "../../generated/templates/Pool/PremiumRateModelDynamic";

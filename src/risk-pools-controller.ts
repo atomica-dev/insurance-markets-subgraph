@@ -1569,7 +1569,7 @@ export function handleLogMarketCharge(event: LogMarketCharge): void {
 
     pf.save();
 
-    let mid = id + market.marketId.toString();
+    let mid = id + "-" + market.marketId.toString();
     let mpf = MarketPoolFee.load(mid);
 
     if (!mpf) {
