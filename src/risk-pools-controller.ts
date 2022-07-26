@@ -1997,10 +1997,12 @@ function updateMarketChargeState(
   market.premiumMulAccumulator = rpcContract.marketsPremiumMulAccumulators(
     market.marketId
   );
-  market.latestAccruedTimestamp = getMarketMeta(
-    rpcContract,
-    market.marketId
-  ).accrualBlockNumberPrior;
+
+  const marketMeta = getMarketMeta(rpcContract, market.marketId);
+
+  market.latestAccruedTimestamp = marketMeta.accrualBlockNumberPrior;
+  market.exposure = marketMeta.desiredCover;
+  market.actualCover = marketMeta.actualCover;
 
   market.save();
 
