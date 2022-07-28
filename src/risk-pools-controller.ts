@@ -663,7 +663,7 @@ function handleUpdateMarketOperatorIncentiveFee(event: LogGovernance): void {
     return;
   }
 
-  market.marketOperatorIncentiveFee = event.params.param4;
+  market.marketOperatorIncentiveFee = event.params.param3;
 
   market.save();
 }
