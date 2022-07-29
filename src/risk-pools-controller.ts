@@ -656,7 +656,7 @@ function handleUpdateProductMaxMarketIncentiveFee(event: LogGovernance): void {
 }
 
 function handleUpdateMarketOperatorIncentiveFee(event: LogGovernance): void {
-  let id = event.address.toHexString() + "-" + event.params.param3.toString();
+  let id = event.address.toHexString() + "-" + event.params.param4.toString();
   let market = Market.load(id);
 
   if (!market) {
