@@ -376,13 +376,7 @@ type PoolParticipant @entity {
   id: ID!
   user: String!
   poolId: String
-  depositSum: BigInt!
-  withdrawSum: BigInt!
   tokenBalance: BigInt!
-  earnedSum: BigInt
-  earnedFrom: BigInt
-  lastDeposit: BigInt
-  dpSum: BigInt
 }
 
 type State @entity {

@@ -76,14 +76,6 @@ export function handleTransfer(event: Transfer): void {
     return;
   }
 
-  updateEarnings(
-    pool,
-    sender,
-    event.block,
-    event.params.value.times(BigInt.fromI32(-1))
-  );
-  updateEarnings(pool, receiver, event.block, event.params.value);
-
   sender.tokenBalance = sender.tokenBalance.minus(event.params.value);
 
   if (sender.tokenBalance.isZero()) {
@@ -117,12 +109,9 @@ export function handleLogDeposit(event: LogDeposit): void {
     account = addPoolParticipant(pool, event.params.usr.toHexString(), event);
   }
 
-  updateEarnings(pool, account, event.block, event.params.poolTokenAmount);
-
   account.tokenBalance = account.tokenBalance.plus(
     event.params.poolTokenAmount
   );
-  account.depositSum = account.depositSum.plus(event.params.capitalTokenAmount);
 
   pool.save();
   account.save();
@@ -168,18 +157,8 @@ export function handleLogWithdraw(event: LogWithdraw): void {
   pool.save();
 
   if (account != null) {
-    updateEarnings(
-      pool,
-      account,
-      event.block,
-      event.params.poolTokenAmount.times(BigInt.fromI32(-1))
-    );
-
     account.tokenBalance = account.tokenBalance.minus(
       event.params.poolTokenAmount
-    );
-    account.withdrawSum = account.withdrawSum.plus(
-      event.params.capitalTokenAmount
     );
 
     if (account.tokenBalance.isZero()) {
@@ -340,8 +319,6 @@ function addPoolParticipant(
   account.tokenBalance = BigInt.fromI32(0);
   account.poolId = pool.id;
   account.user = userId;
-  account.depositSum = BigInt.fromI32(0);
-  account.withdrawSum = BigInt.fromI32(0);
 
   pool.participants = pool.participants.plus(BigInt.fromI32(1));
 
@@ -670,36 +647,6 @@ export function handleLogCapacityChanged(event: LogCapacityChanged): void {
       pool.capitalTokenBalance.minus(oldBalance).toString()
     );
   }
-}
-
-function updateEarnings(
-  pool: Pool,
-  account: PoolParticipant,
-  block: ethereum.Block,
-  newTokenDepositDelta: BigInt
-): void {
-  let from = account.earnedFrom;
-  let newDepositDelta = newTokenDepositDelta
-    .times(pool.capitalTokenBalance)
-    .div(pool.poolTokenBalance);
-
-  if (from === null) {
-    account.earnedSum = BigInt.fromI32(0);
-    account.dpSum = BigInt.fromI32(0);
-    account.lastDeposit = newDepositDelta;
-  } else {
-    let currentBalance = account.tokenBalance
-      .times(pool.capitalTokenBalance)
-      .div(pool.poolTokenBalance);
-    let earned = currentBalance.minus(account.lastDeposit!);
-    let period = block.timestamp.minus(from);
-
-    account.earnedSum = account.earnedSum!.plus(earned);
-    account.dpSum = account.dpSum!.plus(account.lastDeposit!.times(period));
-    account.lastDeposit = currentBalance.plus(newDepositDelta);
-  }
-
-  account.earnedFrom = block.timestamp;
 }
 
 export function handleLogNewRewardDistribution(
