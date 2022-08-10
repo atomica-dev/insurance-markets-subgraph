@@ -608,34 +608,6 @@ export function handleLogCapacityChanged(event: LogCapacityChanged): void {
 
   pool.save();
 
-  let markets = pool.markets;
-
-  for (let i = 0; i < markets.length; i++) {
-    let marketId = markets[i];
-    let id = pool.id + "-" + marketId;
-    let pmr = PoolMarketRelation.load(id);
-
-    if (!pmr) {
-      continue;
-    }
-
-    let aggPool = AggregatedPool.load(pmr.aggregatedPool)!;
-    let premiumRateModel = PremiumRateModelContract.bind(changetype<Address>(aggPool.premiumRateModel));
-    let rate = premiumRateModel.try_getPremiumRate(aggPool.totalCapacity, aggPool.coverage);
-
-    aggPool.rate = rate.reverted ? BigInt.fromI32(0) : rate.value;
-
-    aggPool.save();
-
-    addEvent(
-      EventType.PoolPremiumRate,
-      event,
-      null,
-      aggPool.id,
-      aggPool.rate.toString()
-    );
-  }
-
   if (!pool.capitalTokenBalance.minus(oldBalance).isZero()) {
     addEvent(
       EventType.PoolBalance,

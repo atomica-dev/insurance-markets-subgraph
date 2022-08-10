@@ -1539,7 +1539,7 @@ export function handleLogMarketCharge(event: LogMarketCharge): void {
   for (let i = 0; i < aggPool.poolList.length; i++) {
     let poolId = aggPool.poolList[i];
     let pool = Pool.load(poolId)!;
-    let pmrId = poolId + "-" + aggPool.market;
+    let pmrId = poolId + "-" + aggPool.id;
     let pmRelation = PoolMarketRelation.load(pmrId);
     let id = poolId + "-" + token.toHexString();
 
@@ -1633,7 +1633,7 @@ export function handleLogAggregatedPoolCapacityAllowanceUpdated(
     return;
   }
 
-  let id = event.params.riskPool.toHexString() + "-" + aggPool.market;
+  let id = event.params.riskPool.toHexString() + "-" + aggPool.id;
   let pmRelation = PoolMarketRelation.load(id);
 
   if (!pmRelation) {
@@ -1662,7 +1662,7 @@ export function handleLogAggregatedPoolRiskPoolCapacityLimitUpdated(
     return;
   }
 
-  let id = event.params.riskPool.toHexString() + "-" + aggPool.market;
+  let id = event.params.riskPool.toHexString() + "-" + aggPool.id;
   let pmRelation = PoolMarketRelation.load(id);
 
   if (!pmRelation) {
@@ -1691,7 +1691,7 @@ export function handleLogAggregatedPoolMarketCapacityLimitUpdated(
     return;
   }
 
-  let id = event.params.riskPool.toHexString() + "-" + aggPool.market;
+  let id = event.params.riskPool.toHexString() + "-" + aggPool.id;
   let pmRelation = PoolMarketRelation.load(id);
 
   if (!pmRelation) {
@@ -1718,7 +1718,7 @@ export function handleLogRebalance(event: LogRebalance): void {
     return;
   }
 
-  let id = event.params.riskPool.toHexString() + "-" + aggPool.market;
+  let id = event.params.riskPool.toHexString() + "-" + aggPool.id;
   let pmRelation = PoolMarketRelation.load(id);
 
   if (!pmRelation) {
@@ -1782,7 +1782,7 @@ export function handleLogRiskPoolAddedToAggregatedPool(
     return;
   }
 
-  let id = event.params.riskPool.toHexString() + "-" + aggPool.market;
+  let id = event.params.riskPool.toHexString() + "-" + aggPool.id;
   let pmRelation = PoolMarketRelation.load(id);
 
   if (!pmRelation) {
