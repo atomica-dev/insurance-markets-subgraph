@@ -213,10 +213,6 @@ function updatePolicyCoverage(
 
   let market = Market.load(policy.market.toString())!;
 
-  market.exposure = market.exposure.plus(policy.coverage).minus(oldCoverage);
-
-  market.save();
-
   updateAndLogState(
     EventType.MarketExposure,
     event,

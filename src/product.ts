@@ -299,10 +299,6 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
 
   let market = Market.load(policy.market)!;
 
-  market.exposure = market.exposure.plus(policy.coverage);
-
-  market.save();
-
   addEvent(
     EventType.NewPolicy,
     event,
