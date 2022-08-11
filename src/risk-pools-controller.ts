@@ -109,6 +109,7 @@ import {
   getPolicyDeposit,
 } from "./contract-mapper";
 import { PremiumRateModelDynamic as PremiumRateModelContract } from "../generated/templates/Pool/PremiumRateModelDynamic";
+import { claimAllTypeFees, updateAllTypeFees } from "./fee";
 
 export function handleLogNewProduct(event: LogNewProduct): void {
   getState(EventType.SystemStatus).save();
@@ -1593,6 +1594,7 @@ export function handleLogMarketCharge(event: LogMarketCharge): void {
     mpf.save();
   }
 
+  updateAllTypeFees(event, token, market);
   updateMarketChargeState(event.address, aggPool.market);
 }
 
@@ -1622,6 +1624,8 @@ export function handleLogWithdrawAccruedMarketFee(
 
     pf.save();
   }
+
+  claimAllTypeFees(event.params.erc20, event.params.delegate);
 }
 
 export function handleLogAggregatedPoolCapacityAllowanceUpdated(

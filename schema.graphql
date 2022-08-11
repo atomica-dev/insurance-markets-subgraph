@@ -64,12 +64,12 @@ type Product @entity {
   withdrawRequestExpiration: BigInt
   marketCreatorsAllowlistId: BigInt
   waitingPeriod: BigInt
-  operator: Bytes
-  createdAt: BigInt
-  createdBy: Bytes
-  updatedAt: BigInt
+  operator: Bytes!
+  createdAt: BigInt!
+  createdBy: Bytes!
+  updatedAt: BigInt!
   markets: [Market!] @derivedFrom(field: "product")
-  status: Int
+  status: Int!
 }
 
 type Market @entity {
@@ -352,6 +352,31 @@ type MarketPoolFee @entity {
   amount: BigInt!
   claimedAmount: BigInt!
   pool: Pool!
+}
+
+type UserFee @entity {
+  """
+  tokenId-userId-type
+  """
+  id: ID!
+  tokenId: Bytes!
+  userId: Bytes!
+  type: String!
+  amount: BigInt!
+  claimedAmount: BigInt!
+}
+
+type MarketUserFee @entity {
+  """
+  tokenId-userId-type-marketId
+  """
+  id: ID!
+  tokenId: Bytes!
+  userId: Bytes!
+  type: String!
+  marketId: BigInt!
+  amount: BigInt!
+  claimedAmount: BigInt!
 }
 
 type Reward @entity {
