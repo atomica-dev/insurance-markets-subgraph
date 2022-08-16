@@ -80,8 +80,33 @@ export function getPoolBucket(
   };
 }
 
+export class CProduct {
+  wording: string;
+  productOperator: Address;
+  productOperatorIncentiveFee: BigInt;
+  maxMarketOperatorIncentiveFee: BigInt;
+  settlement: number;
+  status: number;
+};
+
+export function getProduct(
+  contract: RiskPoolsControllerContract,
+  id: Address,
+): CProduct {
+  let d = contract.products(id);
+  return {
+    wording: d.value0,
+    productOperator: d.value1,
+    productOperatorIncentiveFee: d.value2,
+    maxMarketOperatorIncentiveFee: d.value3,
+    settlement: d.value4,
+    status: d.value5,
+  };
+}
+
 export class CMarket {
   marketOperator: Address;
+  marketFeeRecipient: Address;
   product: Address;
   premiumToken: Address;
   capitalToken: Address;
@@ -100,15 +125,16 @@ export function getMarket(
   let d = contract.markets(id);
   return {
     marketOperator: d.value0,
-    product: d.value1,
-    premiumToken: d.value2,
-    capitalToken: d.value3,
-    insuredToken: d.value4,
-    coverAdjusterOracle: d.value5,
-    ratesOracle: d.value6,
-    payoutRequester: d.value7,
-    payoutApprover: d.value8,
-    title: d.value9,
+    marketFeeRecipient: d.value1,
+    product: d.value2,
+    premiumToken: d.value3,
+    capitalToken: d.value4,
+    insuredToken: d.value5,
+    coverAdjusterOracle: d.value6,
+    ratesOracle: d.value7,
+    payoutRequester: d.value8,
+    payoutApprover: d.value9,
+    title: d.value10,
   };
 }
 
@@ -132,7 +158,8 @@ export function getRiskTowerLevel(
 export class CAggregatedPool {
   marketId: BigInt;
   totalCapacity: BigInt;
-  distributedCover: BigInt;
+  premiumAccumulator: BigInt;
+  premiumBalance: BigInt;
   premiumRateModel: Address;
 }
 
@@ -145,8 +172,9 @@ export function getAggregatedPool(
   return {
     marketId: d.value0,
     totalCapacity: d.value1,
-    distributedCover: d.value2,
-    premiumRateModel: d.value3,
+    premiumAccumulator: d.value2,
+    premiumBalance: d.value3,
+    premiumRateModel: d.value4,
   };
 }
 
@@ -174,11 +202,11 @@ export function getRiskPoolData(
 export class CMarketMeta {
   riskTowerRootLevel: BigInt;
   desiredCover: BigInt;
-  actualCover: BigInt;
   waitingPeriod: BigInt;
   marketOperatorIncentiveFee: BigInt;
   accrualBlockNumberPrior: BigInt;
   settlementDiscount: BigInt;
+  withdrawDelay: BigInt;
 }
 
 export function getMarketMeta(
@@ -190,11 +218,11 @@ export function getMarketMeta(
   return {
     riskTowerRootLevel: d.value0,
     desiredCover: d.value1,
-    actualCover: d.value2,
-    waitingPeriod: d.value3,
-    marketOperatorIncentiveFee: d.value4,
-    accrualBlockNumberPrior: d.value5,
-    settlementDiscount: d.value6,
+    waitingPeriod: d.value2,
+    marketOperatorIncentiveFee: d.value3,
+    accrualBlockNumberPrior: d.value4,
+    settlementDiscount: d.value5,
+    withdrawDelay: d.value6,
   };
 }
 

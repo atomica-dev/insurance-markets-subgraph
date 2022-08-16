@@ -71,13 +71,14 @@ export function handleLogNewMarket(event: LogNewMarket): void {
     titleParams.length > 0 ? titleParams[titleParams.length - 1] : null;
 
   market.exposure = marketMeta.desiredCover;
-  market.actualCover = marketMeta.actualCover;
+  market.actualCover = BigInt.fromI32(0);
   market.waitingPeriod = marketMeta.waitingPeriod;
   market.marketOperatorIncentiveFee = marketMeta.marketOperatorIncentiveFee;
   market.latestAccruedTimestamp = marketMeta.accrualBlockNumberPrior;
   market.settlementDiscount = marketMeta.settlementDiscount;
 
   market.author = marketInfo.marketOperator;
+  market.marketFeeRecipient = marketInfo.marketFeeRecipient;
   market.premiumToken = marketInfo.premiumToken;
   market.capitalToken = marketInfo.capitalToken;
   market.insuredToken = marketInfo.insuredToken;

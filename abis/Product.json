@@ -287,6 +287,11 @@
                         "type": "address"
                     },
                     {
+                        "internalType": "address",
+                        "name": "marketFeeRecipient",
+                        "type": "address"
+                    },
+                    {
                         "internalType": "uint256",
                         "name": "policyBuyerAllowlistId",
                         "type": "uint256"

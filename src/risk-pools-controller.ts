@@ -1505,7 +1505,7 @@ export function handleLogCoverDistributed(event: LogCoverDistributed): void {
 
   aggPool.save();
 
-  let market = updateMarketChargeState(event.address, aggPool.market);
+  let market = updateMarketChargeState(event.address, aggPool.market, event.params.cover);
 
   addEvent(
     EventType.PoolExposure,
@@ -1591,7 +1591,6 @@ export function handleLogMarketCharge(event: LogMarketCharge): void {
   }
 
   updateAllTypeFees(event, token, market);
-  updateMarketChargeState(event.address, aggPool.market);
 }
 
 export function handleLogWithdrawAccruedMarketFee(
@@ -1989,7 +1988,8 @@ function getAggPoolCurrentRate(aggPool: AggregatedPool): BigInt {
 
 function updateMarketChargeState(
   rpcContractAddress: Address,
-  marketId: string
+  marketId: string,
+  actualCover: BigInt,
 ): Market {
   let rpcContract = RiskPoolsControllerContract.bind(rpcContractAddress);
   let market = Market.load(marketId)!;
@@ -2002,7 +2002,7 @@ function updateMarketChargeState(
 
   market.latestAccruedTimestamp = marketMeta.accrualBlockNumberPrior;
   market.exposure = marketMeta.desiredCover;
-  market.actualCover = marketMeta.actualCover;
+  market.actualCover = actualCover;
 
   market.save();
 

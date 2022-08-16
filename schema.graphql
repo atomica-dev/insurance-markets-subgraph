@@ -89,6 +89,7 @@ type Market @entity {
   exposure: BigInt!
   actualCover: BigInt
   author: Bytes!
+  marketFeeRecipient: Bytes!
   premiumToken: Bytes!
   capitalToken: Bytes!
   insuredToken: Bytes!
