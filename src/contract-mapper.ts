@@ -199,6 +199,27 @@ export function getRiskPoolData(
   };
 }
 
+export class CMarketCoverDetails {
+  actualCover: BigInt;
+  accruedCharge: BigInt;
+  aggregatedPools: BigInt[];
+  covers: BigInt[];
+}
+
+export function getMarketCoverDetails(
+  contract: RiskPoolsControllerContract,
+  id: BigInt
+): CMarketCoverDetails {
+  let d = contract.actualCoverDetailed(id);
+
+  return {
+    actualCover: d.value0,
+    accruedCharge: d.value1,
+    aggregatedPools: d.value2,
+    covers: d.value3,
+  };
+}
+
 export class CMarketMeta {
   riskTowerRootLevel: BigInt;
   desiredCover: BigInt;

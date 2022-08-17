@@ -20,6 +20,7 @@ import { Pool as PoolTemplate } from "../generated/templates";
 import {
   addEvent,
   EventType,
+  getState,
   StatusEnum,
   updateAndLogState,
   updateState,
@@ -40,9 +41,8 @@ import {
   getRiskPoolData,
   getRiskTowerLevel,
 } from "./contract-mapper";
-
-export const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
-export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+import { addUniqueToList, ETH_ADDRESS, filterNotEqual, ZERO_ADDRESS } from "./utils";
+import { updateMarketChargeState } from "./risk-pools-controller";
 
 export function handleLogNewMarket(event: LogNewMarket): void {
   let marketId = event.params.marketId;
@@ -210,11 +210,7 @@ export function updateFeeRecipientRelation(feeRecipientId: Bytes, riskPoolId: By
     frp.poolList = [];
   }
 
-  let list = frp.poolList;
-
-  list.push(riskPoolId.toHexString());
-
-  frp.poolList = list;
+  frp.poolList = addUniqueToList(frp.poolList, riskPoolId.toHexString());
 
   frp.save();
 
@@ -231,23 +227,12 @@ export function updateFeeRecipientRelation(feeRecipientId: Bytes, riskPoolId: By
   }
 }
 
-export function filterNotEqual(array: string[], item: string): string[] {
-  let res: string[] = [];
-
-  for (let i = 0; i < array.length; i++) {
-    if (array[i] != item) {
-      res.push(array[i]);
-    }
-  }
-
-  return res;
-}
-
 export function handleLogNewPolicy(event: LogNewPolicy): void {
   let policyId = event.params.policyId;
   let productContract = ProductContract.bind(event.address);
+  let rpcAddress = productContract.riskPoolsController();
   let rpcContract = RiskPoolsControllerContract.bind(
-    productContract.riskPoolsController()
+    rpcAddress
   );
   let piContract = PolicyTokenIssuerContract.bind(
     rpcContract.policyTokenIssuer()
@@ -275,7 +260,7 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
 
   policy.marketId = policyInfo.marketId;
   policy.market =
-    productContract.riskPoolsController().toHexString() +
+    rpcAddress.toHexString() +
     "-" +
     policyInfo.marketId.toString();
   policy.validUntil = policyInfo.validUntil;
@@ -299,6 +284,11 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
   policy.save();
 
   let market = Market.load(policy.market)!;
+
+  if (getState(EventType.TotalPolicies, policy.market).value == BigInt.fromI32(0)) {
+    // Until contract issue is fixed it's required to call update coverage manually.
+    updateMarketChargeState(rpcAddress, policy.market, event);
+  }
 
   addEvent(
     EventType.NewPolicy,

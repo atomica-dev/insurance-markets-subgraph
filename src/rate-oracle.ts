@@ -2,6 +2,7 @@ import { RateOracle, RateOraclePairRate } from "../generated/schema";
 import { RateOracle as RateOracleContract } from "../generated/templates/RateOracle/RateOracle";
 import { RateOracle as RateOracleTemplate } from "../generated/templates";
 import { ethereum, BigInt, Address, Bytes, dataSource, DataSourceContext, log } from "@graphprotocol/graph-ts";
+import { addToList } from "./utils";
 
 const DELAY_BLOCK_COUNT = 5;
 
@@ -50,11 +51,7 @@ export function addOraclePair(oracleId: string, from: Bytes, to: Bytes): void {
   let pairId = getPairId(from, to);
 
   if (oracle.pairList.indexOf(pairId) < 0) {
-    let l = oracle.pairList;
-
-    l.push(pairId);
-
-    oracle.pairList = l;
+    oracle.pairList = addToList(oracle.pairList, pairId);
 
     oracle.save();
   }

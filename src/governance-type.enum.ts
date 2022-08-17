@@ -41,6 +41,7 @@ export enum GovernanceLogType {
   GovernanceIncentiveFee,
   LiquidationIncentive,
   FrontendOperatorPenalty,
+  MarketFeeRecipient,
 
   // Market
   MarketCoverAdjusterOracle,

@@ -30,7 +30,6 @@ import {
 } from "../../generated/templates/Pool/Pool";
 import {
   Pool,
-  PoolMarketRelation,
   PoolParticipant,
   Reward,
   WithdrawRequest,
@@ -41,16 +40,12 @@ import {
   OutgoingLoss,
   IncomingLoss,
   PoolOwnLoss,
-  AggregatedPool,
 } from "../../generated/schema";
 import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import { EventType, addEvent, updateState } from "../event";
 import { marketPremiumEarned } from "../risk-pools-controller";
-import { filterNotEqual } from "../product";
 import { getRiskPoolConnection } from "../contract-mapper";
-import { PremiumRateModelDynamic as PremiumRateModelContract } from "../../generated/templates/Pool/PremiumRateModelDynamic";
-
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+import { addToList, filterNotEqual, ZERO_ADDRESS } from "../utils";
 
 export function handleTransfer(event: Transfer): void {
   let pool = Pool.load(event.address.toHexString())!;
@@ -406,8 +401,7 @@ export function addExternalPool(
   let l = pool.externalPoolList;
 
   if (l.indexOf(epId) < 0) {
-    l.push(epId);
-    pool.externalPoolList = l;
+    pool.externalPoolList = addToList(pool.externalPoolList, epId);
 
     pool.save();
 
@@ -655,11 +649,7 @@ export function handleLogNewRewardDistribution(
 
   let pool = Pool.load(event.address.toHexString())!;
 
-  let r = pool.rewards;
-
-  r.push(id);
-
-  pool.rewards = r;
+  pool.rewards = addToList(pool.rewards, id);
 
   pool.save();
 }

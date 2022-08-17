@@ -109,6 +109,11 @@ type Market @entity {
   riskTower: [RiskTowerLevel!]! @derivedFrom(field: "market")
 }
 
+type MarketAggregatedPool @entity {
+  id: ID!
+  list: [String!]!
+}
+
 type RiskTowerLevel @entity {
   id: ID!
   market: Market!

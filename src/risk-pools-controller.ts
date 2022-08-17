@@ -24,7 +24,6 @@ import {
   LogIncreaseRewardAmount,
   LogNewReward,
   LogMarketCharge,
-  LogCoverDistributed,
   LogAggregatedPoolCreated,
   LogAggregatedPoolRemoved,
   LogRiskTowerLevelCreated1,
@@ -41,6 +40,7 @@ import {
   LogCoverMiningRewardArchived,
   LogArchivedRewardClaimed,
   LogWithdrawAccruedMarketFee,
+  LogPremiumEarned,
 } from "../generated/RiskPoolsController/RiskPoolsController";
 import { RiskPoolsController as RiskPoolsControllerContract } from "../generated/templates/Product/RiskPoolsController";
 import {
@@ -56,10 +56,8 @@ import {
   Pool,
   PoolMarketRelation,
   Product,
-  FrontendOperator,
   AccruedFee,
   MarketAccruedFee,
-  PremiumRateModel,
   Swap,
   Payout,
   PayoutRequest,
@@ -71,6 +69,7 @@ import {
   PoolFee,
   MarketPoolFee,
   FeeRecipientPool,
+  MarketAggregatedPool,
 } from "../generated/schema";
 import {
   addEvent,
@@ -82,27 +81,22 @@ import {
 } from "./event";
 import {
   Address,
-  BigDecimal,
   BigInt,
   Bytes,
   ethereum,
   log,
   store,
 } from "@graphprotocol/graph-ts";
-import { createPool, ETH_ADDRESS, filterNotEqual, updateFeeRecipientRelation } from "./product";
+import { createPool, updateFeeRecipientRelation } from "./product";
 import { Product as ProductContract } from "../generated/RiskPoolsController/Product";
-import { CoverAdjuster as CoverAdjusterTemplate } from "../generated/templates";
-import { PremiumRateModelFixed } from "../generated/RiskPoolsController/PremiumRateModelFixed";
-import { PremiumRateModelDynamic } from "../generated/RiskPoolsController/PremiumRateModelDynamic";
 import { PolicyTokenIssuer as PolicyTokenIssuerContract } from "../generated/RiskPoolsController/PolicyTokenIssuer";
 import { getSystemConfig } from "./system";
-import { addOraclePair } from "./rate-oracle";
-import { GovernanceLogType } from "./governance-type.enum";
 import {
   CPolicy,
   getAggregatedPool,
   getCoverReward,
   getForwardedPayoutRequest,
+  getMarketCoverDetails,
   getMarketMeta,
   getPayoutRequest,
   getPolicy,
@@ -110,6 +104,8 @@ import {
 } from "./contract-mapper";
 import { PremiumRateModelDynamic as PremiumRateModelContract } from "../generated/templates/Pool/PremiumRateModelDynamic";
 import { claimAllTypeFees, updateAllTypeFees } from "./fee";
+import { GovernanceOperationMap } from "./governance-operations";
+import { addToList, filterNotEqual, WEI_BIGINT } from "./utils";
 
 export function handleLogNewProduct(event: LogNewProduct): void {
   getState(EventType.SystemStatus).save();
@@ -317,648 +313,9 @@ function updatePolicyBalances(
   );
 }
 
-function handleUpdateNewOperator(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  config.operator = event.params.param1;
-  config.save();
-}
-
-function handleUpdateNewAllowanceManager(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  config.allowanceManager = event.params.param1;
-  config.save();
-}
-
-function handleUpdateTreasury(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  config.treasury = event.params.param1;
-  config.save();
-}
-
-function handleUpdateDefaultPayoutRequester(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  config.defaultPayoutRequester = event.params.param1;
-  config.save();
-}
-
-function handleUpdateDefaultPayoutApprover(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  config.defaultPayoutApprover = event.params.param1;
-  config.save();
-}
-
-function handleUpdateProductCreatorsAllowlistId(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  config.productCreatorsAllowlistId = event.params.param3;
-  config.save();
-}
-
-function handleUpdateGovernanceIncentiveFee(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  config.governanceFee = event.params.param3;
-  config.save();
-}
-
-function handleUpdateMaxProductOperatorIncentiveFee(
-  event: LogGovernance
-): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  config.maxProductOperatorIncentiveFee = event.params.param3;
-  config.save();
-}
-
-function handleUpdateMaxMarketOperatorIncentiveFee(event: LogGovernance): void {
-  let product = Product.load(event.params.param1.toHexString());
-
-  if (product != null) {
-    product.maxMarketIncentiveFee = event.params.param3;
-    product.save();
-
-    return;
-  }
-
-  let config = getSystemConfig(event.address.toHexString());
-
-  config.maxMarketOperatorIncentiveFee = event.params.param3;
-  config.save();
-}
-
-function handleUpdateExchangeRateOracle(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  if (event.params.param5) {
-    let l = config.rateOracleList;
-
-    if (l.indexOf(event.params.param1.toHexString()) < 0) {
-      l.push(event.params.param1.toHexString());
-    }
-
-    config.rateOracleList = l;
-  } else {
-    config.rateOracleList = filterNotEqual(
-      config.rateOracleList,
-      event.params.param1.toHexString()
-    );
-  }
-
-  config.save();
-}
-
-function handleUpdatePremiumRateModel(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  if (event.params.param5) {
-    let l = config.premiumRateModelList;
-
-    if (l.indexOf(event.params.param1.toHexString()) < 0) {
-      l.push(event.params.param1.toHexString());
-    }
-
-    config.premiumRateModelList = l;
-
-    guessRateModelType(event.params.param1);
-  } else {
-    config.premiumRateModelList = filterNotEqual(
-      config.premiumRateModelList,
-      event.params.param1.toHexString()
-    );
-  }
-
-  config.save();
-}
-
-function handleUpdateCoverAdjusterOracle(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  if (event.params.param5) {
-    let l = config.coverAdjusterOracleList;
-
-    if (l.indexOf(event.params.param1.toHexString()) < 0) {
-      l.push(event.params.param1.toHexString());
-    }
-
-    config.coverAdjusterOracleList = l;
-    CoverAdjusterTemplate.create(event.params.param1);
-  } else {
-    config.coverAdjusterOracleList = filterNotEqual(
-      config.coverAdjusterOracleList,
-      event.params.param1.toHexString()
-    );
-  }
-
-  config.save();
-}
-
-function handleSyncOracle(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  if (event.params.param5) {
-    let l = config.syncOracleList;
-
-    if (l.indexOf(event.params.param1.toHexString()) < 0) {
-      l.push(event.params.param1.toHexString());
-    }
-
-    config.syncOracleList = l;
-  } else {
-    config.syncOracleList = filterNotEqual(
-      config.syncOracleList,
-      event.params.param1.toHexString()
-    );
-  }
-
-  config.save();
-}
-
-function handleUpdateMarketCoverAdjusterOracle(event: LogGovernance): void {
-  let id = event.address.toHexString() + "-" + event.params.param3.toString();
-  let market = Market.load(id);
-
-  if (!market) {
-    return;
-  }
-
-  market.coverAdjusterOracle = event.params.param1;
-
-  market.save();
-}
-
-function handleUpdateExternalProduct(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  if (true) {
-    // event.params.param5) { Until the issue in contract fixed we can add ext. products only.
-    let l = config.externalProductList;
-
-    if (l.indexOf(event.params.param1.toHexString()) < 0) {
-      l.push(event.params.param1.toHexString());
-    }
-
-    config.externalProductList = l;
-  } else {
-    config.externalProductList = filterNotEqual(
-      config.externalProductList,
-      event.params.param1.toHexString()
-    );
-  }
-
-  config.save();
-}
-
-function handleUpdateMarketExchangeRateOracle(event: LogGovernance): void {
-  let id = event.address.toHexString() + "-" + event.params.param3.toString();
-  let market = Market.load(id);
-
-  if (!market) {
-    return;
-  }
-
-  market.rateOracle = event.params.param1;
-
-  market.save();
-
-  if (market.rateOracle) {
-    addOraclePair(
-      market.rateOracle!.toHexString(),
-      market.capitalToken,
-      market.premiumToken
-    );
-  }
-  addOraclePair(
-    market.rateOracle!.toHexString(),
-    market.premiumToken,
-    Address.fromHexString(ETH_ADDRESS)
-  );
-}
-
-function handleUpdateRiskPoolWithdrawDelay(event: LogGovernance): void {
-  let pool = Pool.load(event.params.param1.toHexString());
-
-  if (!pool) {
-    return;
-  }
-
-  pool.withdrawDelay = event.params.param3;
-
-  pool.save();
-}
-
-function handleUpdateRiskPoolWithdrawRequestExpiration(
-  event: LogGovernance
-): void {
-  let pool = Pool.load(event.params.param1.toHexString());
-
-  if (!pool) {
-    return;
-  }
-
-  pool.withdrawRequestExpiration = event.params.param3;
-
-  pool.save();
-}
-
-function handleUpdateMarketPolicyBuyerAllowlistId(event: LogGovernance): void {
-  let id = event.address.toHexString() + "-" + event.params.param3.toString();
-  let market = Market.load(id);
-
-  if (!market) {
-    return;
-  }
-
-  market.policyBuyerAllowListId = event.params.param4;
-
-  market.save();
-}
-
-function handleUpdateRiskPoolLpAllowlistId(event: LogGovernance): void {
-  let pool = Pool.load(event.params.param1.toHexString());
-
-  if (!pool) {
-    return;
-  }
-
-  pool.lpAllowListId = event.params.param3;
-
-  pool.save();
-}
-
-function handleUpdateProductWording(event: LogGovernance): void {
-  let address = event.params.param1;
-  let product = Product.load(address.toHexString());
-  let rpcContract = RiskPoolsControllerContract.bind(event.address);
-
-  if (!product) {
-    return;
-  }
-
-  product.wording = rpcContract.products(address).value0;
-
-  product.save();
-}
-
-function handleUpdateProductOperator(event: LogGovernance): void {
-  let product = Product.load(event.params.param1.toHexString());
-
-  if (!product) {
-    return;
-  }
-
-  product.operator = event.params.param2;
-
-  product.save();
-}
-
-function handleUpdateMarketOperator(event: LogGovernance): void {
-  let id = event.address.toHexString() + "-" + event.params.param3.toString();
-  let market = Market.load(id);
-
-  if (!market) {
-    return;
-  }
-
-  market.author = event.params.param1;
-
-  market.save();
-}
-
-function handleUpdateProductOperatorIncentiveFee(event: LogGovernance): void {
-  let product = Product.load(event.params.param1.toHexString());
-
-  if (!product) {
-    return;
-  }
-
-  product.productIncentiveFee = event.params.param3;
-
-  product.save();
-}
-
-function handleUpdateProductMaxMarketIncentiveFee(event: LogGovernance): void {
-  let product = Product.load(event.params.param1.toHexString());
-
-  if (!product) {
-    return;
-  }
-
-  product.maxMarketIncentiveFee = event.params.param3;
-  product.save();
-}
-
-function handleUpdateMarketOperatorIncentiveFee(event: LogGovernance): void {
-  let id = event.address.toHexString() + "-" + event.params.param4.toString();
-  let market = Market.load(id);
-
-  if (!market) {
-    return;
-  }
-
-  market.marketOperatorIncentiveFee = event.params.param3;
-
-  market.save();
-}
-
-function handleUpdateLiquidationGasUsage(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  config.liquidationGasUsage = event.params.param3;
-  config.save();
-}
-
-function handleUpdateLiquidationIncentive(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  config.liquidationIncentive = event.params.param3;
-  config.save();
-}
-
-function handleUpdateSolvencyMultiplier(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  config.solvencyMultiplier = event.params.param3;
-  config.save();
-}
-
-function handleUpdateMinPolicyDepositMultiplier(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  config.minPolicyDepositMultiplier = event.params.param3;
-  config.save();
-}
-
-function handleNewFrontendOperator(event: LogGovernance): void {
-  let fo = new FrontendOperator(event.params.param1.toHexString());
-  let rpcContract = RiskPoolsControllerContract.bind(event.address);
-  let foInfo = rpcContract.frontendOperators(event.params.param1);
-
-  fo.feeRecipient = foInfo.value0;
-  fo.frontendOperatorFee = foInfo.value1;
-  fo.referralFee = foInfo.value2;
-  fo.policyBuyerReferralBonus = foInfo.value3;
-  fo.meta = foInfo.value4;
-  fo.isActive = foInfo.value5;
-
-  fo.save();
-}
-
-function handleFrontendOperatorDisabled(event: LogGovernance): void {
-  let fo = FrontendOperator.load(event.params.param1.toHexString());
-
-  if (fo != null) {
-    fo.isActive = false;
-
-    fo.save();
-  }
-}
-
-function handleFrontendOperatorEnabled(event: LogGovernance): void {
-  let fo = FrontendOperator.load(event.params.param1.toHexString());
-
-  if (fo != null) {
-    fo.isActive = true;
-
-    fo.save();
-  }
-}
-
-function handleFrontendOperatorFee(event: LogGovernance): void {
-  let fo = FrontendOperator.load(event.params.param1.toHexString());
-
-  if (fo != null) {
-    fo.frontendOperatorFee = event.params.param3;
-
-    fo.save();
-  }
-}
-
-function handleReferralFee(event: LogGovernance): void {
-  let fo = FrontendOperator.load(event.params.param1.toHexString());
-
-  if (fo != null) {
-    fo.referralFee = event.params.param3;
-
-    fo.save();
-  }
-}
-
-function handlePolicyBuyerReferralBonus(event: LogGovernance): void {
-  let fo = FrontendOperator.load(event.params.param1.toHexString());
-
-  if (fo != null) {
-    let rpcContract = RiskPoolsControllerContract.bind(event.address);
-
-    fo.policyBuyerReferralBonus = event.params.param3;
-    fo.meta = rpcContract.frontendOperators(event.params.param1).value4;
-
-    fo.save();
-  }
-}
-
-function handleRiskPoolCap(event: LogGovernance): void {
-  let pool = Pool.load(event.params.param1.toHexString());
-
-  if (!pool) {
-    return;
-  }
-
-  pool.capitalRequirement = event.params.param3;
-
-  pool.save();
-}
-
-function handleFrontendOperatorPenalty(event: LogGovernance): void {
-  let id =
-    event.params.param1.toHexString() + "-" + event.params.param2.toHexString();
-  let af = AccruedFee.load(id);
-
-  if (af != null) {
-    af.balance = event.params.param4;
-    af.claimedBalance = af.claimedBalance.plus(event.params.param3);
-
-    af.save();
-  }
-}
-
-let map = new Map<GovernanceLogType, (event: LogGovernance) => void>();
-
-map.set(GovernanceLogType.NewOperator, handleUpdateNewOperator);
-map.set(GovernanceLogType.NewAllowanceManager, handleUpdateNewAllowanceManager);
-map.set(GovernanceLogType.Treasury, handleUpdateTreasury);
-map.set(
-  GovernanceLogType.DefaultPayoutRequester,
-  handleUpdateDefaultPayoutRequester
-);
-map.set(
-  GovernanceLogType.DefaultPayoutApprover,
-  handleUpdateDefaultPayoutApprover
-);
-map.set(
-  GovernanceLogType.ProductCreatorsAllowlistId,
-  handleUpdateProductCreatorsAllowlistId
-);
-map.set(
-  GovernanceLogType.GovernanceIncentiveFee,
-  handleUpdateGovernanceIncentiveFee
-);
-map.set(
-  GovernanceLogType.MaxProductOperatorIncentiveFee,
-  handleUpdateMaxProductOperatorIncentiveFee
-);
-map.set(
-  GovernanceLogType.MaxMarketOperatorIncentiveFee,
-  handleUpdateMaxMarketOperatorIncentiveFee
-);
-map.set(GovernanceLogType.ExchangeRateOracle, handleUpdateExchangeRateOracle);
-map.set(GovernanceLogType.PremiumRateModel, handleUpdatePremiumRateModel);
-map.set(GovernanceLogType.CoverAdjusterOracle, handleUpdateCoverAdjusterOracle);
-map.set(GovernanceLogType.SyncOracle, handleSyncOracle);
-map.set(
-  GovernanceLogType.MarketCoverAdjusterOracle,
-  handleUpdateMarketCoverAdjusterOracle
-);
-map.set(GovernanceLogType.ExternalProduct, handleUpdateExternalProduct);
-map.set(
-  GovernanceLogType.MarketExchangeRateOracle,
-  handleUpdateMarketExchangeRateOracle
-);
-map.set(
-  GovernanceLogType.RiskPoolWithdrawDelay,
-  handleUpdateRiskPoolWithdrawDelay
-);
-map.set(
-  GovernanceLogType.RiskPoolWithdrawRequestExpiration,
-  handleUpdateRiskPoolWithdrawRequestExpiration
-);
-map.set(
-  GovernanceLogType.MarketPolicyBuyerAllowlistId,
-  handleUpdateMarketPolicyBuyerAllowlistId
-);
-map.set(
-  GovernanceLogType.RiskPoolLpAllowlistId,
-  handleUpdateRiskPoolLpAllowlistId
-);
-map.set(GovernanceLogType.ProductWording, handleUpdateProductWording);
-map.set(GovernanceLogType.ProductOperator, handleUpdateProductOperator);
-map.set(GovernanceLogType.MarketOperator, handleUpdateMarketOperator);
-map.set(
-  GovernanceLogType.ProductOperatorIncentiveFee,
-  handleUpdateProductOperatorIncentiveFee
-);
-map.set(
-  GovernanceLogType.ProductMaxMarketIncentiveFee,
-  handleUpdateProductMaxMarketIncentiveFee
-);
-map.set(
-  GovernanceLogType.MarketOperatorIncentiveFee,
-  handleUpdateMarketOperatorIncentiveFee
-);
-map.set(GovernanceLogType.LiquidationGasUsage, handleUpdateLiquidationGasUsage);
-
-map.set(
-  GovernanceLogType.LiquidationIncentive,
-  handleUpdateLiquidationIncentive
-);
-map.set(GovernanceLogType.SolvencyMultiplier, handleUpdateSolvencyMultiplier);
-map.set(
-  GovernanceLogType.MinPolicyDepositMultiplier,
-  handleUpdateMinPolicyDepositMultiplier
-);
-map.set(
-  GovernanceLogType.MaxRiskPoolManagerFee,
-  handleUpdateMaxRiskPoolManagerFee
-);
-map.set(GovernanceLogType.NewFrontendOperator, handleNewFrontendOperator);
-map.set(
-  GovernanceLogType.FrontendOperatorDisabled,
-  handleFrontendOperatorDisabled
-);
-map.set(
-  GovernanceLogType.FrontendOperatorEnabled,
-  handleFrontendOperatorEnabled
-);
-map.set(GovernanceLogType.FrontendOperatorFee, handleFrontendOperatorFee);
-map.set(GovernanceLogType.ReferralFee, handleReferralFee);
-map.set(
-  GovernanceLogType.PolicyBuyerReferralBonus,
-  handlePolicyBuyerReferralBonus
-);
-map.set(GovernanceLogType.RiskPoolCap, handleRiskPoolCap);
-map.set(
-  GovernanceLogType.FrontendOperatorPenalty,
-  handleFrontendOperatorPenalty
-);
-map.set(
-  GovernanceLogType.PolicyBuyerReferralBonus,
-  handlePolicyBuyerReferralBonus
-);
-map.set(GovernanceLogType.BridgeConnector, handleBridgeConnector);
-map.set(
-  GovernanceLogType.ExternalRiskPoolsConfidenceInterval,
-  handleExternalRiskPoolsConfidenceInterval
-);
-map.set(GovernanceLogType.SwapCycle, handleSwapCycle);
-map.set(GovernanceLogType.SettlementDiscount, handleSettlementDiscount);
-
-export function handleExternalRiskPoolsConfidenceInterval(
-  event: LogGovernance
-): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  config.extPoolDetailsConfidenceInterval = event.params.param3;
-
-  config.save();
-}
-
-export function handleUpdateMaxRiskPoolManagerFee(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  config.maxRiskPoolManagerFee = event.params.param3;
-
-  config.save();
-}
-
-export function handleSettlementDiscount(event: LogGovernance): void {
-  let id = event.address.toHexString() + "-" + event.params.param3.toString();
-  let market = Market.load(id);
-
-  if (!market) {
-    return;
-  }
-
-  market.settlementDiscount = event.params.param4;
-
-  market.save();
-}
-
-export function handleSwapCycle(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-  let rpcContract = RiskPoolsControllerContract.bind(event.address);
-
-  config.swapCycleDuration = rpcContract.swapCycleDuration();
-  config.swapDuration = rpcContract.swapDuration();
-  config.idleDuration = rpcContract.idleDuration();
-
-  config.save();
-}
-
-export function handleBridgeConnector(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  config.bridgeConnector = event.params.param1;
-
-  config.save();
-}
-
 export function handleLogGovernance(event: LogGovernance): void {
-  if (map.has(event.params.logType)) {
-    map.get(event.params.logType)(event);
+  if (GovernanceOperationMap.has(event.params.logType)) {
+    GovernanceOperationMap.get(event.params.logType)(event);
 
     return;
   }
@@ -1187,96 +544,7 @@ export function handleLogWithdrawFee(event: LogWithdrawFee): void {
   af.save();
 }
 
-enum PremiumModelType {
-  Unknown = 0,
-  Fixed = 1,
-  Dynamic = 2,
-}
 
-let SECONDS_IN_A_YEAR = BigInt.fromI32(60 * 60 * 24 * 365);
-export const WEI_BIGINT = BigInt.fromI32(1000000000).times(
-  BigInt.fromI32(1000000000)
-);
-let WEI_DECIMALS = new BigDecimal(WEI_BIGINT);
-
-function guessRateModelType(modelAddress: Address): void {
-  let model = PremiumRateModel.load(modelAddress.toHexString());
-
-  if (model /* && model.type != PremiumModelType.Unknown */) {
-    return;
-  }
-
-  model = new PremiumRateModel(modelAddress.toHexString());
-
-  model.type = PremiumModelType.Unknown;
-
-  let fixedModelContract = PremiumRateModelFixed.bind(modelAddress);
-  let rate0Result = fixedModelContract.try_ratePerSec();
-  let hnd = BigInt.fromI32(100);
-
-  if (!rate0Result.reverted) {
-    model.rate0 = new BigDecimal(
-      rate0Result.value.times(SECONDS_IN_A_YEAR).times(hnd)
-    );
-    model.type = PremiumModelType.Fixed;
-
-    model.save();
-
-    return;
-  }
-
-  let dynamicModelContract = PremiumRateModelDynamic.bind(modelAddress);
-  let util1Result = dynamicModelContract.try_kink();
-
-  rate0Result = dynamicModelContract.try_baseRatePerSec();
-
-  if (rate0Result.reverted || util1Result.reverted) {
-    model.save();
-
-    return;
-  }
-
-  model.rate0 = BigDecimal.fromString(
-    rate0Result.value
-      .times(SECONDS_IN_A_YEAR)
-      .times(hnd)
-      .toString()
-  ).div(WEI_DECIMALS);
-  model.util1 = BigDecimal.fromString(
-    util1Result.value.times(hnd).toString()
-  ).div(WEI_DECIMALS);
-
-  let rate1Result = dynamicModelContract.try_getPremiumRate(
-    hnd,
-    util1Result.value.times(hnd).div(WEI_BIGINT)
-  );
-  let rate2Result = dynamicModelContract.try_getPremiumRate(
-    BigInt.fromI32(1),
-    BigInt.fromI32(1)
-  );
-
-  if (rate1Result.reverted || rate2Result.reverted) {
-    model.save();
-
-    return;
-  }
-
-  model.rate1 = BigDecimal.fromString(
-    rate1Result.value
-      .times(SECONDS_IN_A_YEAR)
-      .times(hnd)
-      .toString()
-  ).div(WEI_DECIMALS);
-  model.rate2 = BigDecimal.fromString(
-    rate2Result.value
-      .times(SECONDS_IN_A_YEAR)
-      .times(hnd)
-      .toString()
-  ).div(WEI_DECIMALS);
-  model.type = PremiumModelType.Dynamic;
-
-  model.save();
-}
 
 export function handleLogSwap(event: LogSwap): void {
   let id = updateState(EventType.SwapCount, BigInt.fromI32(1), "");
@@ -1491,21 +759,11 @@ export function handleLogCoverMiningRewardArchived(
   cmReward.save();
 }
 
-export function handleLogCoverDistributed(event: LogCoverDistributed): void {
-  let aggPool = AggregatedPool.load(event.params.aggregatedPoolId.toString());
-
-  if (!aggPool) {
-    return;
-  }
-
-  let oldCoverage = aggPool.coverage;
-
-  aggPool.coverage = event.params.cover;
+function updateAggPoolCover(event: ethereum.Event, aggPool: AggregatedPool, newCover: BigInt): void {
+  aggPool.coverage = newCover;
   aggPool.rate = getAggPoolCurrentRate(aggPool);
 
   aggPool.save();
-
-  let market = updateMarketChargeState(event.address, aggPool.market, event.params.cover);
 
   addEvent(
     EventType.PoolExposure,
@@ -1514,13 +772,12 @@ export function handleLogCoverDistributed(event: LogCoverDistributed): void {
     aggPool.id,
     aggPool.coverage.toString()
   );
+}
 
-  updateState(
-    EventType.SystemExposure,
-    aggPool.coverage.minus(oldCoverage),
-    null,
-    market.capitalToken.toHexString()
-  );
+export function handleLogPremiumEarned(event: LogPremiumEarned): void {
+  const marketId = event.address.toHexString() + "-" + event.params.marketId.toString();
+
+  updateMarketChargeState(event.address, marketId, event);
 }
 
 export function handleLogMarketCharge(event: LogMarketCharge): void {
@@ -1796,19 +1053,11 @@ export function handleLogRiskPoolAddedToAggregatedPool(
     return;
   }
 
-  let markets = pool.markets;
-
-  markets.push(aggPool.market);
-
-  pool.markets = markets;
+  pool.markets = addToList(pool.markets, aggPool.market);
 
   pool.save();
 
-  let poolList = aggPool.poolList;
-
-  poolList.push(pool.id);
-
-  aggPool.poolList = poolList;
+  aggPool.poolList = addToList(aggPool.poolList, pool.id);
 
   aggPool.save();
 
@@ -1817,7 +1066,7 @@ export function handleLogRiskPoolAddedToAggregatedPool(
     event,
     aggPool.market,
     pool.id,
-    markets.length.toString()
+    aggPool.poolList.length.toString()
   );
 }
 
@@ -1966,6 +1215,18 @@ export function handleLogAggregatedPoolCreated(
   aggPool.poolList = [];
 
   aggPool.save();
+
+  let marketAggPool = MarketAggregatedPool.load(marketId);
+
+  if (!marketAggPool) {
+    marketAggPool = new MarketAggregatedPool(marketId);
+
+    marketAggPool.list = [];
+  }
+
+  marketAggPool.list = addToList(marketAggPool.list, aggPool.id);
+
+  marketAggPool.save();
 }
 
 export function handleLogAggregatedPoolRemoved(
@@ -1986,11 +1247,11 @@ function getAggPoolCurrentRate(aggPool: AggregatedPool): BigInt {
   return rate.reverted ? BigInt.fromI32(0) : rate.value;
 }
 
-function updateMarketChargeState(
+export function updateMarketChargeState(
   rpcContractAddress: Address,
   marketId: string,
-  actualCover: BigInt,
-): Market {
+  event: ethereum.Event,
+): void {
   let rpcContract = RiskPoolsControllerContract.bind(rpcContractAddress);
   let market = Market.load(marketId)!;
 
@@ -2000,13 +1261,51 @@ function updateMarketChargeState(
 
   const marketMeta = getMarketMeta(rpcContract, market.marketId);
 
+  const coverDetails = getMarketCoverDetails(rpcContract, market.marketId);
+
+  const oldCover = market.exposure;
+
   market.latestAccruedTimestamp = marketMeta.accrualBlockNumberPrior;
   market.exposure = marketMeta.desiredCover;
-  market.actualCover = actualCover;
+  market.actualCover = coverDetails.actualCover;
 
   market.save();
 
-  return market;
+  updateState(
+    EventType.SystemExposure,
+    market.exposure.minus(oldCover),
+    null,
+    market.capitalToken.toHexString()
+  );
+
+  const coverMap = new Map<string, BigInt>();
+
+  for (let i = 0; i < coverDetails.aggregatedPools.length; i++) {
+    coverMap.set(coverDetails.aggregatedPools[i].toString(), coverDetails.covers[i]);
+  }
+
+  const marketAggPool = MarketAggregatedPool.load(market.id);
+
+  if (!marketAggPool) {
+    return;
+  }
+
+  for (let i = 0; i < marketAggPool.list.length; i++) {
+    const aggPoolId = marketAggPool.list[i];
+    const aggPool = AggregatedPool.load(aggPoolId);
+
+    if (!aggPool) {
+      continue;
+    }
+
+    let poolCover = BigInt.fromI32(0);
+
+    if (coverMap.has(aggPoolId)) {
+      poolCover = coverMap.get(aggPoolId);
+    }
+
+    updateAggPoolCover(event, aggPool, poolCover);
+  }
 }
 
 function createPoolMarketRelation(

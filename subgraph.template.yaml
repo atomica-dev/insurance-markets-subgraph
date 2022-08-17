@@ -102,12 +102,12 @@ dataSources:
           handler: handleLogCoverMiningRewardArchived
         - event: LogArchivedRewardClaimed(uint256,uint256,uint256)
           handler: handleLogArchivedRewardClaimed
-        - event: LogCoverDistributed(uint256,uint256)
-          handler: handleLogCoverDistributed
         - event: LogMarketCharge(uint256,uint256,uint256,uint256,uint256,uint256,uint256)
           handler: handleLogMarketCharge
         - event: LogAggregatedPoolCreated(uint256,uint256,uint256,address)
           handler: handleLogAggregatedPoolCreated
+        - event: LogPremiumEarned(uint256,uint256,uint256)
+          handler: handleLogPremiumEarned
         - event: LogAggregatedPoolCapacityAllowanceUpdated(uint256,address,uint256)
           handler: handleLogAggregatedPoolCapacityAllowanceUpdated
         - event: LogAggregatedPoolRiskPoolCapacityLimitUpdated(uint256,address,uint256)
