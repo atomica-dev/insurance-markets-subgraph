@@ -78,7 +78,7 @@ export function updateMarketUserFee(userFee: UserFee, marketId: BigInt, delta: B
     marketUserFee.marketId = marketId;
     marketUserFee.amount = BigInt.fromI32(0);
     marketUserFee.claimedAmount = BigInt.fromI32(0);
-    marketUserFee.claimedIndicator = BigInt.fromI32(0);
+    marketUserFee.claimedIndicator = userFee.claimedAmount;
   }
 
   if (marketUserFee.claimedIndicator != userFee.claimedAmount) {

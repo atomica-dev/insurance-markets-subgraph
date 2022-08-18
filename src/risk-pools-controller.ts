@@ -514,8 +514,8 @@ function increaseFeeRecipientBalance(
     maf.recipientAddress = recipient;
     maf.tokenAddress = token;
     maf.balance = BigInt.fromI32(0);
-    maf.claimedBalance = af.claimedBalance;
-    maf.claimedIndicator = BigInt.fromI32(0);
+    maf.claimedBalance = BigInt.fromI32(0);
+    maf.claimedIndicator = af.claimedBalance;
   }
 
   if (maf.claimedIndicator != af.claimedBalance) {
@@ -837,7 +837,7 @@ export function handleLogMarketCharge(event: LogMarketCharge): void {
       mpf.pool = poolId;
       mpf.amount = BigInt.fromI32(0);
       mpf.claimedAmount = BigInt.fromI32(0);
-      mpf.claimedIndicator = BigInt.fromI32(0);
+      mpf.claimedIndicator = pf.claimedAmount;
     }
 
     if (mpf.claimedIndicator != pf.claimedAmount) {
