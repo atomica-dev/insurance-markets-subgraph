@@ -518,7 +518,7 @@ function increaseFeeRecipientBalance(
     maf.claimedIndicator = BigInt.fromI32(0);
   }
 
-  if (maf.claimedBalance != af.claimedBalance) {
+  if (maf.claimedIndicator != af.claimedBalance) {
     maf.claimedBalance = maf.claimedBalance.plus(maf.balance);
     maf.balance = amount;
     maf.claimedIndicator = af.claimedBalance;
@@ -840,7 +840,7 @@ export function handleLogMarketCharge(event: LogMarketCharge): void {
       mpf.claimedIndicator = BigInt.fromI32(0);
     }
 
-    if (mpf.claimedAmount != pf.claimedAmount) {
+    if (mpf.claimedIndicator != pf.claimedAmount) {
       mpf.claimedAmount = mpf.claimedAmount.plus(mpf.amount);
       mpf.amount = amount;
       mpf.claimedIndicator = pf.claimedAmount;
