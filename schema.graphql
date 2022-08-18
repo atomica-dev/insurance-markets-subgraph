@@ -181,6 +181,7 @@ type MarketAccruedFee @entity {
   tokenAddress: Bytes!
   balance: BigInt!
   claimedBalance: BigInt!
+  claimedIndicator: BigInt!
 }
 
 type FrontendOperator @entity {
@@ -357,6 +358,7 @@ type MarketPoolFee @entity {
   tokenId: Bytes!
   amount: BigInt!
   claimedAmount: BigInt!
+  claimedIndicator: BigInt!
   pool: Pool!
 }
 
@@ -383,6 +385,7 @@ type MarketUserFee @entity {
   marketId: BigInt!
   amount: BigInt!
   claimedAmount: BigInt!
+  claimedIndicator: BigInt!
 }
 
 type Reward @entity {

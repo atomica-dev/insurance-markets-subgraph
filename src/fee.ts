@@ -38,6 +38,8 @@ export function claimUserFee(token: Bytes, user: Bytes, type: string): void {
 
   userFee.claimedAmount = userFee.claimedAmount.plus(userFee.amount);
   userFee.amount = BigInt.fromI32(0);
+
+  userFee.save();
 }
 
 export function updateUserFee(token: Bytes, user: Bytes, type: string, delta: BigInt): UserFee {
@@ -76,11 +78,13 @@ export function updateMarketUserFee(userFee: UserFee, marketId: BigInt, delta: B
     marketUserFee.marketId = marketId;
     marketUserFee.amount = BigInt.fromI32(0);
     marketUserFee.claimedAmount = BigInt.fromI32(0);
+    marketUserFee.claimedIndicator = BigInt.fromI32(0);
   }
 
   if (marketUserFee.claimedAmount != userFee.claimedAmount) {
+    marketUserFee.claimedAmount = marketUserFee.claimedAmount.plus(marketUserFee.amount);
     marketUserFee.amount = delta;
-    marketUserFee.claimedAmount = userFee.claimedAmount;
+    marketUserFee.claimedIndicator = userFee.claimedAmount;
   } else {
     marketUserFee.amount = marketUserFee.amount.plus(delta);
   }
@@ -108,5 +112,4 @@ export function updateAllTypeFees(event: LogMarketCharge, token: Bytes, market: 
   const product = Product.load(market.product)!;
   const productManagerFee = updateUserFee(token, product.operator, getFeeTypeString(FeeType.ProductManager), event.params.productOperatorFee);
   updateMarketUserFee(productManagerFee, event.params.marketId, event.params.productOperatorFee);
-
 }

@@ -515,11 +515,13 @@ function increaseFeeRecipientBalance(
     maf.tokenAddress = token;
     maf.balance = BigInt.fromI32(0);
     maf.claimedBalance = af.claimedBalance;
+    maf.claimedIndicator = BigInt.fromI32(0);
   }
 
   if (maf.claimedBalance != af.claimedBalance) {
+    maf.claimedBalance = maf.claimedBalance.plus(maf.balance);
     maf.balance = amount;
-    maf.claimedBalance = af.claimedBalance;
+    maf.claimedIndicator = af.claimedBalance;
   } else {
     maf.balance = maf.balance.plus(amount);
   }
@@ -835,11 +837,13 @@ export function handleLogMarketCharge(event: LogMarketCharge): void {
       mpf.pool = poolId;
       mpf.amount = BigInt.fromI32(0);
       mpf.claimedAmount = BigInt.fromI32(0);
+      mpf.claimedIndicator = BigInt.fromI32(0);
     }
 
     if (mpf.claimedAmount != pf.claimedAmount) {
+      mpf.claimedAmount = mpf.claimedAmount.plus(mpf.amount);
       mpf.amount = amount;
-      mpf.claimedAmount = pf.claimedAmount;
+      mpf.claimedIndicator = pf.claimedAmount;
     } else {
       mpf.amount = mpf.amount.plus(amount);
     }
