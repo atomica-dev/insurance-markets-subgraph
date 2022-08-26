@@ -396,6 +396,7 @@ export function handleLogPolicyDeposit(event: LogPolicyDeposit): void {
   policy.save();
 
   updatePolicy(id, event.address, event);
+  updateAndLogState(EventType.MarketPolicyPremium, event,event.params.premiumFeeDeposit, policy.market);
 }
 
 function loadPolicyByRpc(rpcAddress: Address, policyId: BigInt): Policy | null {
@@ -421,6 +422,7 @@ export function handleLogPolicyWithdraw(event: LogPolicyWithdraw): void {
   policy.save();
 
   updatePolicy(policy.id, event.address, event);
+  updateAndLogState(EventType.MarketPolicyPremium, event,event.params.withdrawnPremiumFeeDeposit.neg(), policy.market);
 }
 
 function updatePolicy(
@@ -780,6 +782,7 @@ export function handleLogPremiumEarned(event: LogPremiumEarned): void {
   const marketId = event.address.toHexString() + "-" + event.params.marketId.toString();
 
   updateMarketChargeState(event.address, marketId, event);
+  updateAndLogState(EventType.MarketEarnedPremium, event, event.params.charge, marketId);
 }
 
 export function handleLogMarketCharge(event: LogMarketCharge): void {

@@ -223,13 +223,13 @@ type Policy @entity {
 
   initialMarketPremiumMulAccumulator: BigInt
 
-  premiumDeposit: BigInt
-  foAddress: Bytes
-  foFeeRate: BigInt
-  foFeeDeposit: BigInt
-  referralAddress: Bytes
-  referralFeeRate: BigInt
-  referralFeeDeposit: BigInt
+  premiumDeposit: BigInt!
+  foAddress: Bytes!
+  foFeeRate: BigInt!
+  foFeeDeposit: BigInt!
+  referralAddress: Bytes!
+  referralFeeRate: BigInt!
+  referralFeeDeposit: BigInt!
   permissionTokens: [PolicyPermissionToken!] @derivedFrom(field: "policy")
 }
 

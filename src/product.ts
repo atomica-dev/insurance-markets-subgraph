@@ -317,6 +317,8 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
     null,
     market.capitalToken.toHexString()
   );
+
+  updateAndLogState(EventType.MarketPolicyPremium, event, policy.premiumDeposit, policy.market);
 }
 
 enum UintProp {
