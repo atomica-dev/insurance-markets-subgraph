@@ -87,7 +87,7 @@ type Market @entity {
   details: String
   wording: String
   exposure: BigInt!
-  actualCover: BigInt
+  actualCover: BigInt!
   author: Bytes!
   marketFeeRecipient: Bytes!
   premiumToken: Bytes!
