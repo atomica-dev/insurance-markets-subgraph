@@ -215,13 +215,6 @@ function updatePolicyCoverage(
     policy.coverage.minus(oldCoverage),
     policy.market
   );
-
-  updateState(
-    EventType.SystemDesiredCoverage,
-    policy.coverage.minus(oldCoverage),
-    null,
-    market.capitalToken.toHexString()
-  );
 }
 
 export function handleLogPolicyCoverChanged(
@@ -1282,8 +1275,6 @@ export function updateMarketChargeState(
 
   const coverDetails = getMarketCoverDetails(rpcContract, market.marketId);
 
-  const oldCover = market.exposure;
-
   market.latestAccruedTimestamp = marketMeta.accrualBlockNumberPrior;
   market.exposure = marketMeta.desiredCover;
   market.actualCover = coverDetails.actualCover;
@@ -1296,13 +1287,6 @@ export function updateMarketChargeState(
     market.id,
     market.id,
     market.actualCover.toString()
-  );
-
-  updateState(
-    EventType.SystemExposure,
-    market.exposure.minus(oldCover),
-    null,
-    market.capitalToken.toHexString()
   );
 
   const coverMap = new Map<string, BigInt>();

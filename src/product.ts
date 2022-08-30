@@ -311,13 +311,6 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
     policy.market
   );
 
-  updateState(
-    EventType.SystemDesiredCoverage,
-    policy.coverage,
-    null,
-    market.capitalToken.toHexString()
-  );
-
   updateAndLogState(EventType.MarketPolicyPremium, event, policy.premiumDeposit, policy.market);
 }
 

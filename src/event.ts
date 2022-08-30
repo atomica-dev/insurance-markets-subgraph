@@ -18,12 +18,10 @@ export enum EventType {
   PolicyTransferred,
   PoolExposure,
   SystemPoolBalance,
-  SystemExposure,
   SystemPremiumEarned,
   SystemPoolCount,
   SystemStatus,
   SystemProductCount,
-  SystemDesiredCoverage,
   PoolEarnedPremium,
   PoolExternalBalance,
   ExternalPoolConnectionChanged,
@@ -71,8 +69,6 @@ function getEventTypeString(eventType: EventType): string {
       return "PoolExposure";
     case EventType.SystemPoolBalance:
       return "SystemPoolBalance";
-    case EventType.SystemExposure:
-      return "SystemExposure";
     case EventType.SystemPremiumEarned:
       return "SystemPremiumEarned";
     case EventType.SystemPoolCount:
@@ -81,8 +77,6 @@ function getEventTypeString(eventType: EventType): string {
       return "SystemStatus";
     case EventType.SystemProductCount:
       return "SystemProductCount";
-    case EventType.SystemDesiredCoverage:
-      return "SystemDesiredCoverage";
     case EventType.PoolEarnedPremium:
       return "PoolEarnedPremium";
     case EventType.PoolExternalBalance:
