@@ -764,8 +764,20 @@ export function handleLogCoverMiningRewardArchived(
 }
 
 function updateAggPoolCover(event: ethereum.Event, aggPool: AggregatedPool, newCover: BigInt): void {
+  const oldCoverage = aggPool.coverage;
   aggPool.coverage = newCover;
+  const oldRate = aggPool.rate;
   aggPool.rate = getAggPoolCurrentRate(aggPool);
+
+  const oldQuote = oldRate.times(oldCoverage);
+  const newQuote = aggPool.rate.times(aggPool.coverage);
+
+  updateAndLogState(
+    EventType.MarketQuote,
+    event,
+    newQuote.minus(oldQuote),
+    aggPool.market
+  );
 
   aggPool.save();
 
@@ -1277,6 +1289,14 @@ export function updateMarketChargeState(
   market.actualCover = coverDetails.actualCover;
 
   market.save();
+
+  addEvent(
+    EventType.MarketActualCover,
+    event,
+    market.id,
+    market.id,
+    market.actualCover.toString()
+  );
 
   updateState(
     EventType.SystemExposure,

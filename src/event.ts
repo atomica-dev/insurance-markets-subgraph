@@ -16,7 +16,6 @@ export enum EventType {
   ClaimStatusChanged,
   MarketLastChargeTotal,
   PolicyTransferred,
-  PoolPremiumRate,
   PoolExposure,
   SystemPoolBalance,
   SystemExposure,
@@ -34,6 +33,8 @@ export enum EventType {
   PoolMarketCount,
   PoolReBalance,
   MarketPolicyPremium,
+  MarketQuote,
+  MarketActualCover,
 }
 
 function getEventTypeString(eventType: EventType): string {
@@ -66,8 +67,6 @@ function getEventTypeString(eventType: EventType): string {
       return "MarketLastChargeTotal";
     case EventType.PolicyTransferred:
       return "PolicyTransferred";
-    case EventType.PoolPremiumRate:
-      return "PoolPremiumRate";
     case EventType.PoolExposure:
       return "PoolExposure";
     case EventType.SystemPoolBalance:
@@ -102,6 +101,10 @@ function getEventTypeString(eventType: EventType): string {
       return "PoolReBalance";
     case EventType.MarketPolicyPremium:
       return "MarketPolicyPremium";
+    case EventType.MarketQuote:
+      return "MarketQuote";
+    case EventType.MarketActualCover:
+      return "MarketActualCover";
   }
 
   return eventType.toString();
