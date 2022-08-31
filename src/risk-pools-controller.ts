@@ -996,8 +996,19 @@ export function handleLogRebalance(event: LogRebalance): void {
   pmRelation.balance = event.params.riskPoolCapacity;
   pmRelation.save();
 
+  const oldRate = aggPool.rate;
   aggPool.totalCapacity = event.params.totalAggregatedPoolCapacity;
   aggPool.rate = getAggPoolCurrentRate(aggPool);
+
+  const oldQuote = oldRate.times(aggPool.coverage);
+  const newQuote = aggPool.rate.times(aggPool.coverage);
+
+  updateAndLogState(
+    EventType.MarketQuote,
+    event,
+    newQuote.minus(oldQuote),
+    aggPool.market
+  );
 
   aggPool.save();
 
