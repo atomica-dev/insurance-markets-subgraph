@@ -90,8 +90,6 @@ function getEventTypeString(eventType: EventType): string {
       return "SystemPremiumEarned";
     case EventType.SystemPoolCount:
       return "SystemPoolCount";
-    case EventType.SystemStatus:
-      return "SystemStatus";
     case EventType.SystemProductCount:
       return "SystemProductCount";
     case EventType.PoolEarnedPremium:
