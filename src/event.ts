@@ -20,7 +20,6 @@ export enum EventType {
   SystemPoolBalance,
   SystemPremiumEarned,
   SystemPoolCount,
-  SystemStatus,
   SystemProductCount,
   PoolEarnedPremium,
   PoolExternalBalance,
@@ -33,6 +32,24 @@ export enum EventType {
   MarketPolicyPremium,
   MarketQuote,
   MarketActualCover,
+
+  //#region Governance
+
+  NewOperator,
+  SystemStatus,
+  Treasury,
+  GovernanceIncentiveFee,
+  LiquidationGasUsage,
+  SolvencyMultiplier,
+  MinPolicyDepositMultiplier,
+  LiquidationIncentive,
+  ProductCreatorsAllowlistId,
+  DefaultPayoutRequester,
+  DefaultPayoutApprover,
+  MaxProductOperatorIncentiveFee,
+  MaxMarketOperatorIncentiveFee,
+
+  //#endregion
 }
 
 function getEventTypeString(eventType: EventType): string {
@@ -73,8 +90,6 @@ function getEventTypeString(eventType: EventType): string {
       return "SystemPremiumEarned";
     case EventType.SystemPoolCount:
       return "SystemPoolCount";
-    case EventType.SystemStatus:
-      return "SystemStatus";
     case EventType.SystemProductCount:
       return "SystemProductCount";
     case EventType.PoolEarnedPremium:
@@ -99,6 +114,37 @@ function getEventTypeString(eventType: EventType): string {
       return "MarketQuote";
     case EventType.MarketActualCover:
       return "MarketActualCover";
+
+    //#region Governance
+
+    case EventType.NewOperator:
+      return "NewOperator";
+    case EventType.SystemStatus:
+      return "SystemStatus";
+    case EventType.Treasury:
+      return "Treasury";
+    case EventType.GovernanceIncentiveFee:
+      return "GovernanceIncentiveFee";
+    case EventType.LiquidationGasUsage:
+      return "LiquidationGasUsage";
+    case EventType.SolvencyMultiplier:
+      return "SolvencyMultiplier";
+    case EventType.MinPolicyDepositMultiplier:
+      return "MinPolicyDepositMultiplier";
+    case EventType.LiquidationIncentive:
+      return "LiquidationIncentive";
+    case EventType.ProductCreatorsAllowlistId:
+      return "ProductCreatorsAllowlistId";
+    case EventType.DefaultPayoutRequester:
+      return "DefaultPayoutRequester";
+    case EventType.DefaultPayoutApprover:
+      return "DefaultPayoutApprover";
+    case EventType.MaxProductOperatorIncentiveFee:
+      return "MaxProductOperatorIncentiveFee";
+    case EventType.MaxMarketOperatorIncentiveFee:
+      return "MaxMarketOperatorIncentiveFee";
+
+    //#endregion
   }
 
   return eventType.toString();
@@ -127,9 +173,9 @@ export function getState(
 export function updateState(
   type: EventType,
   delta: BigInt,
-  marketId: string|null,
+  marketId: string | null,
   key: string = "",
-  newValue: BigInt|null = null
+  newValue: BigInt | null = null
 ): BigInt {
   let m: string = marketId ? marketId : "";
   let state = getState(type, m, key);
@@ -149,9 +195,9 @@ export function updateAndLogState(
   type: EventType,
   event: ethereum.Event,
   delta: BigInt,
-  marketId: string|null,
+  marketId: string | null,
   key: string = "",
-  newValue: BigInt|null = null
+  newValue: BigInt | null = null
 ): void {
   addEvent(
     type,
@@ -166,13 +212,13 @@ export function updateAndLogState(
 export function addEvent(
   type: EventType,
   event: ethereum.Event,
-  marketId: string|null,
+  marketId: string | null,
   key: string,
-  value1: string|null = null,
-  value2: string|null = null,
-  value3: string|null = null,
-  value4: string|null = null,
-  value5: string|null = null
+  value1: string | null = null,
+  value2: string | null = null,
+  value3: string | null = null,
+  value4: string | null = null,
+  value5: string | null = null
 ): void {
   let m: string = marketId ? marketId : "";
 
