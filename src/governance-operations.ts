@@ -14,11 +14,14 @@ import { addOraclePair } from "./rate-oracle";
 import { Address } from "@graphprotocol/graph-ts";
 import { addUniqueToList, ETH_ADDRESS, filterNotEqual } from "./utils";
 import { guessRateModelType } from "./premium-rate-model";
+import { addEvent, EventType } from "./event";
 
 export const GovernanceOperationMap = new Map<
   GovernanceLogType,
   (event: LogGovernance) => void
 >();
+
+//#region  Registrations
 
 GovernanceOperationMap.set(
   GovernanceLogType.NewOperator,
@@ -187,11 +190,21 @@ GovernanceOperationMap.set(
   handleSettlementDiscount
 );
 
+//#endregion
+
 function handleUpdateNewOperator(event: LogGovernance): void {
   let config = getSystemConfig(event.address.toHexString());
 
   config.operator = event.params.param1;
   config.save();
+
+  addEvent(
+    EventType.NewOperator,
+    event,
+    null,
+    config.id,
+    event.params.param1.toHexString()
+  );
 }
 
 function handleUpdateNewAllowanceManager(event: LogGovernance): void {
@@ -206,6 +219,14 @@ function handleUpdateTreasury(event: LogGovernance): void {
 
   config.treasury = event.params.param1;
   config.save();
+
+  addEvent(
+    EventType.Treasury,
+    event,
+    null,
+    config.id,
+    event.params.param1.toHexString()
+  );
 }
 
 function handleUpdateDefaultPayoutRequester(event: LogGovernance): void {
@@ -213,6 +234,14 @@ function handleUpdateDefaultPayoutRequester(event: LogGovernance): void {
 
   config.defaultPayoutRequester = event.params.param1;
   config.save();
+
+  addEvent(
+    EventType.DefaultPayoutRequester,
+    event,
+    null,
+    config.id,
+    event.params.param1.toHexString()
+  );
 }
 
 function handleUpdateDefaultPayoutApprover(event: LogGovernance): void {
@@ -220,6 +249,14 @@ function handleUpdateDefaultPayoutApprover(event: LogGovernance): void {
 
   config.defaultPayoutApprover = event.params.param1;
   config.save();
+
+  addEvent(
+    EventType.DefaultPayoutApprover,
+    event,
+    null,
+    config.id,
+    event.params.param1.toHexString()
+  );
 }
 
 function handleUpdateProductCreatorsAllowlistId(event: LogGovernance): void {
@@ -227,6 +264,14 @@ function handleUpdateProductCreatorsAllowlistId(event: LogGovernance): void {
 
   config.productCreatorsAllowlistId = event.params.param3;
   config.save();
+
+  addEvent(
+    EventType.ProductCreatorsAllowlistId,
+    event,
+    null,
+    config.id,
+    event.params.param3.toString()
+  );
 }
 
 function handleUpdateGovernanceIncentiveFee(event: LogGovernance): void {
@@ -234,6 +279,14 @@ function handleUpdateGovernanceIncentiveFee(event: LogGovernance): void {
 
   config.governanceFee = event.params.param3;
   config.save();
+
+  addEvent(
+    EventType.GovernanceIncentiveFee,
+    event,
+    null,
+    config.id,
+    event.params.param3.toString()
+  );
 }
 
 function handleUpdateMaxProductOperatorIncentiveFee(
@@ -243,6 +296,14 @@ function handleUpdateMaxProductOperatorIncentiveFee(
 
   config.maxProductOperatorIncentiveFee = event.params.param3;
   config.save();
+
+  addEvent(
+    EventType.MaxProductOperatorIncentiveFee,
+    event,
+    null,
+    config.id,
+    event.params.param3.toString()
+  );
 }
 
 function handleUpdateMaxMarketOperatorIncentiveFee(event: LogGovernance): void {
@@ -259,13 +320,24 @@ function handleUpdateMaxMarketOperatorIncentiveFee(event: LogGovernance): void {
 
   config.maxMarketOperatorIncentiveFee = event.params.param3;
   config.save();
+
+  addEvent(
+    EventType.MaxMarketOperatorIncentiveFee,
+    event,
+    null,
+    config.id,
+    event.params.param3.toString()
+  );
 }
 
 function handleUpdateExchangeRateOracle(event: LogGovernance): void {
   let config = getSystemConfig(event.address.toHexString());
 
   if (event.params.param5) {
-    config.rateOracleList = addUniqueToList(config.rateOracleList, event.params.param1.toHexString());
+    config.rateOracleList = addUniqueToList(
+      config.rateOracleList,
+      event.params.param1.toHexString()
+    );
   } else {
     config.rateOracleList = filterNotEqual(
       config.rateOracleList,
@@ -280,7 +352,10 @@ function handleUpdatePremiumRateModel(event: LogGovernance): void {
   let config = getSystemConfig(event.address.toHexString());
 
   if (event.params.param5) {
-    config.premiumRateModelList = addUniqueToList(config.premiumRateModelList, event.params.param1.toHexString());
+    config.premiumRateModelList = addUniqueToList(
+      config.premiumRateModelList,
+      event.params.param1.toHexString()
+    );
 
     guessRateModelType(event.params.param1);
   } else {
@@ -297,7 +372,10 @@ function handleUpdateCoverAdjusterOracle(event: LogGovernance): void {
   let config = getSystemConfig(event.address.toHexString());
 
   if (event.params.param5) {
-    config.coverAdjusterOracleList = addUniqueToList(config.coverAdjusterOracleList, event.params.param1.toHexString());
+    config.coverAdjusterOracleList = addUniqueToList(
+      config.coverAdjusterOracleList,
+      event.params.param1.toHexString()
+    );
 
     CoverAdjusterTemplate.create(event.params.param1);
   } else {
@@ -314,7 +392,10 @@ function handleSyncOracle(event: LogGovernance): void {
   let config = getSystemConfig(event.address.toHexString());
 
   if (event.params.param5) {
-    config.syncOracleList = addUniqueToList(config.syncOracleList, event.params.param1.toHexString());
+    config.syncOracleList = addUniqueToList(
+      config.syncOracleList,
+      event.params.param1.toHexString()
+    );
   } else {
     config.syncOracleList = filterNotEqual(
       config.syncOracleList,
@@ -344,7 +425,10 @@ function handleUpdateExternalProduct(event: LogGovernance): void {
   if (true) {
     // event.params.param5) { Until the issue in contract fixed we can add ext. products only.
 
-    config.externalProductList = addUniqueToList(config.externalProductList, event.params.param1.toHexString());
+    config.externalProductList = addUniqueToList(
+      config.externalProductList,
+      event.params.param1.toHexString()
+    );
   } else {
     config.externalProductList = filterNotEqual(
       config.externalProductList,
@@ -512,6 +596,14 @@ function handleUpdateLiquidationGasUsage(event: LogGovernance): void {
 
   config.liquidationGasUsage = event.params.param3;
   config.save();
+
+  addEvent(
+    EventType.LiquidationGasUsage,
+    event,
+    null,
+    config.id,
+    event.params.param3.toString()
+  );
 }
 
 function handleUpdateLiquidationIncentive(event: LogGovernance): void {
@@ -519,6 +611,14 @@ function handleUpdateLiquidationIncentive(event: LogGovernance): void {
 
   config.liquidationIncentive = event.params.param3;
   config.save();
+
+  addEvent(
+    EventType.LiquidationIncentive,
+    event,
+    null,
+    config.id,
+    event.params.param3.toString()
+  );
 }
 
 function handleUpdateSolvencyMultiplier(event: LogGovernance): void {
@@ -526,6 +626,14 @@ function handleUpdateSolvencyMultiplier(event: LogGovernance): void {
 
   config.solvencyMultiplier = event.params.param3;
   config.save();
+
+  addEvent(
+    EventType.SolvencyMultiplier,
+    event,
+    null,
+    config.id,
+    event.params.param3.toString()
+  );
 }
 
 function handleUpdateMinPolicyDepositMultiplier(event: LogGovernance): void {
@@ -533,6 +641,14 @@ function handleUpdateMinPolicyDepositMultiplier(event: LogGovernance): void {
 
   config.minPolicyDepositMultiplier = event.params.param3;
   config.save();
+
+  addEvent(
+    EventType.MinPolicyDepositMultiplier,
+    event,
+    null,
+    config.id,
+    event.params.param3.toString()
+  );
 }
 
 function handleNewFrontendOperator(event: LogGovernance): void {
