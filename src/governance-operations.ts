@@ -346,6 +346,16 @@ function handleUpdateExchangeRateOracle(event: LogGovernance): void {
   }
 
   config.save();
+
+  addEvent(
+    event.params.param5
+      ? EventType.RegisterExchangeRateOracle
+      : EventType.DeregisterExchangeRateOracle,
+    event,
+    null,
+    config.id,
+    event.params.param1.toHexString()
+  );
 }
 
 function handleUpdatePremiumRateModel(event: LogGovernance): void {
@@ -386,6 +396,16 @@ function handleUpdateCoverAdjusterOracle(event: LogGovernance): void {
   }
 
   config.save();
+
+  addEvent(
+    event.params.param5
+      ? EventType.RegisterCoverAdjusterOracle
+      : EventType.DeregisterCoverAdjusterOracle,
+    event,
+    null,
+    config.id,
+    event.params.param1.toHexString()
+  );
 }
 
 function handleSyncOracle(event: LogGovernance): void {
@@ -404,6 +424,16 @@ function handleSyncOracle(event: LogGovernance): void {
   }
 
   config.save();
+
+  addEvent(
+    event.params.param5
+      ? EventType.RegisterSyncOracle
+      : EventType.DeregisterSyncOracle,
+    event,
+    null,
+    config.id,
+    event.params.param1.toHexString()
+  );
 }
 
 function handleUpdateMarketCoverAdjusterOracle(event: LogGovernance): void {
