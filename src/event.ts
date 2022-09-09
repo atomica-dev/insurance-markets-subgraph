@@ -50,6 +50,17 @@ export enum EventType {
   MaxMarketOperatorIncentiveFee,
 
   //#endregion
+
+  //#region Oracle
+
+  RegisterCoverAdjusterOracle,
+  DeregisterCoverAdjusterOracle,
+  RegisterSyncOracle,
+  DeregisterSyncOracle,
+  RegisterExchangeRateOracle,
+  DeregisterExchangeRateOracle,
+
+  //#endregion
 }
 
 function getEventTypeString(eventType: EventType): string {
@@ -143,6 +154,23 @@ function getEventTypeString(eventType: EventType): string {
       return "MaxProductOperatorIncentiveFee";
     case EventType.MaxMarketOperatorIncentiveFee:
       return "MaxMarketOperatorIncentiveFee";
+
+    //#endregion
+
+    //#region Oracle
+
+    case EventType.RegisterCoverAdjusterOracle:
+      return "RegisterCoverAdjusterOracle";
+    case EventType.DeregisterCoverAdjusterOracle:
+      return "DeregisterCoverAdjusterOracle";
+    case EventType.RegisterSyncOracle:
+      return "RegisterSyncOracle";
+    case EventType.DeregisterSyncOracle:
+      return "DeregisterSyncOracle";
+    case EventType.RegisterExchangeRateOracle:
+      return "RegisterExchangeRateOracle";
+    case EventType.DeregisterExchangeRateOracle:
+      return "DeregisterExchangeRateOracle";
 
     //#endregion
   }
