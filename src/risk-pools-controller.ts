@@ -38,6 +38,7 @@ import {
   LogRiskPoolManagerFeeChanged,
   LogRiskPoolManagerFeeRecipientChanged,
   LogCoverMiningRewardArchived,
+  LogCoverMiningRewardDeactivated,
   LogArchivedRewardClaimed,
   LogWithdrawAccruedMarketFee,
   LogPremiumEarned,
@@ -663,8 +664,7 @@ export function handleLogNewReward(event: LogNewReward): void {
   cmReward.ratePerSecond = reward.rate;
   cmReward.updatedAt = event.block.timestamp;
   cmReward.rewardPerToken = reward.rewardPerShareStored;
-  cmReward.cid = reward.sid;
-  cmReward.rootHash = reward.rootHash;
+  cmReward.cid = reward.cid;
 
   cmReward.save();
 }
@@ -752,6 +752,21 @@ export function handleLogCoverMiningRewardArchived(
 
   cmReward.isArchived = true;
   cmReward.rootHash = event.params.rootHash;
+  cmReward.dataUrl = event.params.proofsCid;
+
+  cmReward.save();
+}
+
+export function handleLogCoverMiningRewardDeactivated(
+  event: LogCoverMiningRewardDeactivated
+): void {
+  let cmReward = CoverMiningReward.load(event.params.rewardId.toString());
+
+  if (!cmReward) {
+    return;
+  }
+
+  cmReward.isArchived = true;
 
   cmReward.save();
 }

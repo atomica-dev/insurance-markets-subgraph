@@ -98,7 +98,9 @@ dataSources:
           handler: handleLogIncreaseRewardAmount
         - event: LogRewardClaimed(uint256,uint256,uint256)
           handler: handleLogRewardClaimed
-        - event: LogCoverMiningRewardArchived(uint256,bytes32)
+        - event: LogCoverMiningRewardDeactivated(uint256)
+          handler: handleLogCoverMiningRewardDeactivated
+        - event: LogCoverMiningRewardArchived(uint256,bytes32,string)
           handler: handleLogCoverMiningRewardArchived
         - event: LogArchivedRewardClaimed(uint256,uint256,uint256)
           handler: handleLogArchivedRewardClaimed

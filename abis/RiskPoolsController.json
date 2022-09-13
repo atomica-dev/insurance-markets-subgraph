@@ -215,11 +215,31 @@
                 "internalType": "bytes32",
                 "name": "rootHash",
                 "type": "bytes32"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "proofsCid",
+                "type": "string"
             }
         ],
         "name": "LogCoverMiningRewardArchived",
         "type": "event",
-        "signature": "0x7ddc0a46aa218fbca8807ca96db6aa4beb13fc718a7931d647ff3cf2aaf1a994"
+        "signature": "0xe2061998943218d797099fe49883467e337618f02d66df0dee9ef2ffc55275d4"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "rewardId",
+                "type": "uint256"
+            }
+        ],
+        "name": "LogCoverMiningRewardDeactivated",
+        "type": "event",
+        "signature": "0xc3aac8263f7c8790ea33f7a080553c810f914b85f31ce919279d1c4374e86d9a"
     },
     {
         "anonymous": false,
@@ -1731,25 +1751,25 @@
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "marketId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "index",
+                "name": "rewardId",
                 "type": "uint256"
             },
             {
                 "internalType": "bytes32",
                 "name": "rootHash",
                 "type": "bytes32"
+            },
+            {
+                "internalType": "string",
+                "name": "proofsCid",
+                "type": "string"
             }
         ],
         "name": "archiveCoverMiningReward",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xaf826c2f"
+        "signature": "0xb8f5b868"
     },
     {
         "inputs": [
@@ -2187,7 +2207,7 @@
             },
             {
                 "internalType": "string",
-                "name": "sid",
+                "name": "cid",
                 "type": "string"
             }
         ],
@@ -2611,6 +2631,25 @@
         "type": "function",
         "constant": true,
         "signature": "0xf936941c"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "index",
+                "type": "uint256"
+            }
+        ],
+        "name": "deactivateCoverMiningReward",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x9e892f50"
     },
     {
         "inputs": [
@@ -4764,7 +4803,7 @@
             },
             {
                 "internalType": "bool",
-                "name": "archived",
+                "name": "deactivated",
                 "type": "bool"
             },
             {
@@ -4774,7 +4813,12 @@
             },
             {
                 "internalType": "string",
-                "name": "sid",
+                "name": "cid",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "proofsCid",
                 "type": "string"
             }
         ],

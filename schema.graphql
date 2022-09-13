@@ -149,6 +149,7 @@ type CoverMiningReward @entity {
   isArchived: Boolean!
   cid: String
   rootHash: Bytes
+  dataUrl: String
 }
 
 type CoverMiningRewardClaim @entity {

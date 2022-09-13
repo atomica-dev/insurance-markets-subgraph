@@ -345,7 +345,7 @@ export class CCoverReward {
   rewardPerShareStored: BigInt;
   archived: boolean;
   rootHash: Bytes;
-  sid: string;
+  cid: string;
 }
 
 export function getCoverReward(
@@ -366,6 +366,6 @@ export function getCoverReward(
     rewardPerShareStored: d.value8,
     archived: d.value9,
     rootHash: d.value10,
-    sid: d.value11,
+    cid: d.value11,
   };
 }
