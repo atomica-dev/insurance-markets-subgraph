@@ -61,6 +61,13 @@ export enum EventType {
   DeregisterExchangeRateOracle,
 
   //#endregion
+
+  //#region PremiumRate
+
+  RegisterPremiumRateModel,
+  DeregisterPremiumRateModel,
+
+  //#endregion
 }
 
 function getEventTypeString(eventType: EventType): string {
@@ -171,6 +178,15 @@ function getEventTypeString(eventType: EventType): string {
       return "RegisterExchangeRateOracle";
     case EventType.DeregisterExchangeRateOracle:
       return "DeregisterExchangeRateOracle";
+
+    //#endregion
+
+    //#region Premium rate model
+
+    case EventType.DeregisterPremiumRateModel:
+      return "DeregisterPremiumRateModel";
+    case EventType.RegisterPremiumRateModel:
+      return "RegisterPremiumRateModel";
 
     //#endregion
   }
