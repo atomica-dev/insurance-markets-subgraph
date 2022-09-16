@@ -166,6 +166,7 @@ export function createPool(
     ? pContract.try_symbol().value
     : "";
   pool.managerFee = riskPoolData.managerFee;
+  pool.agreement = riskPoolData.agreement;
   pool.capitalTokenDecimals = !btContract.try_decimals().reverted
     ? btContract.try_decimals().value
     : 18;

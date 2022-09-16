@@ -183,6 +183,7 @@ export class CRiskPoolData {
   managerFeeRecipient: Address;
   nominatedToken: Address;
   managerFee: BigInt;
+  agreement: string;
 }
 
 export function getRiskPoolData(
@@ -195,7 +196,8 @@ export function getRiskPoolData(
     manager: d.value0,
     managerFeeRecipient: d.value1,
     nominatedToken: d.value2,
-    managerFee: d.value3
+    managerFee: d.value3,
+    agreement: d.value4,
   };
 }
 
@@ -343,9 +345,10 @@ export class CCoverReward {
   rate: BigInt;
   lastUpdateTime: BigInt;
   rewardPerShareStored: BigInt;
-  archived: boolean;
+  deactivated: boolean;
   rootHash: Bytes;
   cid: string;
+  proofsCid: string;
 }
 
 export function getCoverReward(
@@ -364,8 +367,9 @@ export function getCoverReward(
     rate: d.value6,
     lastUpdateTime: d.value7,
     rewardPerShareStored: d.value8,
-    archived: d.value9,
+    deactivated: d.value9,
     rootHash: d.value10,
     cid: d.value11,
+    proofsCid: d.value12,
   };
 }

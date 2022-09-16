@@ -289,6 +289,7 @@ type Pool @entity {
   manager: Bytes!
   managerFee: BigInt!
   feeRecipient: Bytes!
+  agreement: String!
 }
 
 type FeeRecipientPool @entity {
