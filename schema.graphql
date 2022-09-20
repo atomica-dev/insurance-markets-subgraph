@@ -219,7 +219,7 @@ type Policy @entity {
   expired: Boolean
   waitingPeriod: BigInt
   claims: [Claim!] @derivedFrom(field: "policy")
-  frontendOperator: FrontendOperator!
+  frontendOperator: FrontendOperator
   updatedAt: BigInt
   liquidatedAt: BigInt
   liquidatedBy: String
