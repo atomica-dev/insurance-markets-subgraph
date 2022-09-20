@@ -25,13 +25,7 @@ import {
   updateAndLogState,
   updateState,
 } from "./event";
-import {
-  Address,
-  BigInt,
-  Bytes,
-  ethereum,
-  log,
-} from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, ethereum, log } from "@graphprotocol/graph-ts";
 import { addOraclePair } from "./rate-oracle";
 import {
   getMarket,
@@ -41,7 +35,12 @@ import {
   getRiskPoolData,
   getRiskTowerLevel,
 } from "./contract-mapper";
-import { addUniqueToList, ETH_ADDRESS, filterNotEqual, ZERO_ADDRESS } from "./utils";
+import {
+  addUniqueToList,
+  ETH_ADDRESS,
+  filterNotEqual,
+  ZERO_ADDRESS,
+} from "./utils";
 import { updateMarketChargeState } from "./risk-pools-controller";
 
 export function handleLogNewMarket(event: LogNewMarket): void {
@@ -88,8 +87,9 @@ export function handleLogNewMarket(event: LogNewMarket): void {
   market.isEnabled = rpcContract.marketStatus(marketId) == 0;
 
   market.policyBuyerAllowListId = rpcContract.policyBuyerAllowlistId(marketId);
-  market.premiumMulAccumulator =
-    rpcContract.marketsPremiumMulAccumulators(marketId);
+  market.premiumMulAccumulator = rpcContract.marketsPremiumMulAccumulators(
+    marketId
+  );
   market.createdAt = event.block.timestamp;
 
   market.status = StatusEnum.Opened;
@@ -130,17 +130,15 @@ export function handleLogNewMarket(event: LogNewMarket): void {
     level.save();
 
     levelNo++;
-    currentLevel = getRiskTowerLevel(rpcContract, currentLevel).nextRiskTowerLevelId;
+    currentLevel = getRiskTowerLevel(rpcContract, currentLevel)
+      .nextRiskTowerLevelId;
   }
 
   updateAndLogState(EventType.TotalMarkets, event, BigInt.fromI32(1), null);
   addEvent(EventType.NewMarket, event, id, market.title);
 }
 
-export function createPool(
-  poolId: Address,
-  event: ethereum.Event
-): void {
+export function createPool(poolId: Address, event: ethereum.Event): void {
   let pool = new Pool(poolId.toHexString());
   let pContract = PoolContract.bind(poolId);
   let btContract = PoolContract.bind(pContract.assetToken()); // It is also ERC20
@@ -202,7 +200,11 @@ export function createPool(
   updateState(EventType.SystemPoolCount, BigInt.fromI32(1), null);
 }
 
-export function updateFeeRecipientRelation(feeRecipientId: Bytes, riskPoolId: Bytes, oldFeeRecipient: Bytes | null = null): void {
+export function updateFeeRecipientRelation(
+  feeRecipientId: Bytes,
+  riskPoolId: Bytes,
+  oldFeeRecipient: Bytes | null = null
+): void {
   let id = feeRecipientId.toHexString();
   let frp = FeeRecipientPool.load(id);
 
@@ -232,16 +234,21 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
   let policyId = event.params.policyId;
   let productContract = ProductContract.bind(event.address);
   let rpcAddress = productContract.riskPoolsController();
-  let rpcContract = RiskPoolsControllerContract.bind(
-    rpcAddress
-  );
+  let rpcContract = RiskPoolsControllerContract.bind(rpcAddress);
   let piContract = PolicyTokenIssuerContract.bind(
     rpcContract.policyTokenIssuer()
   );
   let policyInfo = getPolicy(rpcContract, policyId);
   let marketInfo = getMarket(rpcContract, event.params.marketId);
-  let policyBalance = rpcContract.policyBalance(policyId, marketInfo.premiumToken);
-  let depositInfo = getPolicyDeposit(rpcContract, policyId, marketInfo.premiumToken);
+  let policyBalance = rpcContract.policyBalance(
+    policyId,
+    marketInfo.premiumToken
+  );
+  let depositInfo = getPolicyDeposit(
+    rpcContract,
+    policyId,
+    marketInfo.premiumToken
+  );
 
   let id =
     rpcContract.policyTokenIssuer().toHexString() + "-" + policyId.toString();
@@ -261,15 +268,14 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
 
   policy.marketId = policyInfo.marketId;
   policy.market =
-    rpcAddress.toHexString() +
-    "-" +
-    policyInfo.marketId.toString();
+    rpcAddress.toHexString() + "-" + policyInfo.marketId.toString();
   policy.validUntil = policyInfo.validUntil;
   policy.validFrom = event.block.timestamp;
   policy.coverageChanged = policyInfo.coverChanged;
   policy.issuer = policyInfo.issuer.toHexString();
   policy.owner = piContract.ownerOf(policyId).toHexString();
   policy.waitingPeriod = policyInfo.waitingPeriod;
+  policy.frontendOperator = policyInfo.frontendOperator.toHexString();
   policy.foAddress = policyInfo.frontendOperator;
   policy.foFeeRate = policyInfo.frontendOperatorFee;
   policy.referralAddress = policyInfo.referral;
@@ -286,7 +292,9 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
 
   let market = Market.load(policy.market)!;
 
-  if (getState(EventType.TotalPolicies, policy.market).value == BigInt.fromI32(0)) {
+  if (
+    getState(EventType.TotalPolicies, policy.market).value == BigInt.fromI32(0)
+  ) {
     // Until contract issue is fixed it's required to call update coverage manually.
     updateMarketChargeState(rpcAddress, policy.market, event);
   }
@@ -312,7 +320,12 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
     policy.market
   );
 
-  updateAndLogState(EventType.MarketPolicyPremium, event, policy.premiumDeposit, policy.market);
+  updateAndLogState(
+    EventType.MarketPolicyPremium,
+    event,
+    policy.premiumDeposit,
+    policy.market
+  );
 }
 
 enum UintProp {

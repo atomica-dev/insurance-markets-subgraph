@@ -376,6 +376,16 @@ function handleUpdatePremiumRateModel(event: LogGovernance): void {
   }
 
   config.save();
+
+  addEvent(
+    event.params.param5
+      ? EventType.RegisterPremiumRateModel
+      : EventType.DeregisterPremiumRateModel,
+    event,
+    null,
+    config.id,
+    event.params.param1.toHexString()
+  );
 }
 
 function handleUpdateCoverAdjusterOracle(event: LogGovernance): void {
