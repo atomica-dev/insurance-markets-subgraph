@@ -105,7 +105,7 @@ type Market @entity {
   settlementDiscount: BigInt
   riskTowerRoot: BigInt
 
-  rewards: [CoverMiningReward!]!  @derivedFrom(field: "market")
+  rewards: [CoverMiningReward!]! @derivedFrom(field: "market")
   riskTower: [RiskTowerLevel!]! @derivedFrom(field: "market")
 }
 
@@ -128,7 +128,8 @@ type AggregatedPool @entity {
   riskTowerLevel: RiskTowerLevel!
   premiumRateModel: Bytes!
   market: Market!
-  poolMarketRelations: [PoolMarketRelation!]! @derivedFrom(field: "aggregatedPool")
+  poolMarketRelations: [PoolMarketRelation!]!
+    @derivedFrom(field: "aggregatedPool")
   poolList: [String!]!
   rate: BigInt!
   totalCapacity: BigInt!
@@ -218,6 +219,7 @@ type Policy @entity {
   expired: Boolean
   waitingPeriod: BigInt
   claims: [Claim!] @derivedFrom(field: "policy")
+  frontendOperator: FrontendOperator!
   updatedAt: BigInt
   liquidatedAt: BigInt
   liquidatedBy: String
@@ -293,7 +295,7 @@ type Pool @entity {
 
 type FeeRecipientPool @entity {
   """
-    id is feeRecipientAddress
+  id is feeRecipientAddress
   """
   id: ID!
   poolList: [String!]!
