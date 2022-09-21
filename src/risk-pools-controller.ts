@@ -826,11 +826,7 @@ export function handleLogMarketCharge(event: LogMarketCharge): void {
     }
 
     let poolPremium = pmRelation.balance
-      .times(
-        event.params.premium.minus(
-        event.params.governanceFee).minus(
-        event.params.marketOparatorFee).minus(
-        event.params.productOperatorFee))
+      .times(event.params.premium)
       .div(aggPool.totalCapacity);
 
     let pf = PoolFee.load(id);
