@@ -572,6 +572,7 @@ export function handleLogPayout(event: LogPayout): void {
   let p = new Payout(id.toString());
 
   p.marketId = event.params.marketId;
+  p.market = event.address.toHexString() + "-" + event.params.marketId.toString();
   p.capitalToken = event.params.capitalToken;
   p.amount = event.params.paidoutAmount;
   p.recipient = event.params.recipient;

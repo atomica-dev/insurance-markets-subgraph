@@ -526,6 +526,7 @@ type Swap @entity {
 type Payout @entity {
   id: ID!
   marketId: BigInt
+  market: Market!
   recipient: Bytes
   capitalToken: Bytes
   amount: BigInt
