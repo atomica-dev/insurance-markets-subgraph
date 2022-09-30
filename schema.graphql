@@ -250,7 +250,6 @@ type PoolMarketRelation @entity {
 
 type Pool @entity {
   id: ID!
-  productId: String
   capitalTokenAddress: Bytes!
   nominatedTokenAddress: Bytes
   name: String
