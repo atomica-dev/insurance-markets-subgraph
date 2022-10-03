@@ -351,7 +351,7 @@ enum AddressProp {
 export function handleLogUintPropUpdated(event: LogUintPropUpdated): void {
   let product = Product.load(event.address.toHexString())!;
 
-  let eventType: EventType | undefined = undefined;
+  let eventType: EventType = -1;
 
   switch (event.params.prop) {
     case UintProp.WithdrawalDelay:
@@ -381,7 +381,7 @@ export function handleLogUintPropUpdated(event: LogUintPropUpdated): void {
 
   product.save();
 
-  if (eventType) {
+  if (eventType >= 0) {
     addEvent(
       eventType,
       event,
@@ -397,7 +397,7 @@ export function handleLogAddressPropUpdated(
 ): void {
   let product = Product.load(event.address.toHexString())!;
 
-  let eventType: EventType | undefined = undefined;
+  let eventType: EventType = -1;
 
   switch (event.params.prop) {
     case AddressProp.DefaultRatesOracle:
@@ -446,7 +446,7 @@ export function handleLogAddressPropUpdated(
 
   product.save();
 
-  if (eventType) {
+  if (eventType >= 0) {
     addEvent(
       eventType,
       event,
