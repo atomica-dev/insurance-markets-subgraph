@@ -1,8 +1,8 @@
 {
   "environment": {
     "srm-dev": {
-      "defaultStartBlock": 11208083,
-      "RiskPoolsController": "0x46d9Ae24001Fa817498863459F0434329eD6A341"
+      "defaultStartBlock": 11486790,
+      "RiskPoolsController": "0x795A6Dd90A308454BCF67c9eeD503ec8396BfE34"
     },
     "srm-staging": {
       "defaultStartBlock": 11442670,
@@ -52,12 +52,12 @@
       "SolvencyMarkets": "0x0a1b25D7d750F6Bf9A9d43afE4a47592b8CA3f84"
     },
     "local": {
-      "defaultStartBlock": 11125470,
-      "RiskPoolsController": "0x0F3717151ED5A3Ba7E22954Fd042c5537EF09b56"
+      "defaultStartBlock": 11371680,
+      "RiskPoolsController": "0x3d1c3BDA35a0303107FE890F8518ce2B212343cd"
     },
     "local-goerli": {
-      "defaultStartBlock": 7137990,
-      "RiskPoolsController": "0x9cDF3dc0e134739862CE3570b949D545416d4Ad9"
+      "defaultStartBlock": 7619670,
+      "RiskPoolsController": "0x89481aaE571b83b58d58d0fAE8aC1c9c07ab10e9"
     },
     "local-kovan": {
       "defaultStartBlock": 28779970,
