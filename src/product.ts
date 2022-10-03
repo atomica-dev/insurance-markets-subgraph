@@ -275,8 +275,8 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
   policy.issuer = policyInfo.issuer.toHexString();
   policy.owner = piContract.ownerOf(policyId).toHexString();
   policy.waitingPeriod = policyInfo.waitingPeriod;
-  policy.foAddress = policyInfo.frontendOperator;
   policy.frontendOperator = policyInfo.frontendOperator.toHexString();
+  policy.foAddress = policyInfo.frontendOperator;
   policy.foFeeRate = policyInfo.frontendOperatorFee;
   policy.referralAddress = policyInfo.referral;
   policy.referralFeeRate = policyInfo.referralFee;

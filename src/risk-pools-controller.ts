@@ -667,7 +667,6 @@ export function handleLogForwardedPayoutRequestDeclined(
 }
 
 export function handleLogNewReward(event: LogNewReward): void {
-  return;
   let rpcContract = RiskPoolsControllerContract.bind(event.address);
   let reward = getCoverReward(rpcContract, event.params.rewardId);
   let cmReward = new CoverMiningReward(event.params.rewardId.toString());
