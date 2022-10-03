@@ -68,6 +68,28 @@ export enum EventType {
   DeregisterPremiumRateModel,
 
   //#endregion
+
+  //#region Product
+
+  ProductWording,
+  ProductStatus,
+  DefaultCapitalToken,
+  DefaultPremiumToken,
+  DefaultRatesOracle,
+  DefaultCoverAdjusterOracle,
+  ProductOperator,
+  MarketCreatorsAllowList,
+  FeeToken,
+  MarketCreationFeeAmount,
+  ProductOperatorIncentiveFee,
+  ProductMaxMarketOperatorIncentiveFee,
+  WithdrawalDelay,
+  WaitingPeriod,
+  PayoutRequester,
+  PayoutApprover,
+  ClaimProcessor,
+
+  //#endregion
 }
 
 function getEventTypeString(eventType: EventType): string {
@@ -189,6 +211,41 @@ function getEventTypeString(eventType: EventType): string {
       return "RegisterPremiumRateModel";
 
     //#endregion
+
+    case EventType.ProductWording:
+      return "ProductWording";
+    case EventType.ProductStatus:
+      return "ProductStatus";
+    case EventType.DefaultCapitalToken:
+      return "DefaultCapitalToken";
+    case EventType.DefaultPremiumToken:
+      return "DefaultPremiumToken";
+    case EventType.DefaultRatesOracle:
+      return "DefaultRatesOracle";
+    case EventType.DefaultCoverAdjusterOracle:
+      return "DefaultCoverAdjusterOracle";
+    case EventType.ProductOperator:
+      return "ProductOperator";
+    case EventType.MarketCreatorsAllowList:
+      return "MarketCreatorsAllowList";
+    case EventType.FeeToken:
+      return "FeeToken";
+    case EventType.MarketCreationFeeAmount:
+      return "MarketCreationFeeAmount";
+    case EventType.ProductOperatorIncentiveFee:
+      return "ProductOperatorIncentiveFee";
+    case EventType.ProductMaxMarketOperatorIncentiveFee:
+      return "ProductMaxMarketOperatorIncentiveFee";
+    case EventType.WithdrawalDelay:
+      return "WithdrawalDelay";
+    case EventType.WaitingPeriod:
+      return "WaitingPeriod";
+    case EventType.PayoutRequester:
+      return "PayoutRequester";
+    case EventType.PayoutApprover:
+      return "PayoutApprover";
+    case EventType.ClaimProcessor:
+      return "ClaimProcessor";
   }
 
   return eventType.toString();
