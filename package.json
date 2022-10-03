@@ -16,6 +16,7 @@
     "@graphprotocol/graph-cli": "0.28.0",
     "@graphprotocol/graph-ts": "0.26.0",
     "ts-node": "^10.7.0",
-    "yaml": "^1.7.2"
+    "yaml": "^1.7.2",
+    "typescript": "^3.9.7"
   }
 }

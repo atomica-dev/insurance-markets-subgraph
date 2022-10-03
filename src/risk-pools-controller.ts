@@ -338,6 +338,14 @@ export function handleLogNewProductStatus(event: LogNewProductStatus): void {
   product.status = event.params.status;
 
   product.save();
+
+  addEvent(
+    EventType.ProductStatus,
+    event,
+    null,
+    event.params.product.toHexString(),
+    event.params.status.toString()
+  );
 }
 
 export function handleLogNewMarketStatus(event: LogNewMarketStatus): void {
@@ -389,7 +397,12 @@ export function handleLogPolicyDeposit(event: LogPolicyDeposit): void {
   policy.save();
 
   updatePolicy(id, event.address, event);
-  updateAndLogState(EventType.MarketPolicyPremium, event,event.params.premiumFeeDeposit, policy.market);
+  updateAndLogState(
+    EventType.MarketPolicyPremium,
+    event,
+    event.params.premiumFeeDeposit,
+    policy.market
+  );
 }
 
 function loadPolicyByRpc(rpcAddress: Address, policyId: BigInt): Policy | null {
@@ -415,7 +428,12 @@ export function handleLogPolicyWithdraw(event: LogPolicyWithdraw): void {
   policy.save();
 
   updatePolicy(policy.id, event.address, event);
-  updateAndLogState(EventType.MarketPolicyPremium, event,event.params.withdrawnPremiumFeeDeposit.neg(), policy.market);
+  updateAndLogState(
+    EventType.MarketPolicyPremium,
+    event,
+    event.params.withdrawnPremiumFeeDeposit.neg(),
+    policy.market
+  );
 }
 
 function updatePolicy(
@@ -541,8 +559,6 @@ export function handleLogWithdrawFee(event: LogWithdrawFee): void {
   af.save();
 }
 
-
-
 export function handleLogSwap(event: LogSwap): void {
   let id = updateState(EventType.SwapCount, BigInt.fromI32(1), "");
 
@@ -572,7 +588,8 @@ export function handleLogPayout(event: LogPayout): void {
   let p = new Payout(id.toString());
 
   p.marketId = event.params.marketId;
-  p.market = event.address.toHexString() + "-" + event.params.marketId.toString();
+  p.market =
+    event.address.toHexString() + "-" + event.params.marketId.toString();
   p.capitalToken = event.params.capitalToken;
   p.amount = event.params.paidoutAmount;
   p.recipient = event.params.recipient;
@@ -650,6 +667,7 @@ export function handleLogForwardedPayoutRequestDeclined(
 }
 
 export function handleLogNewReward(event: LogNewReward): void {
+  return;
   let rpcContract = RiskPoolsControllerContract.bind(event.address);
   let reward = getCoverReward(rpcContract, event.params.rewardId);
   let cmReward = new CoverMiningReward(event.params.rewardId.toString());
@@ -771,7 +789,11 @@ export function handleLogCoverMiningRewardDeactivated(
   cmReward.save();
 }
 
-function updateAggPoolCover(event: ethereum.Event, aggPool: AggregatedPool, newCover: BigInt): void {
+function updateAggPoolCover(
+  event: ethereum.Event,
+  aggPool: AggregatedPool,
+  newCover: BigInt
+): void {
   const oldCoverage = aggPool.coverage;
   aggPool.coverage = newCover;
   const oldRate = aggPool.rate;
@@ -799,10 +821,16 @@ function updateAggPoolCover(event: ethereum.Event, aggPool: AggregatedPool, newC
 }
 
 export function handleLogPremiumEarned(event: LogPremiumEarned): void {
-  const marketId = event.address.toHexString() + "-" + event.params.marketId.toString();
+  const marketId =
+    event.address.toHexString() + "-" + event.params.marketId.toString();
 
   updateMarketChargeState(event.address, marketId, event);
-  updateAndLogState(EventType.MarketEarnedPremium, event, event.params.charge, marketId);
+  updateAndLogState(
+    EventType.MarketEarnedPremium,
+    event,
+    event.params.charge,
+    marketId
+  );
 }
 
 export function handleLogMarketCharge(event: LogMarketCharge): void {
@@ -920,7 +948,12 @@ export function handleLogAggregatedPoolCapacityAllowanceUpdated(
   let pmRelation = PoolMarketRelation.load(id);
 
   if (!pmRelation) {
-    pmRelation = createPoolMarketRelation(id, event.params.riskPool, aggPool.market, aggPool.id);
+    pmRelation = createPoolMarketRelation(
+      id,
+      event.params.riskPool,
+      aggPool.market,
+      aggPool.id
+    );
   }
 
   pmRelation.capacityAllowance = event.params.capacityAllowance;
@@ -949,7 +982,12 @@ export function handleLogAggregatedPoolRiskPoolCapacityLimitUpdated(
   let pmRelation = PoolMarketRelation.load(id);
 
   if (!pmRelation) {
-    pmRelation = createPoolMarketRelation(id, event.params.riskPool, aggPool.market, aggPool.id);
+    pmRelation = createPoolMarketRelation(
+      id,
+      event.params.riskPool,
+      aggPool.market,
+      aggPool.id
+    );
   }
 
   pmRelation.poolCapacityLimit = event.params.capacityLimit;
@@ -978,7 +1016,12 @@ export function handleLogAggregatedPoolMarketCapacityLimitUpdated(
   let pmRelation = PoolMarketRelation.load(id);
 
   if (!pmRelation) {
-    pmRelation = createPoolMarketRelation(id, event.params.riskPool, aggPool.market, aggPool.id);
+    pmRelation = createPoolMarketRelation(
+      id,
+      event.params.riskPool,
+      aggPool.market,
+      aggPool.id
+    );
   }
 
   pmRelation.marketCapacityLimit = event.params.capacityLimit;
@@ -1005,7 +1048,12 @@ export function handleLogRebalance(event: LogRebalance): void {
   let pmRelation = PoolMarketRelation.load(id);
 
   if (!pmRelation) {
-    pmRelation = createPoolMarketRelation(id, event.params.riskPool, aggPool.market, aggPool.id);
+    pmRelation = createPoolMarketRelation(
+      id,
+      event.params.riskPool,
+      aggPool.market,
+      aggPool.id
+    );
   }
 
   pmRelation.balance = event.params.riskPoolCapacity;
@@ -1080,7 +1128,12 @@ export function handleLogRiskPoolAddedToAggregatedPool(
   let pmRelation = PoolMarketRelation.load(id);
 
   if (!pmRelation) {
-    pmRelation = createPoolMarketRelation(id, event.params.riskPool, aggPool.market, aggPool.id);
+    pmRelation = createPoolMarketRelation(
+      id,
+      event.params.riskPool,
+      aggPool.market,
+      aggPool.id
+    );
 
     pmRelation.save();
   }
@@ -1133,7 +1186,11 @@ export function handleLogRiskPoolManagerFeeRecipientChanged(
 ): void {
   let pool = Pool.load(event.params.riskPool.toHexString())!;
 
-  updateFeeRecipientRelation(event.params.managerFeeRecipient, event.params.riskPool, pool.feeRecipient);
+  updateFeeRecipientRelation(
+    event.params.managerFeeRecipient,
+    event.params.riskPool,
+    pool.feeRecipient
+  );
 
   pool.feeRecipient = event.params.managerFeeRecipient;
 
@@ -1288,7 +1345,7 @@ function getAggPoolCurrentRate(aggPool: AggregatedPool): BigInt {
 export function updateMarketChargeState(
   rpcContractAddress: Address,
   marketId: string,
-  event: ethereum.Event,
+  event: ethereum.Event
 ): void {
   let rpcContract = RiskPoolsControllerContract.bind(rpcContractAddress);
   let market = Market.load(marketId)!;
@@ -1318,7 +1375,10 @@ export function updateMarketChargeState(
   const coverMap = new Map<string, BigInt>();
 
   for (let i = 0; i < coverDetails.aggregatedPools.length; i++) {
-    coverMap.set(coverDetails.aggregatedPools[i].toString(), coverDetails.covers[i]);
+    coverMap.set(
+      coverDetails.aggregatedPools[i].toString(),
+      coverDetails.covers[i]
+    );
   }
 
   const marketAggPool = MarketAggregatedPool.load(market.id);
