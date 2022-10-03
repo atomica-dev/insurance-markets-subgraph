@@ -351,18 +351,24 @@ enum AddressProp {
 export function handleLogUintPropUpdated(event: LogUintPropUpdated): void {
   let product = Product.load(event.address.toHexString())!;
 
+  let eventType: EventType = -1;
+
   switch (event.params.prop) {
     case UintProp.WithdrawalDelay:
       product.withdrawalDelay = event.params.value;
+      eventType = EventType.WithdrawalDelay;
       break;
     case UintProp.WaitingPeriod:
       product.waitingPeriod = event.params.value;
+      eventType = EventType.WaitingPeriod;
       break;
     case UintProp.MarketCreationFeeAmount:
       product.marketCreationFeeAmount = event.params.value;
+      eventType = EventType.MarketCreationFeeAmount;
       break;
     case UintProp.MarketCreatorsAllowlistId:
       product.marketCreatorsAllowlistId = event.params.value;
+      eventType = EventType.MarketCreatorsAllowList;
       break;
 
     default:
@@ -374,6 +380,16 @@ export function handleLogUintPropUpdated(event: LogUintPropUpdated): void {
   product.updatedAt = event.block.timestamp;
 
   product.save();
+
+  if (eventType >= 0) {
+    addEvent(
+      eventType,
+      event,
+      null,
+      event.address.toHexString(),
+      event.params.value.toString()
+    );
+  }
 }
 
 export function handleLogAddressPropUpdated(
@@ -381,33 +397,44 @@ export function handleLogAddressPropUpdated(
 ): void {
   let product = Product.load(event.address.toHexString())!;
 
+  let eventType: EventType = -1;
+
   switch (event.params.prop) {
     case AddressProp.DefaultRatesOracle:
       product.defaultRatesOracle = event.params.value;
+      eventType = EventType.DefaultRatesOracle;
       break;
     case AddressProp.FeeToken:
       product.feeToken = event.params.value;
+      eventType = EventType.FeeToken;
       break;
     case AddressProp.DefaultCoverAdjusterOracle:
       product.defaultCoverAdjusterOracle = event.params.value;
+      eventType = EventType.DefaultCoverAdjusterOracle;
       break;
     case AddressProp.DefaultCapitalToken:
       product.defaultCapitalToken = event.params.value;
+      eventType = EventType.DefaultCapitalToken;
       break;
     case AddressProp.DefaultPremiumToken:
       product.defaultPremiumToken = event.params.value;
+      eventType = EventType.DefaultPremiumToken;
       break;
     case AddressProp.PayoutRequester:
       product.payoutRequester = event.params.value;
+      eventType = EventType.PayoutRequester;
       break;
     case AddressProp.PayoutApprover:
       product.payoutApprover = event.params.value;
+      eventType = EventType.PayoutApprover;
       break;
     case AddressProp.ProductOperator:
       product.operator = event.params.value;
+      eventType = EventType.ProductOperator;
       break;
     case AddressProp.ClaimProcessor:
       product.claimProcessor = event.params.value;
+      eventType = EventType.ClaimProcessor;
       break;
     default:
       log.warning("Unknown product address prop update {}", [
@@ -418,4 +445,14 @@ export function handleLogAddressPropUpdated(
   product.updatedAt = event.block.timestamp;
 
   product.save();
+
+  if (eventType >= 0) {
+    addEvent(
+      eventType,
+      event,
+      null,
+      event.address.toHexString(),
+      event.params.value.toHexString()
+    );
+  }
 }

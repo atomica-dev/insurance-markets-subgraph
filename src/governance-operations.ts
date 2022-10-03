@@ -568,6 +568,14 @@ function handleUpdateProductWording(event: LogGovernance): void {
   product.wording = rpcContract.products(address).value0;
 
   product.save();
+
+  addEvent(
+    EventType.ProductWording,
+    event,
+    null,
+    address.toHexString(),
+    rpcContract.products(address).value0
+  );
 }
 
 function handleUpdateProductOperator(event: LogGovernance): void {
@@ -605,6 +613,14 @@ function handleUpdateProductOperatorIncentiveFee(event: LogGovernance): void {
   product.productIncentiveFee = event.params.param3;
 
   product.save();
+
+  addEvent(
+    EventType.ProductOperatorIncentiveFee,
+    event,
+    null,
+    event.params.param1.toHexString(),
+    event.params.param3.toString()
+  );
 }
 
 function handleUpdateProductMaxMarketIncentiveFee(event: LogGovernance): void {
@@ -616,6 +632,14 @@ function handleUpdateProductMaxMarketIncentiveFee(event: LogGovernance): void {
 
   product.maxMarketIncentiveFee = event.params.param3;
   product.save();
+
+  addEvent(
+    EventType.MaxProductOperatorIncentiveFee,
+    event,
+    null,
+    event.params.param1.toHexString(),
+    event.params.param3.toString()
+  );
 }
 
 function handleUpdateMarketOperatorIncentiveFee(event: LogGovernance): void {
