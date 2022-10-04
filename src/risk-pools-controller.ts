@@ -682,6 +682,7 @@ export function handleLogNewReward(event: LogNewReward): void {
   cmReward.updatedAt = event.block.timestamp;
   cmReward.rewardPerToken = reward.rewardPerShareStored;
   cmReward.cid = reward.cid;
+  cmReward.isArchived = false;
 
   cmReward.save();
 }
