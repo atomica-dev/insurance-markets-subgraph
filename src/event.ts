@@ -88,6 +88,7 @@ export enum EventType {
   PayoutRequester,
   PayoutApprover,
   ClaimProcessor,
+  NewProduct,
 
   //#endregion
 }
@@ -212,6 +213,8 @@ function getEventTypeString(eventType: EventType): string {
 
     //#endregion
 
+    case EventType.NewProduct:
+      return "NewProduct";
     case EventType.ProductWording:
       return "ProductWording";
     case EventType.ProductStatus:

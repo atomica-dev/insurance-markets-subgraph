@@ -166,6 +166,8 @@ export function handleLogNewProduct(event: LogNewProduct): void {
   PayoutRequesterTemplate.create(changetype<Address>(product.claimProcessor));
 
   updateState(EventType.SystemProductCount, BigInt.fromI32(1), null);
+
+  addEvent(EventType.NewProduct, event, null, productAddress.toHexString());
 }
 
 export function handleLogLiquidation(event: LogLiquidation): void {
