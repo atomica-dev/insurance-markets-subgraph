@@ -634,7 +634,7 @@ function handleUpdateProductMaxMarketIncentiveFee(event: LogGovernance): void {
   product.save();
 
   addEvent(
-    EventType.MaxProductOperatorIncentiveFee,
+    EventType.ProductMaxMarketOperatorIncentiveFee,
     event,
     null,
     event.params.param1.toHexString(),
