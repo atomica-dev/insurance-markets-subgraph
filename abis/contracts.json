@@ -5,12 +5,12 @@
       "RiskPoolsController": "0x89481aaE571b83b58d58d0fAE8aC1c9c07ab10e9"
     },
     "srm-staging": {
-      "defaultStartBlock": 11442670,
+      "defaultStartBlock": 7715830,
       "Registry": "0x916484A5f58961fA4349581A2984e8B6D12cdb6A",
       "Allowlist": "0x4e08F3DDf9882Db09782293Ed3A69EDDe5e73433",
       "PolicyTokenIssuer": "0x3CE3f655d80f10a0a88843dc59E48a68c5DD049e",
       "PolicyTokenPermissionIssuer": "0xe4d427C568d47EEEFF0C3a03A08fF90c96b81b11",
-      "RiskPoolsController": "0xB2248920045b09889eff15864c2C4760ce87915b",
+      "RiskPoolsController": "0x468245732a14ae827Ae20325ebc04153C210a02C",
       "OperatorImpl": "0x3A9488156FB41a6697e232bBccAF087c2517aa50",
       "MarketImpl": "0xE7282a09cE1F5aA7638bC5d3CAd58C777CcdF03A",
       "PolicyImpl": "0xaFac49c83E6DEbF68C8aDffD7c8F6272dBD46266",
