@@ -3,9 +3,9 @@ import * as fs from "fs";
 
 const YAML_PATH = "./subgraph.template.yaml";
 const OUT_PATH = "./subgraph.yaml";
-const DEFAULT_NETWORK = "4";
+const DEFAULT_NETWORK = "5";
 const ENV_TO_NETWORK: any = {
-  "srm-dev": "4",
+  "srm-dev": "5",
   "mainnet": "1",
   "ganache": "7777",
   "srm-staging": "4",

@@ -1,8 +1,8 @@
 {
   "environment": {
     "srm-dev": {
-      "defaultStartBlock": 11486790,
-      "RiskPoolsController": "0x795A6Dd90A308454BCF67c9eeD503ec8396BfE34"
+      "defaultStartBlock": 7619670,
+      "RiskPoolsController": "0x89481aaE571b83b58d58d0fAE8aC1c9c07ab10e9"
     },
     "srm-staging": {
       "defaultStartBlock": 11442670,
