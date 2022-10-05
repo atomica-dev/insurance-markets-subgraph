@@ -8,10 +8,10 @@ const ENV_TO_NETWORK: any = {
   "srm-dev": "5",
   "mainnet": "1",
   "ganache": "7777",
-  "srm-staging": "4",
+  "srm-staging": "5",
   "local-kovan": "42",
   "local-goerli": "5",
-  "srm-production": "4",
+  "srm-production": "137",
 };
 const NETWORK_NAMES: any = {
   "7777": "ganache",
@@ -19,6 +19,7 @@ const NETWORK_NAMES: any = {
   "5": "goerli",
   "42": "kovan",
   "1": "mainnet",
+  "137": "polygon",
 };
 const MANUAL_FILE_UPDATES: string[] = [];
 const ENV = process.argv[2] || "srm-dev";
