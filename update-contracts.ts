@@ -19,7 +19,7 @@ const NETWORK_NAMES: any = {
   "5": "goerli",
   "42": "kovan",
   "1": "mainnet",
-  "137": "polygon",
+  "137": "matic",
 };
 const MANUAL_FILE_UPDATES: string[] = [];
 const ENV = process.argv[2] || "srm-dev";

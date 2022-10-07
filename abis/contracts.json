@@ -26,21 +26,8 @@
       "Wallet": "0x5127153428Ff639b1c2F8dF8540eBf824fb24BB4"
     },
     "srm-production": {
-      "defaultStartBlock": 8262297,
-      "Erc20Mock": "0x4D8C39343fE15CA51a5bd4bEA2500ed2d7344315",
-      "ProductFactory": "0x1e80576cb7874B53718e81473734f15d9dd552c4",
-      "SolvencyMarkets": "0xEAa6dcD59E43069a037cE5872cAa425812D1B3d3",
-      "RiskPoolFactory": "0xC94EED30b9B72A13b6c9e50D23e75366725998D9",
-      "RiskPoolsController": "0x37b1263fbA9821BBb5e2eC7C77a01794D18d8bdE",
-      "PolicyTokenIssuer": "0xA3c4A3eff7fE466E77DD0A9Cf2047cA5163023Fe",
-      "PolicyTokenPermissionIssuer": "0xD8dC4A7767741848Fa8539Ea1789222DF988ccE7",
-      "PremiumRateModelFixed": "0xF610C0Ce76ddEd3e1C049e3d9815B8fDe8696189",
-      "PremiumRateModelDynamic": "0x0A9E9a3bBb43D700Bc50b3e1bC82a3745E2D1803",
-      "AtomicaRewardsMultiTokenUnipoolFactory": "0xF0cbB6b6d2ced7FaeBa49f2947d8f124Cb40841c",
-      "ERC20Controller": "0x5a64680721160823AE53A9f076003d7B12e911e7",
-      "PoolController": "0x364ac4B5C8b560Af78ADCd90EaDDa82DA5e65108",
-      "RewardsController": "0x17fBb8d2eBE0Cc0184E3d45b3DA8A939c6cD452F",
-      "Allowlist": "0xD0F66c27E245709Fc7c74C94c2886d1C30D1946B"
+      "defaultStartBlock": 34002868,
+      "RiskPoolsController": "0x57c80926D859fb76BC0e52DdFb136504aD15af97"
     },
     "fc-demo": {
       "defaultStartBlock": 7534945,
