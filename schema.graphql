@@ -521,6 +521,7 @@ type Swap @entity {
   swapCover: BigInt!
   transaction: Bytes!
   createdAt: BigInt!
+  market: Market!
 }
 
 type Payout @entity {
@@ -534,7 +535,8 @@ type Payout @entity {
 
 type PayoutRequest @entity {
   id: ID!
-  marketId: BigInt
+  marketId: BigInt!
+  market: Market!
   policyId: BigInt
   recipient: Bytes
   distributor: Boolean

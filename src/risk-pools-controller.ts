@@ -563,6 +563,12 @@ export function handleLogWithdrawFee(event: LogWithdrawFee): void {
 
 export function handleLogSwap(event: LogSwap): void {
   let id = updateState(EventType.SwapCount, BigInt.fromI32(1), "");
+  let rpcContract = RiskPoolsController.bind(event.address);
+  let policyId =
+    rpcContract.policyTokenIssuer().toHexString() +
+    "-" +
+    event.params.policyId.toString();
+  let policy = Policy.load(policyId)!;
 
   let s = new Swap(id.toString());
 
@@ -574,14 +580,10 @@ export function handleLogSwap(event: LogSwap): void {
   s.recipient = event.params.recipient;
   s.createdAt = event.block.timestamp;
   s.transaction = event.transaction.hash;
+  s.market = policy.market;
 
   s.save();
 
-  let rpcContract = RiskPoolsController.bind(event.address);
-  let policyId =
-    rpcContract.policyTokenIssuer().toHexString() +
-    "-" +
-    event.params.policyId.toString();
   updatePolicy(policyId, event.address, event);
 }
 
@@ -608,6 +610,7 @@ export function handleLogNewPayoutRequest(event: LogNewPayoutRequest): void {
   let request = new PayoutRequest(event.params.payoutRequestId.toString());
 
   request.marketId = r.marketId;
+  request.market = event.address.toHexString() + "-" + r.marketId.toString();
   request.policyId = r.policyId;
   request.recipient = r.recipient;
   request.distributor = r.distributor;
