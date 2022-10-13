@@ -573,6 +573,7 @@ export function handleLogSwap(event: LogSwap): void {
   s.swapCover = event.params.marketCapitalTokenCoverSwapped;
   s.recipient = event.params.recipient;
   s.createdAt = event.block.timestamp;
+  s.transaction = event.transaction.hash;
 
   s.save();
 
