@@ -9,7 +9,7 @@ const ENV_TO_NETWORK: any = {
   "mainnet": "1",
   "ganache": "7777",
   "srm-staging": "5",
-  "local-kovan": "42",
+  "local-mumbai": "80001",
   "local-goerli": "5",
   "srm-production": "137",
 };
