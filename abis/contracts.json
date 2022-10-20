@@ -46,6 +46,10 @@
       "defaultStartBlock": 7619670,
       "RiskPoolsController": "0x89481aaE571b83b58d58d0fAE8aC1c9c07ab10e9"
     },
+    "local-mumbai": {
+      "defaultStartBlock": 28716720,
+      "RiskPoolsController": "0x3E0BeC46E1c511F0482e11ab26317520B0DE344e"
+    },
     "local-kovan": {
       "defaultStartBlock": 28779970,
       "Registry": "0x56e6A859FecCf3D9AD788545b63Bd31D677aC4Bc",
