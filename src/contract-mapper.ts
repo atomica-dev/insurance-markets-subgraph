@@ -138,29 +138,14 @@ export function getMarket(
   };
 }
 
-export class CRiskTowerLevel {
-  marketId: BigInt;
-  nextRiskTowerLevelId: BigInt;
-}
-
-export function getRiskTowerLevel(
-  contract: RiskPoolsControllerContract,
-  marketId: BigInt
-): CRiskTowerLevel {
-  let d = contract.riskTowerLevels(marketId);
-
-  return {
-    marketId: d.value0,
-    nextRiskTowerLevelId: d.value1,
-  };
-}
-
 export class CAggregatedPool {
   marketId: BigInt;
   totalCapacity: BigInt;
   premiumAccumulator: BigInt;
   premiumBalance: BigInt;
-  premiumRateModel: Address;
+  nextAggregatedPoolId: BigInt;
+  prevAggregatedPoolId: BigInt;
+  premiumRateId: BigInt;
 }
 
 export function getAggregatedPool(
@@ -174,7 +159,9 @@ export function getAggregatedPool(
     totalCapacity: d.value1,
     premiumAccumulator: d.value2,
     premiumBalance: d.value3,
-    premiumRateModel: d.value4,
+    nextAggregatedPoolId: d.value4,
+    prevAggregatedPoolId: d.value5,
+    premiumRateId: d.value6,
   };
 }
 
@@ -227,9 +214,11 @@ export class CMarketMeta {
   desiredCover: BigInt;
   waitingPeriod: BigInt;
   marketOperatorIncentiveFee: BigInt;
-  accrualBlockNumberPrior: BigInt;
+  lastChargeTimestamp: BigInt;
   settlementDiscount: BigInt;
   withdrawDelay: BigInt;
+  premiumRatePriorityRoot: BigInt;
+  payoutPriorityRoot: BigInt;
 }
 
 export function getMarketMeta(
@@ -243,9 +232,11 @@ export function getMarketMeta(
     desiredCover: d.value1,
     waitingPeriod: d.value2,
     marketOperatorIncentiveFee: d.value3,
-    accrualBlockNumberPrior: d.value4,
+    lastChargeTimestamp: d.value4,
     settlementDiscount: d.value5,
     withdrawDelay: d.value6,
+    premiumRatePriorityRoot: d.value7,
+    payoutPriorityRoot: d.value8,
   };
 }
 
@@ -371,5 +362,28 @@ export function getCoverReward(
     rootHash: d.value10,
     cid: d.value11,
     proofsCid: d.value12,
+  };
+}
+
+export class CPremiumRate {
+  premiumRateType: i32;
+  baseRatePerSec: BigInt;
+  multiplierPerSec: BigInt;
+  jumpMultiplierPerSec: BigInt;
+  kink: BigInt;
+}
+
+export function getPremiumRate(
+  contract: RiskPoolsControllerContract,
+  id: BigInt,
+): CPremiumRate {
+  let d = contract.premiumRates(id);
+
+  return {
+    premiumRateType: d.value0,
+    baseRatePerSec: d.value1,
+    multiplierPerSec: d.value2,
+    jumpMultiplierPerSec: d.value3,
+    kink: d.value4,
   };
 }

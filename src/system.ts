@@ -13,7 +13,6 @@ export function getSystemConfig(id: string): System {
     );
 
     config.rateOracleList = [];
-    config.premiumRateModelList = [];
     config.coverAdjusterOracleList = [];
     config.externalProductList = [];
     config.syncOracleList = [];

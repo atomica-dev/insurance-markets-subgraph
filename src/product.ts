@@ -14,7 +14,6 @@ import {
   Policy,
   Pool,
   Product,
-  RiskTowerLevel,
 } from "../generated/schema";
 import { Pool as PoolTemplate } from "../generated/templates";
 import {
@@ -33,7 +32,6 @@ import {
   getPolicy,
   getPolicyDeposit,
   getRiskPoolData,
-  getRiskTowerLevel,
 } from "./contract-mapper";
 import {
   addUniqueToList,
@@ -41,19 +39,15 @@ import {
   filterNotEqual,
   ZERO_ADDRESS,
 } from "./utils";
-import { updateMarketChargeState } from "./risk-pools-controller";
+import { rebuildMarketPoolList, updateMarketChargeState } from "./risk-pools-controller";
 
 export function handleLogNewMarket(event: LogNewMarket): void {
   let marketId = event.params.marketId;
   let product = Product.load(event.address.toHexString())!;
-  let rpcContract = RiskPoolsControllerContract.bind(
-    changetype<Address>(product.riskPoolsControllerAddress)
-  );
+  let rpcContractAddress = changetype<Address>(product.riskPoolsControllerAddress);
+  let rpcContract = RiskPoolsControllerContract.bind(rpcContractAddress);
 
-  let id =
-    product.riskPoolsControllerAddress.toHexString() +
-    "-" +
-    marketId.toString();
+  let id = rpcContractAddress.toHexString() + "-" + marketId.toString();
   let market = new Market(id);
   let marketInfo = getMarket(rpcContract, marketId);
   let marketMeta = getMarketMeta(rpcContract, marketId);
@@ -62,7 +56,7 @@ export function handleLogNewMarket(event: LogNewMarket): void {
 
   market.marketId = marketId;
   market.product = event.address.toHexString();
-  market.riskPoolsControllerAddress = product.riskPoolsControllerAddress;
+  market.riskPoolsControllerAddress = rpcContractAddress;
 
   market.wording = productInfo.value0;
   market.entityList = titleParams.filter((t, i, a) => i != a.length - 1);
@@ -73,7 +67,7 @@ export function handleLogNewMarket(event: LogNewMarket): void {
   market.actualCover = BigInt.fromI32(0);
   market.waitingPeriod = marketMeta.waitingPeriod;
   market.marketOperatorIncentiveFee = marketMeta.marketOperatorIncentiveFee;
-  market.latestAccruedTimestamp = marketMeta.accrualBlockNumberPrior;
+  market.latestAccruedTimestamp = marketMeta.lastChargeTimestamp;
   market.settlementDiscount = marketMeta.settlementDiscount;
 
   market.author = marketInfo.marketOperator;
@@ -93,9 +87,10 @@ export function handleLogNewMarket(event: LogNewMarket): void {
   market.createdAt = event.block.timestamp;
 
   market.status = StatusEnum.Opened;
-  market.riskTowerRoot = marketMeta.riskTowerRootLevel;
 
   market.save();
+
+  rebuildMarketPoolList(marketId, rpcContractAddress);
 
   if (market.rateOracle) {
     addOraclePair(
@@ -116,22 +111,6 @@ export function handleLogNewMarket(event: LogNewMarket): void {
         market.insuredToken
       );
     }
-  }
-
-  let currentLevel = market.riskTowerRoot!;
-  let levelNo: i32 = 1;
-
-  while (!currentLevel.isZero()) {
-    let level = new RiskTowerLevel(currentLevel.toString());
-
-    level.market = id;
-    level.levelNo = levelNo;
-
-    level.save();
-
-    levelNo++;
-    currentLevel = getRiskTowerLevel(rpcContract, currentLevel)
-      .nextRiskTowerLevelId;
   }
 
   updateAndLogState(EventType.TotalMarkets, event, BigInt.fromI32(1), null);

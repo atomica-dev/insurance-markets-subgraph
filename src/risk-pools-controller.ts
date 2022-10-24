@@ -25,9 +25,6 @@ import {
   LogNewReward,
   LogMarketCharge,
   LogAggregatedPoolCreated,
-  LogAggregatedPoolRemoved,
-  LogRiskTowerLevelCreated1,
-  LogRiskTowerLevelRemoved,
   LogRiskPoolAddedToAggregatedPool,
   LogRiskPoolRemovedFromAggregatedPool,
   LogRebalance,
@@ -42,6 +39,7 @@ import {
   LogArchivedRewardClaimed,
   LogWithdrawAccruedMarketFee,
   LogPremiumEarned,
+  LogPremiumRateCreated,
 } from "../generated/RiskPoolsController/RiskPoolsController";
 import { RiskPoolsController as RiskPoolsControllerContract } from "../generated/templates/Product/RiskPoolsController";
 import {
@@ -65,7 +63,6 @@ import {
   IncomingPayoutRequest,
   CoverMiningReward,
   CoverMiningRewardClaim,
-  RiskTowerLevel,
   AggregatedPool,
   PoolFee,
   MarketPoolFee,
@@ -82,6 +79,7 @@ import {
 } from "./event";
 import {
   Address,
+  BigDecimal,
   BigInt,
   Bytes,
   ethereum,
@@ -94,6 +92,7 @@ import { PolicyTokenIssuer as PolicyTokenIssuerContract } from "../generated/Ris
 import { getSystemConfig } from "./system";
 import {
   CPolicy,
+  getAggregatedPool,
   getCoverReward,
   getForwardedPayoutRequest,
   getMarketCoverDetails,
@@ -101,11 +100,12 @@ import {
   getPayoutRequest,
   getPolicy,
   getPolicyDeposit,
+  getPremiumRate,
 } from "./contract-mapper";
-import { PremiumRateModelDynamic as PremiumRateModelContract } from "../generated/templates/Pool/PremiumRateModelDynamic";
 import { claimAllTypeFees, updateAllTypeFees } from "./fee";
 import { GovernanceOperationMap } from "./governance-operations";
 import { addToList, filterNotEqual, WEI_BIGINT } from "./utils";
+import { createRateModel } from "./premium-rate-model";
 
 export function handleLogNewProduct(event: LogNewProduct): void {
   getState(EventType.SystemStatus).save();
@@ -803,7 +803,7 @@ function updateAggPoolCover(
   const oldCoverage = aggPool.coverage;
   aggPool.coverage = newCover;
   const oldRate = aggPool.rate;
-  aggPool.rate = getAggPoolCurrentRate(aggPool);
+  aggPool.rate = getAggPoolCurrentRate(aggPool, event.address);
 
   const oldQuote = oldRate.times(oldCoverage);
   const newQuote = aggPool.rate.times(aggPool.coverage);
@@ -1067,7 +1067,7 @@ export function handleLogRebalance(event: LogRebalance): void {
 
   const oldRate = aggPool.rate;
   aggPool.totalCapacity = event.params.totalAggregatedPoolCapacity;
-  aggPool.rate = getAggPoolCurrentRate(aggPool);
+  aggPool.rate = getAggPoolCurrentRate(aggPool, event.address);
 
   const oldQuote = oldRate.times(aggPool.coverage);
   const newQuote = aggPool.rate.times(aggPool.coverage);
@@ -1203,117 +1203,25 @@ export function handleLogRiskPoolManagerFeeRecipientChanged(
   pool.save();
 }
 
-export function handleLogRiskTowerLevelCreated(
-  event: LogRiskTowerLevelCreated1
-): void {
-  let id = event.params.riskTowerLevelId.toString();
-  let prevId = event.params.priorRiskTowerLevel.toString();
-  let level = new RiskTowerLevel(id);
-  let marketId =
-    event.address.toHexString() + "-" + event.params.marketId.toString();
-  let levelNo = 1;
-
-  level.market = marketId;
-
-  if (prevId !== "0") {
-    level.prevLevel = prevId;
-
-    let prevLevel = RiskTowerLevel.load(prevId);
-
-    if (prevLevel) {
-      let oldNextLevel = prevLevel.nextLevel;
-
-      prevLevel.nextLevel = id;
-
-      levelNo = prevLevel.levelNo + 1;
-
-      prevLevel.save();
-
-      let nextLevel = oldNextLevel ? RiskTowerLevel.load(oldNextLevel) : null;
-
-      if (nextLevel) {
-        nextLevel.prevLevel = id;
-
-        nextLevel.save();
-      }
-    }
-  }
-
-  level.levelNo = levelNo;
-
-  level.save();
-
-  let nextLevel = level.nextLevel
-    ? RiskTowerLevel.load(level.nextLevel!)
-    : null;
-
-  while (nextLevel) {
-    nextLevel.levelNo = nextLevel.levelNo + 1;
-
-    nextLevel.save();
-
-    nextLevel = nextLevel.nextLevel
-      ? RiskTowerLevel.load(nextLevel.nextLevel!)
-      : null;
-  }
-}
-
-export function handleLogRiskTowerLevelRemoved(
-  event: LogRiskTowerLevelRemoved
-): void {
-  let id = event.params.riskTowerLevelId.toString();
-  let level = RiskTowerLevel.load(id);
-
-  if (!level) {
-    return;
-  }
-
-  let prevLevel = level.prevLevel
-    ? RiskTowerLevel.load(level.prevLevel!)
-    : null;
-  let nextLevel = level.nextLevel
-    ? RiskTowerLevel.load(level.nextLevel!)
-    : null;
-
-  if (prevLevel) {
-    prevLevel.nextLevel = level.nextLevel;
-
-    prevLevel.save();
-  }
-
-  if (nextLevel) {
-    nextLevel.prevLevel = level.prevLevel;
-
-    nextLevel.save();
-  }
-
-  store.remove("RiskTowerLevel", id);
-
-  while (nextLevel) {
-    nextLevel.levelNo = nextLevel.levelNo - 1;
-
-    nextLevel.save();
-
-    nextLevel = nextLevel.nextLevel
-      ? RiskTowerLevel.load(nextLevel.nextLevel!)
-      : null;
-  }
-}
-
 export function handleLogAggregatedPoolCreated(
   event: LogAggregatedPoolCreated
 ): void {
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+  let cAggPool = getAggregatedPool(rpcContract, event.params.aggregatedPoolId);
   let aggPool = new AggregatedPool(event.params.aggregatedPoolId.toString());
   let marketId =
-    event.address.toHexString() + "-" + event.params.marketId.toString();
+    event.address.toHexString() + "-" + cAggPool.marketId.toString();
 
   aggPool.market = marketId;
-  aggPool.riskTowerLevel = event.params.riskTowerLevelId.toString();
-  aggPool.premiumRateModel = event.params.premiumRateModel;
+  aggPool.premiumRateId = cAggPool.premiumRateId;
   aggPool.rate = BigInt.fromI32(0);
   aggPool.totalCapacity = BigInt.fromI32(0);
   aggPool.coverage = BigInt.fromI32(0);
   aggPool.poolList = [];
+  aggPool.premiumAccumulator = cAggPool.premiumAccumulator;
+  aggPool.premiumBalance = cAggPool.premiumBalance;
+  aggPool.nextAggregatedPoolId = cAggPool.nextAggregatedPoolId;
+  aggPool.prevAggregatedPoolId = cAggPool.prevAggregatedPoolId;
 
   aggPool.save();
 
@@ -1328,22 +1236,57 @@ export function handleLogAggregatedPoolCreated(
   marketAggPool.list = addToList(marketAggPool.list, aggPool.id);
 
   marketAggPool.save();
+
+  rebuildMarketPoolList(cAggPool.marketId, event.address);
 }
 
-export function handleLogAggregatedPoolRemoved(
-  event: LogAggregatedPoolRemoved
-): void {
-  store.remove("AggregatedPool", event.params.aggregatedPoolId.toString());
+export function rebuildMarketPoolList(marketNo: BigInt, rpcContractAddress: Address): void {
+  let marketId = rpcContractAddress.toHexString() + "-" + marketNo.toString();
+  let market = Market.load(marketId);
+  let rpcContract = RiskPoolsControllerContract.bind(rpcContractAddress);
+  let marketMeta = getMarketMeta(rpcContract, marketNo);
+
+  if (!market) {
+    return;
+  }
+
+  market.premiumPoolList = updateAggPoolList(marketMeta.premiumRatePriorityRoot, rpcContract);
+  market.sponsorPoolList = updateAggPoolList(marketMeta.payoutPriorityRoot, rpcContract);
+
+  market.save();
 }
 
-function getAggPoolCurrentRate(aggPool: AggregatedPool): BigInt {
-  let premiumRateModel = PremiumRateModelContract.bind(
-    changetype<Address>(aggPool.premiumRateModel)
-  );
-  let rate = premiumRateModel.try_getPremiumRate(
-    aggPool.totalCapacity,
-    aggPool.coverage
-  );
+function updateAggPoolList(curAggId: BigInt, rpcContract: RiskPoolsControllerContract): string[] {
+  let result: string[] = [];
+
+  while (!curAggId.isZero()) {
+    result.push(curAggId.toString());
+
+    let cAggPool = getAggregatedPool(rpcContract, curAggId);
+    let aggPool = AggregatedPool.load(curAggId.toString())!;
+
+    aggPool.nextAggregatedPoolId = cAggPool.nextAggregatedPoolId;
+    aggPool.prevAggregatedPoolId = cAggPool.prevAggregatedPoolId;
+
+    aggPool.save();
+
+    curAggId = cAggPool.nextAggregatedPoolId;
+  }
+
+  return result;
+}
+
+export function handleLogPremiumRateCreated(event: LogPremiumRateCreated): void {
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+  let cPremiumRate = getPremiumRate(rpcContract, event.params.premiumRateId);
+
+  createRateModel(event.params.premiumRateId.toString(), cPremiumRate);
+}
+
+function getAggPoolCurrentRate(aggPool: AggregatedPool, rpcContractAddress: Address): BigInt {
+  let rpcContract = RiskPoolsControllerContract.bind(rpcContractAddress);
+
+  let rate = rpcContract.try_premiumRatePerSec(BigInt.fromString(aggPool.id), aggPool.coverage);
 
   return rate.reverted ? BigInt.fromI32(0) : rate.value;
 }
@@ -1364,7 +1307,7 @@ export function updateMarketChargeState(
 
   const coverDetails = getMarketCoverDetails(rpcContract, market.marketId);
 
-  market.latestAccruedTimestamp = marketMeta.accrualBlockNumberPrior;
+  market.latestAccruedTimestamp = marketMeta.lastChargeTimestamp;
   market.exposure = marketMeta.desiredCover;
   market.actualCover = coverDetails.actualCover;
 

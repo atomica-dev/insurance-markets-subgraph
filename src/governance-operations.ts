@@ -13,7 +13,6 @@ import { getSystemConfig } from "./system";
 import { addOraclePair } from "./rate-oracle";
 import { Address } from "@graphprotocol/graph-ts";
 import { addUniqueToList, ETH_ADDRESS, filterNotEqual } from "./utils";
-import { guessRateModelType } from "./premium-rate-model";
 import { addEvent, EventType } from "./event";
 
 export const GovernanceOperationMap = new Map<
@@ -59,10 +58,6 @@ GovernanceOperationMap.set(
 GovernanceOperationMap.set(
   GovernanceLogType.ExchangeRateOracle,
   handleUpdateExchangeRateOracle
-);
-GovernanceOperationMap.set(
-  GovernanceLogType.PremiumRateModel,
-  handleUpdatePremiumRateModel
 );
 GovernanceOperationMap.set(
   GovernanceLogType.CoverAdjusterOracle,
@@ -351,36 +346,6 @@ function handleUpdateExchangeRateOracle(event: LogGovernance): void {
     event.params.param5
       ? EventType.RegisterExchangeRateOracle
       : EventType.DeregisterExchangeRateOracle,
-    event,
-    null,
-    config.id,
-    event.params.param1.toHexString()
-  );
-}
-
-function handleUpdatePremiumRateModel(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
-
-  if (event.params.param5) {
-    config.premiumRateModelList = addUniqueToList(
-      config.premiumRateModelList,
-      event.params.param1.toHexString()
-    );
-
-    guessRateModelType(event.params.param1);
-  } else {
-    config.premiumRateModelList = filterNotEqual(
-      config.premiumRateModelList,
-      event.params.param1.toHexString()
-    );
-  }
-
-  config.save();
-
-  addEvent(
-    event.params.param5
-      ? EventType.RegisterPremiumRateModel
-      : EventType.DeregisterPremiumRateModel,
     event,
     null,
     config.id,

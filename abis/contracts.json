@@ -6,24 +6,7 @@
     },
     "srm-staging": {
       "defaultStartBlock": 7715830,
-      "Registry": "0x916484A5f58961fA4349581A2984e8B6D12cdb6A",
-      "Allowlist": "0x4e08F3DDf9882Db09782293Ed3A69EDDe5e73433",
-      "PolicyTokenIssuer": "0x3CE3f655d80f10a0a88843dc59E48a68c5DD049e",
-      "PolicyTokenPermissionIssuer": "0xe4d427C568d47EEEFF0C3a03A08fF90c96b81b11",
-      "RiskPoolsController": "0x468245732a14ae827Ae20325ebc04153C210a02C",
-      "OperatorImpl": "0x3A9488156FB41a6697e232bBccAF087c2517aa50",
-      "MarketImpl": "0xE7282a09cE1F5aA7638bC5d3CAd58C777CcdF03A",
-      "PolicyImpl": "0xaFac49c83E6DEbF68C8aDffD7c8F6272dBD46266",
-      "ChargeImpl": "0xE588EdE104088F2eD897fEd955493A373874D3b9",
-      "ERC20Impl": "0x34Dbd9FbFFeDA6498f33dfe1FbDcC03fDdc5cFFA",
-      "PoolImpl": "0xc5bC7FF2d7B4C75273AD7461d0500a19B89E2758",
-      "RewardsImpl": "0x7A5Bf83C633AdB1A986AE089DEF2FF6fDbF6F34b",
-      "PremiumRateModelFixed": "0xD58eD1B0686fb8c6bdEef72D858f48D837dE096E",
-      "PremiumRateModelDynamic": "0xCAc4281bE481DEe5233bFb9f8348Efa51C1D5E18",
-      "CoverAdjuster": "0x8192b680A8E83B7AC7835FD1fA8aeefe1d02f654",
-      "ExchangeRatesOracle": "0x87a9Ce796AB0686CB8d63D552c15ce62839a1684",
-      "ClaimProcessor": "0x021A707FE3Ae463eEf0618Ed860DBA451DAae438",
-      "Wallet": "0x5127153428Ff639b1c2F8dF8540eBf824fb24BB4"
+      "RiskPoolsController": "0x468245732a14ae827Ae20325ebc04153C210a02C"
     },
     "srm-production": {
       "defaultStartBlock": 34002868,
@@ -49,27 +32,6 @@
     "local-mumbai": {
       "defaultStartBlock": 28716720,
       "RiskPoolsController": "0x3E0BeC46E1c511F0482e11ab26317520B0DE344e"
-    },
-    "local-kovan": {
-      "defaultStartBlock": 28779970,
-      "Registry": "0x56e6A859FecCf3D9AD788545b63Bd31D677aC4Bc",
-      "Allowlist": "0x26159caa82BC8F6CDCB8bb5ba6842C57e5F3E04f",
-      "ClaimProcessor": "0x4C1273554b9f133F5190854aad8F99c5676f551a",
-      "PolicyTokenIssuer": "0x2247F04F88a782c57C0Cc494d59663Fb336F2832",
-      "PolicyTokenPermissionIssuer": "0x03fad1F7235357ACf671fb24e1ddC22eab17923e",
-      "Wallet": "0x78863376B4Ec1ca45a0Ca0A9F6df7a16A94F725C",
-      "RiskPoolsController": "0x7f471a97454408B00b98F7C63507A2864fcE5C0F",
-      "OperatorImpl": "0x7feD0dD94A7a8Dc9EDb1bdcDBaE4057f3AD730e4",
-      "MarketImpl": "0xc8aCE55C5d81C20678C2C1A6Bc3bcc48cfEfc63b",
-      "PolicyImpl": "0xE4beB17cE1F47e0AEa5c461a2c591423B7d266c4",
-      "ChargeImpl": "0x8cccc42e73F9DAc4a5b908A8498AAdD5500c3eCF",
-      "ERC20Impl": "0x61578E41fc1a0Ef059749C0d03B5799Ea06c0839",
-      "PoolImpl": "0xab9A602d87b53DE99dD5Ae844c7bB6155AE5009A",
-      "RewardsImpl": "0xB5E7b41e516Ae01db87B1F8b8427c80613557eb0",
-      "CoverAdjuster": "0x0d1753409784E04725d8F63901462Ad65b6ccDE8",
-      "ExchangeRatesOracle": "0x6303eDE1756b98338Af5d461A98151dA87B343d4",
-      "PremiumRateModelFixed": "0x3dAC47C5ab24f7eB6c8cC05383B648931A245454",
-      "PremiumRateModelDynamic": "0x2A019f3AB670DCDb4A4B67667bB4b5691E14F745"
     }
   }
 }

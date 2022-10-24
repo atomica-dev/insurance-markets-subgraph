@@ -1,7 +1,6 @@
 type System @entity {
   id: ID!
   rateOracleList: [String!]!
-  premiumRateModelList: [String!]!
   coverAdjusterOracleList: [String!]!
   externalProductList: [String!]!
   syncOracleList: [String!]!
@@ -103,10 +102,10 @@ type Market @entity {
   status: Int
   premiumMulAccumulator: BigInt
   settlementDiscount: BigInt
-  riskTowerRoot: BigInt
+  premiumPoolList: [AggregatedPool!]!
+  sponsorPoolList: [AggregatedPool!]!
 
   rewards: [CoverMiningReward!]! @derivedFrom(field: "market")
-  riskTower: [RiskTowerLevel!]! @derivedFrom(field: "market")
 }
 
 type MarketAggregatedPool @entity {
@@ -114,19 +113,10 @@ type MarketAggregatedPool @entity {
   list: [String!]!
 }
 
-type RiskTowerLevel @entity {
-  id: ID!
-  market: Market!
-  levelNo: Int
-  aggregatedPools: [AggregatedPool!]! @derivedFrom(field: "riskTowerLevel")
-  nextLevel: RiskTowerLevel
-  prevLevel: RiskTowerLevel
-}
-
 type AggregatedPool @entity {
   id: ID!
-  riskTowerLevel: RiskTowerLevel!
-  premiumRateModel: Bytes!
+  premiumRateId: BigInt!
+  premiumRate: PremiumRateModel!
   market: Market!
   poolMarketRelations: [PoolMarketRelation!]!
     @derivedFrom(field: "aggregatedPool")
@@ -134,6 +124,10 @@ type AggregatedPool @entity {
   rate: BigInt!
   totalCapacity: BigInt!
   coverage: BigInt!
+  premiumAccumulator: BigInt!
+  premiumBalance: BigInt!
+  nextAggregatedPoolId: BigInt!
+  prevAggregatedPoolId: BigInt!
 }
 
 type CoverMiningReward @entity {

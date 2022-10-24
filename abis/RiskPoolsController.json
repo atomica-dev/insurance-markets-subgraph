@@ -31,31 +31,19 @@
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "marketId",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "riskTowerLevelId",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
                 "name": "aggregatedPoolId",
                 "type": "uint256"
             },
             {
                 "indexed": false,
-                "internalType": "address",
-                "name": "premiumRateModel",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "premiumRateId",
+                "type": "uint256"
             }
         ],
         "name": "LogAggregatedPoolCreated",
         "type": "event",
-        "signature": "0xba46e7dce6e88c62b3cafbf3ce7866e8da862560334fc3f74e15b55bd70394f0"
+        "signature": "0xc0548278424e05d380874fe4435b4d994ffc574261855ac4b47b3fa20627f576"
     },
     {
         "anonymous": false,
@@ -987,6 +975,20 @@
             {
                 "indexed": false,
                 "internalType": "uint256",
+                "name": "premiumRateId",
+                "type": "uint256"
+            }
+        ],
+        "name": "LogPremiumRateCreated",
+        "type": "event",
+        "signature": "0x9c761a6f06b16caff541958dc40c0b84f38fd5b19ebf139a98dbaa5c798b2c90"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
                 "name": "aggregatedPoolId",
                 "type": "uint256"
             },
@@ -1631,6 +1633,44 @@
         "inputs": [
             {
                 "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "premiumRateId",
+                "type": "uint256"
+            }
+        ],
+        "name": "addAggregatedPoolToPayoutPriority",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x60d18b7f"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "premiumRateId",
+                "type": "uint256"
+            }
+        ],
+        "name": "addAggregatedPoolToPremiumRatePriority",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x056c688a"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
                 "name": "aggregatedPoolId",
                 "type": "uint256"
             }
@@ -1658,9 +1698,19 @@
                 "type": "uint256"
             },
             {
-                "internalType": "address",
-                "name": "premiumRateModel",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "nextAggregatedPoolId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "prevAggregatedPoolId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "premiumRateId",
+                "type": "uint256"
             }
         ],
         "stateMutability": "view",
@@ -2162,25 +2212,6 @@
     {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "riskTowerLevelId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "premiumRateModel",
-                "type": "address"
-            }
-        ],
-        "name": "createAggregatedPool",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x1f2135c7"
-    },
-    {
-        "inputs": [
-            {
                 "internalType": "address",
                 "name": "erc20",
                 "type": "address"
@@ -2282,9 +2313,14 @@
                         "type": "address"
                     },
                     {
-                        "internalType": "address[]",
-                        "name": "premiumRateModels",
-                        "type": "address[]"
+                        "internalType": "uint256[]",
+                        "name": "premiumRatePriorityPremiumRateIds",
+                        "type": "uint256[]"
+                    },
+                    {
+                        "internalType": "uint256[]",
+                        "name": "payoutPriorityPremiumRateIds",
+                        "type": "uint256[]"
                     },
                     {
                         "internalType": "address",
@@ -2364,7 +2400,7 @@
         ],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xee485346"
+        "signature": "0x3a18ca49"
     },
     {
         "inputs": [
@@ -2414,6 +2450,40 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0xe72ef2c4"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "enum IRiskPoolsControllerStorageModel.PremiumRateType",
+                "name": "premiumRateType",
+                "type": "uint8"
+            },
+            {
+                "internalType": "uint256",
+                "name": "baseRatePerYear",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "normalRatePerYear",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "jumpRatePerYear",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "kink",
+                "type": "uint256"
+            }
+        ],
+        "name": "createPremiumRate",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x753f19ef"
     },
     {
         "inputs": [
@@ -2585,26 +2655,6 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0x6c8a5a23"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "priorRiskTowerLevel",
-                "type": "uint256"
-            }
-        ],
-        "name": "createRiskTowerLevel",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "riskTowerLevelId",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x0b338ff8"
     },
     {
         "inputs": [
@@ -3686,6 +3736,16 @@
                 "internalType": "uint256",
                 "name": "withdrawDelay",
                 "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "premiumRatePriorityRoot",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "payoutPriorityRoot",
+                "type": "uint256"
             }
         ],
         "stateMutability": "view",
@@ -3728,6 +3788,27 @@
         "type": "function",
         "constant": true,
         "signature": "0xc9f6b5e1"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "premiumRateId",
+                "type": "uint256"
+            }
+        ],
+        "name": "maxPremiumRate",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x77759c51"
     },
     {
         "inputs": [],
@@ -4301,6 +4382,88 @@
         "inputs": [
             {
                 "internalType": "uint256",
+                "name": "aggregatedPoolId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "cover",
+                "type": "uint256"
+            }
+        ],
+        "name": "premiumRatePerSec",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x6fe02d0d"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "premiumRateId",
+                "type": "uint256"
+            }
+        ],
+        "name": "premiumRates",
+        "outputs": [
+            {
+                "internalType": "enum IRiskPoolsControllerStorageModel.PremiumRateType",
+                "name": "premiumRateType",
+                "type": "uint8"
+            },
+            {
+                "internalType": "uint256",
+                "name": "baseRatePerSec",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "multiplierPerSec",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "jumpMultiplierPerSec",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "kink",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0xfe02e72d"
+    },
+    {
+        "inputs": [],
+        "name": "premiumRatesCount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0xe6b42318"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
                 "name": "marketId",
                 "type": "uint256"
             }
@@ -4637,39 +4800,6 @@
     {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "riskTowerLevelId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "aggregatedPoolIdx",
-                "type": "uint256"
-            }
-        ],
-        "name": "removeAggregatedPool",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x02225835"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "priorRiskTowerLevel",
-                "type": "uint256"
-            }
-        ],
-        "name": "removeRiskTowerLevel",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x75ad3a9f"
-    },
-    {
-        "inputs": [
-            {
                 "internalType": "address",
                 "name": "riskPool",
                 "type": "address"
@@ -4813,12 +4943,12 @@
             },
             {
                 "internalType": "string",
-                "name": "cid",
+                "name": "sid",
                 "type": "string"
             },
             {
                 "internalType": "string",
-                "name": "proofsCid",
+                "name": "proofsSid",
                 "type": "string"
             }
         ],
