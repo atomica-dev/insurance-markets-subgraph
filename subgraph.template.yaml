@@ -127,6 +127,10 @@ dataSources:
           handler: handleLogWithdrawAccruedMarketFee
         - event: LogPremiumRateCreated(uint256)
           handler: handleLogPremiumRateCreated
+        - event: LogPayoutRequestApproved(uint256)
+          handler: handleLogPayoutRequestApproved
+        - event: LogPayoutRequestDeclined(uint256)
+          handler: handleLogPayoutRequestDeclined
       file: ./src/risk-pools-controller.ts
 templates:
   - kind: ethereum/contract

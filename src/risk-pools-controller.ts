@@ -41,7 +41,11 @@ import {
   LogPremiumEarned,
   LogPremiumRateCreated,
 } from "../generated/RiskPoolsController/RiskPoolsController";
-import { RiskPoolsController as RiskPoolsControllerContract } from "../generated/templates/Product/RiskPoolsController";
+import {
+  LogPayoutRequestApproved,
+  LogPayoutRequestDeclined,
+  RiskPoolsController as RiskPoolsControllerContract,
+} from "../generated/templates/Product/RiskPoolsController";
 import {
   PolicyPermissionTokenIssuer,
   PolicyTokenIssuer,
@@ -620,6 +624,28 @@ export function handleLogNewPayoutRequest(event: LogNewPayoutRequest): void {
   request.rootHash = r.rootHash.toHexString();
   request.data = r.data;
   request.externalRecipientList = [];
+
+  request.save();
+}
+
+export function handleLogPayoutRequestApproved(event: LogPayoutRequestApproved): void {
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+  let r = getPayoutRequest(rpcContract, event.params.payoutRequestId);
+
+  let request = new PayoutRequest(event.params.payoutRequestId.toString());
+
+  request.status = r.status;
+
+  request.save();
+}
+
+export function handleLogPayoutRequestDeclined(event: LogPayoutRequestDeclined): void {
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+  let r = getPayoutRequest(rpcContract, event.params.payoutRequestId);
+
+  let request = new PayoutRequest(event.params.payoutRequestId.toString());
+
+  request.status = r.status;
 
   request.save();
 }

@@ -781,6 +781,34 @@
             {
                 "indexed": false,
                 "internalType": "uint256",
+                "name": "payoutRequestId",
+                "type": "uint256"
+            }
+        ],
+        "name": "LogPayoutRequestApproved",
+        "type": "event",
+        "signature": "0xbd28e7b87f966bae4b5f476150a38c67aeebc00bc0fe876bcab54c171c80c14e"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "payoutRequestId",
+                "type": "uint256"
+            }
+        ],
+        "name": "LogPayoutRequestDeclined",
+        "type": "event",
+        "signature": "0x78eead6aebdc5036f02b0ec2bad4a2c6bc261ac98f6e2eb9603720b0a4f479b6"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
                 "name": "policyId",
                 "type": "uint256"
             },
