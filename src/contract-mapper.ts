@@ -199,13 +199,23 @@ export function getMarketCoverDetails(
   contract: RiskPoolsControllerContract,
   id: BigInt
 ): CMarketCoverDetails {
-  let d = contract.actualCoverDetailed(id);
+  //TODO: Revert me (remove try_) once contract issue is fixed.
+  let d = contract.try_actualCoverDetailed(id);
+
+  if (d.reverted) {
+    return {
+      actualCover: BigInt.fromI32(0),
+      accruedCharge: BigInt.fromI32(0),
+      aggregatedPools: [],
+      covers: [],
+    };
+  }
 
   return {
-    actualCover: d.value0,
-    accruedCharge: d.value1,
-    aggregatedPools: d.value2,
-    covers: d.value3,
+    actualCover: d.value.value0,
+    accruedCharge: d.value.value1,
+    aggregatedPools: d.value.value2,
+    covers: d.value.value3,
   };
 }
 
