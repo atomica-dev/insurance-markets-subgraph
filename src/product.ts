@@ -85,6 +85,8 @@ export function handleLogNewMarket(event: LogNewMarket): void {
     marketId
   );
   market.createdAt = event.block.timestamp;
+  market.premiumPoolList = [];
+  market.sponsorPoolList = [];
 
   market.status = StatusEnum.Opened;
 
