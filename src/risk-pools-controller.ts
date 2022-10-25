@@ -1240,6 +1240,7 @@ export function handleLogAggregatedPoolCreated(
 
   aggPool.market = marketId;
   aggPool.premiumRateId = cAggPool.premiumRateId;
+  aggPool.premiumRate = cAggPool.premiumRateId.toString();
   aggPool.rate = BigInt.fromI32(0);
   aggPool.totalCapacity = BigInt.fromI32(0);
   aggPool.coverage = BigInt.fromI32(0);
