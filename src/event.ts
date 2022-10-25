@@ -48,6 +48,9 @@ export enum EventType {
   DefaultPayoutApprover,
   MaxProductOperatorIncentiveFee,
   MaxMarketOperatorIncentiveFee,
+  MaxRiskPoolManagerFee,
+  AllowanceManager,
+  SwapCycle,
 
   //#endregion
 
@@ -184,6 +187,12 @@ function getEventTypeString(eventType: EventType): string {
       return "MaxProductOperatorIncentiveFee";
     case EventType.MaxMarketOperatorIncentiveFee:
       return "MaxMarketOperatorIncentiveFee";
+    case EventType.MaxRiskPoolManagerFee:
+      return "MaxRiskPoolManagerFee";
+    case EventType.AllowanceManager:
+      return "AllowanceManager";
+    case EventType.SwapCycle:
+      return "SwapCycle";
 
     //#endregion
 
