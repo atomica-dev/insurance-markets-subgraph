@@ -212,6 +212,14 @@ function handleUpdateNewAllowanceManager(event: LogGovernance): void {
 
   config.allowanceManager = event.params.param1;
   config.save();
+
+  addEvent(
+    EventType.AllowanceManager,
+    event,
+    null,
+    config.id,
+    event.params.param1.toHexString()
+  );
 }
 
 function handleUpdateTreasury(event: LogGovernance): void {
@@ -835,6 +843,14 @@ function handleUpdateMaxRiskPoolManagerFee(event: LogGovernance): void {
   config.maxRiskPoolManagerFee = event.params.param3;
 
   config.save();
+
+  addEvent(
+    EventType.MaxRiskPoolManagerFee,
+    event,
+    null,
+    config.id,
+    event.params.param3.toString()
+  );
 }
 
 export function handleSettlementDiscount(event: LogGovernance): void {
@@ -859,6 +875,16 @@ export function handleSwapCycle(event: LogGovernance): void {
   config.idleDuration = rpcContract.idleDuration();
 
   config.save();
+
+  addEvent(
+    EventType.SwapCycle,
+    event,
+    null,
+    config.id,
+    config.swapCycleDuration.toString(),
+    config.swapDuration.toString(),
+    config.idleDuration.toString()
+  );
 }
 
 export function handleBridgeConnector(event: LogGovernance): void {
