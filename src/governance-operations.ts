@@ -872,7 +872,7 @@ export function handleSwapCycle(event: LogGovernance): void {
 
   config.swapCycleDuration = rpcContract.swapCycleDuration();
   config.swapDuration = rpcContract.swapDuration();
-  config.swapDuration = rpcContract.idleDuration();
+  config.idleDuration = rpcContract.idleDuration();
 
   config.save();
 
@@ -883,7 +883,7 @@ export function handleSwapCycle(event: LogGovernance): void {
     config.id,
     config.swapCycleDuration.toString(),
     config.swapDuration.toString(),
-    config.swapDuration.toString()
+    config.idleDuration.toString()
   );
 }
 
