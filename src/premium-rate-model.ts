@@ -44,7 +44,7 @@ export function createRateModel(id: string, cPremiumRate: CPremiumRate): void {
         .times(SECONDS_IN_A_YEAR)
         .toString()
     ).div(WEI_DECIMALS).times(model.util1!).plus(model.rate0!);
-    model.rate1 = BigDecimal.fromString(
+    model.rate2 = BigDecimal.fromString(
       cPremiumRate.multiplierPerSec
         .times(SECONDS_IN_A_YEAR)
         .toString()
