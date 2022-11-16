@@ -1419,6 +1419,9 @@ export function handleLogListCreated(
   allowList.type = list.type;
   allowList.owner = list.editor;
   allowList.descriptionCid = list.descriptionCid;
+  allowList.createdBy = event.transaction.from;
+  allowList.createdAt = event.block.timestamp;
+  allowList.updatedAt = event.block.timestamp;
 
   allowList.save();
 
@@ -1440,10 +1443,15 @@ function handleCreateListParameters(allowListId: BigInt, input: Bytes): void {
 export function handleLogListEdited(
   event: LogListEdited
 ): void {
+  const allowListId = event.params.listId;
+  let allowList = new AllowList(allowListId.toString());
+
+  allowList.updatedAt = event.block.timestamp;
+  allowList.save();
+
   // function edit(uint256,address[],uint256[])
 
   const parameterData = event.transaction.input.slice(4); // cut off 4 bytes function selector
-  const allowListId = getBigIntFromData(0, parameterData);
   const accountListOffset = getNumberFromData(32, parameterData);
   const valueListOffset = getNumberFromData(64, parameterData);
   const accounts = getAddressArrayFromData(accountListOffset, parameterData);
@@ -1460,6 +1468,7 @@ export function handleLogListEditorChanged(
   let list = getList(rpcContract, event.params.listId);
 
   allowList.owner = list.editor;
+  allowList.updatedAt = event.block.timestamp;
 
   allowList.save();
 }
@@ -1503,7 +1512,7 @@ export function updateAllowListAccounts(allowListId: BigInt, accounts: Address[]
     let id = allowListId.toString() + "-" + accounts[i].toHexString();
     let listAccount = new AllowListAccount(id);
 
-    listAccount.allowListId = allowListId;
+    listAccount.allowListId = allowListId.toString();
     listAccount.account = accounts[i];
     listAccount.value = values[i];
 

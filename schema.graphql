@@ -612,6 +612,10 @@ type AllowList @entity {
   type: Int!
   owner: Bytes!
   descriptionCid: String
+  accounts: [AllowListAccount!] @derivedFrom(field: "allowListId")
+  createdAt: BigInt!
+  createdBy: Bytes!
+  updatedAt: BigInt!
 }
 
 type AllowListAccount @entity {
@@ -619,7 +623,7 @@ type AllowListAccount @entity {
   allowListId-account
   """
   id: ID!
-  allowListId: BigInt!
+  allowListId: AllowList!
   account: Bytes!
   value: BigInt!
 }
