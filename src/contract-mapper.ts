@@ -397,3 +397,22 @@ export function getPremiumRate(
     kink: d.value4,
   };
 }
+
+export class CList {
+  type: i32;
+  editor: Address;
+  descriptionCid: string;
+}
+
+export function getList(
+  contract: RiskPoolsControllerContract,
+  id: BigInt,
+): CList {
+  let d = contract.lists(id);
+
+  return {
+    type: d.value0,
+    editor: d.value1,
+    descriptionCid: d.value2,
+  }
+};

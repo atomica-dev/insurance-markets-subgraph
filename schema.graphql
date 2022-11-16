@@ -606,3 +606,20 @@ type IncomingLoss @entity {
   amount: BigInt
   createdAt: BigInt
 }
+
+type AllowList @entity {
+  id: ID!
+  type: Int!
+  owner: Bytes!
+  descriptionCid: String
+}
+
+type AllowListAccount @entity {
+  """
+  allowListId-account
+  """
+  id: ID!
+  allowListId: BigInt!
+  account: Bytes!
+  value: BigInt!
+}

@@ -403,6 +403,48 @@
             {
                 "indexed": false,
                 "internalType": "uint256",
+                "name": "listId",
+                "type": "uint256"
+            }
+        ],
+        "name": "LogListCreated",
+        "type": "event",
+        "signature": "0x6ad8c4710ec33b9391cd2a78ffc75ecda764d4511b01b31a90c8f2ad8c3f9c92"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "listId",
+                "type": "uint256"
+            }
+        ],
+        "name": "LogListEdited",
+        "type": "event",
+        "signature": "0x357cb6002f7a20cdb7060a7934796b6442b5285ae5c920689d89838aec34c055"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "listId",
+                "type": "uint256"
+            }
+        ],
+        "name": "LogListEditorChanged",
+        "type": "event",
+        "signature": "0xb5d19e1c402feafbe852222c605c54899c4228c41a776d06b7fe2ddd38e1abc6"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
                 "name": "marketId",
                 "type": "uint256"
             },
@@ -1986,6 +2028,25 @@
         "inputs": [
             {
                 "internalType": "uint256",
+                "name": "listId_",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "editor_",
+                "type": "address"
+            }
+        ],
+        "name": "changeEditor",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xf49c9b2e"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
                 "name": "policyId",
                 "type": "uint256"
             },
@@ -2236,6 +2297,35 @@
         "type": "function",
         "constant": true,
         "signature": "0xc5eea1a1"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "enum IRiskPoolsControllerStorageModel.ListType",
+                "name": "listType",
+                "type": "uint8"
+            },
+            {
+                "internalType": "string",
+                "name": "descriptionCid_",
+                "type": "string"
+            },
+            {
+                "internalType": "address[]",
+                "name": "accounts_",
+                "type": "address[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "values_",
+                "type": "uint256[]"
+            }
+        ],
+        "name": "create",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xf12ff66b"
     },
     {
         "inputs": [
@@ -2967,6 +3057,30 @@
     {
         "inputs": [
             {
+                "internalType": "uint256",
+                "name": "listId_",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address[]",
+                "name": "accounts_",
+                "type": "address[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "values_",
+                "type": "uint256[]"
+            }
+        ],
+        "name": "edit",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x7b99877e"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "address",
                 "name": "frontendOperator",
                 "type": "address"
@@ -3496,6 +3610,52 @@
         "type": "function",
         "constant": true,
         "signature": "0x8c765e94"
+    },
+    {
+        "inputs": [],
+        "name": "listIncrement",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x05cb0412"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "listId",
+                "type": "uint256"
+            }
+        ],
+        "name": "lists",
+        "outputs": [
+            {
+                "internalType": "enum IRiskPoolsControllerStorageModel.ListType",
+                "name": "listType",
+                "type": "uint8"
+            },
+            {
+                "internalType": "address",
+                "name": "editor",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "descriptionCid",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x96102cf4"
     },
     {
         "inputs": [
@@ -6446,6 +6606,37 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0x97e50818"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "listId_",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "account_",
+                "type": "address"
+            }
+        ],
+        "name": "value",
+        "outputs": [
+            {
+                "internalType": "enum IRiskPoolsControllerStorageModel.ListType",
+                "name": "listType_",
+                "type": "uint8"
+            },
+            {
+                "internalType": "uint256",
+                "name": "value_",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x6978089f"
     },
     {
         "inputs": [

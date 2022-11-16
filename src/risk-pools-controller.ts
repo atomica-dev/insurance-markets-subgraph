@@ -42,6 +42,11 @@ import {
   LogPremiumRateCreated,
 } from "../generated/RiskPoolsController/RiskPoolsController";
 import {
+  CreateCall,
+  EditCall,
+  LogListCreated,
+  LogListEdited,
+  LogListEditorChanged,
   LogPayoutRequestApproved,
   LogPayoutRequestDeclined,
   RiskPoolsController as RiskPoolsControllerContract,
@@ -72,6 +77,8 @@ import {
   MarketPoolFee,
   FeeRecipientPool,
   MarketAggregatedPool,
+  AllowList,
+  AllowListAccount,
 } from "../generated/schema";
 import {
   addEvent,
@@ -99,6 +106,7 @@ import {
   getAggregatedPool,
   getCoverReward,
   getForwardedPayoutRequest,
+  getList,
   getMarketCoverDetails,
   getMarketMeta,
   getPayoutRequest,
@@ -1399,4 +1407,106 @@ function createPoolMarketRelation(
   pmr.aggregatedPool = aggPoolId;
 
   return pmr;
+}
+
+export function handleLogListCreated(
+  event: LogListCreated
+): void {
+  let allowList = new AllowList(event.params.listId.toString());
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+  let list = getList(rpcContract, event.params.listId);
+
+  allowList.type = list.type;
+  allowList.owner = list.editor;
+  allowList.descriptionCid = list.descriptionCid;
+
+  allowList.save();
+
+  handleCreateListParameters(event.params.listId, event.transaction.input);
+}
+
+function handleCreateListParameters(allowListId: BigInt, input: Bytes): void {
+  // function create(uint8,string,address[],uint256[])
+
+  const parameterData = input.slice(4); // cut off 4 bytes function selector
+  const accountListOffset = getNumberFromData(64, parameterData);
+  const valueListOffset = getNumberFromData(96, parameterData);
+  const accounts = getAddressArrayFromData(accountListOffset, parameterData);
+  const values = getBigIntArrayFromData(valueListOffset, parameterData);
+
+  updateAllowListAccounts(allowListId, accounts, values);
+}
+
+export function handleLogListEdited(
+  event: LogListEdited
+): void {
+  // function edit(uint256,address[],uint256[])
+
+  const parameterData = event.transaction.input.slice(4); // cut off 4 bytes function selector
+  const allowListId = getBigIntFromData(0, parameterData);
+  const accountListOffset = getNumberFromData(32, parameterData);
+  const valueListOffset = getNumberFromData(64, parameterData);
+  const accounts = getAddressArrayFromData(accountListOffset, parameterData);
+  const values = getBigIntArrayFromData(valueListOffset, parameterData);
+
+  updateAllowListAccounts(allowListId, accounts, values);
+}
+
+export function handleLogListEditorChanged(
+  event: LogListEditorChanged
+): void {
+  let allowList = new AllowList(event.params.listId.toString());
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+  let list = getList(rpcContract, event.params.listId);
+
+  allowList.owner = list.editor;
+
+  allowList.save();
+}
+
+function getBigIntFromData(offset: i32, data: Uint8Array): BigInt {
+  return BigInt.fromUnsignedBytes(changetype<Bytes>(data.slice(offset, offset + 32).reverse()));
+}
+
+function getNumberFromData(offset: i32, data: Uint8Array): i32 {
+  return getBigIntFromData(offset, data).toI32();
+}
+
+function getAddressFromData(offset: i32, data: Uint8Array): Address {
+  return changetype<Address>(data.slice(offset + 12, offset + 32));
+}
+
+function getAddressArrayFromData(startOffset: i32, data: Uint8Array): Address[] {
+  const length = getNumberFromData(startOffset, data);
+  const result: Address[] = [];
+
+  for (let i = 0; i < length; i++) {
+    result.push(getAddressFromData(startOffset + 32 * (i + 1), data));
+  }
+
+  return result;
+}
+
+function getBigIntArrayFromData(startOffset: i32, data: Uint8Array): BigInt[] {
+  const length = getNumberFromData(startOffset, data);
+  const result: BigInt[] = [];
+
+  for (let i = 0; i < length; i++) {
+    result.push(getBigIntFromData(startOffset + 32 * (i + 1), data));
+  }
+
+  return result;
+}
+
+export function updateAllowListAccounts(allowListId: BigInt, accounts: Address[], values: BigInt[]): void {
+  for (let i = 0; i < accounts.length; i++) {
+    let id = allowListId.toString() + "-" + accounts[i].toHexString();
+    let listAccount = new AllowListAccount(id);
+
+    listAccount.allowListId = allowListId;
+    listAccount.account = accounts[i];
+    listAccount.value = values[i];
+
+    listAccount.save();
+  }
 }

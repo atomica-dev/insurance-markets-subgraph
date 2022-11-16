@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.5
 schema:
   file: ./schema.graphql
 dataSources:
@@ -33,6 +33,8 @@ dataSources:
         - FeeRecipientPool
         - PoolFee
         - MarketPoolFee
+        - AllowList
+        - AllowListAccount
       abis:
         - name: RiskPoolsController
           file: ./abis/RiskPoolsController.json
@@ -131,6 +133,12 @@ dataSources:
           handler: handleLogPayoutRequestApproved
         - event: LogPayoutRequestDeclined(uint256)
           handler: handleLogPayoutRequestDeclined
+        - event: LogListCreated(uint256)
+          handler: handleLogListCreated
+        - event: LogListEdited(uint256)
+          handler: handleLogListEdited
+        - event: LogListEditorChanged(uint256)
+          handler: handleLogListEditorChanged
       file: ./src/risk-pools-controller.ts
 templates:
   - kind: ethereum/contract
