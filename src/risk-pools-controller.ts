@@ -42,8 +42,6 @@ import {
   LogPremiumRateCreated,
 } from "../generated/RiskPoolsController/RiskPoolsController";
 import {
-  CreateCall,
-  EditCall,
   LogListCreated,
   LogListEdited,
   LogListEditorChanged,
