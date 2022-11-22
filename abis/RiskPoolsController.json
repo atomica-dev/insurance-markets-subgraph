@@ -2037,11 +2037,11 @@
                 "type": "address"
             }
         ],
-        "name": "changeEditor",
+        "name": "changeListEditor",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xf49c9b2e"
+        "signature": "0x51615a77"
     },
     {
         "inputs": [
@@ -2301,35 +2301,6 @@
     {
         "inputs": [
             {
-                "internalType": "enum IRiskPoolsControllerStorageModel.ListType",
-                "name": "listType",
-                "type": "uint8"
-            },
-            {
-                "internalType": "string",
-                "name": "descriptionCid_",
-                "type": "string"
-            },
-            {
-                "internalType": "address[]",
-                "name": "accounts_",
-                "type": "address[]"
-            },
-            {
-                "internalType": "uint256[]",
-                "name": "values_",
-                "type": "uint256[]"
-            }
-        ],
-        "name": "create",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0xf12ff66b"
-    },
-    {
-        "inputs": [
-            {
                 "internalType": "address",
                 "name": "erc20",
                 "type": "address"
@@ -2395,6 +2366,35 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0xeeef0367"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "enum IRiskPoolsControllerStorageModel.ListType",
+                "name": "listType",
+                "type": "uint8"
+            },
+            {
+                "internalType": "string",
+                "name": "descriptionCid_",
+                "type": "string"
+            },
+            {
+                "internalType": "address[]",
+                "name": "accounts_",
+                "type": "address[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "values_",
+                "type": "uint256[]"
+            }
+        ],
+        "name": "createList",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x4ec6de12"
     },
     {
         "inputs": [
@@ -3072,11 +3072,11 @@
                 "type": "uint256[]"
             }
         ],
-        "name": "edit",
+        "name": "editList",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x7b99877e"
+        "signature": "0xcef10054"
     },
     {
         "inputs": [
@@ -3625,6 +3625,37 @@
         "type": "function",
         "constant": true,
         "signature": "0x05cb0412"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "listId_",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "account_",
+                "type": "address"
+            }
+        ],
+        "name": "listValue",
+        "outputs": [
+            {
+                "internalType": "enum IRiskPoolsControllerStorageModel.ListType",
+                "name": "listType_",
+                "type": "uint8"
+            },
+            {
+                "internalType": "uint256",
+                "name": "value_",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0xb6dc48c3"
     },
     {
         "inputs": [
@@ -6606,37 +6637,6 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0x97e50818"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "listId_",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "account_",
-                "type": "address"
-            }
-        ],
-        "name": "value",
-        "outputs": [
-            {
-                "internalType": "enum IRiskPoolsControllerStorageModel.ListType",
-                "name": "listType_",
-                "type": "uint8"
-            },
-            {
-                "internalType": "uint256",
-                "name": "value_",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true,
-        "signature": "0x6978089f"
     },
     {
         "inputs": [
