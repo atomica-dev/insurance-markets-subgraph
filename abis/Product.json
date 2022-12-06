@@ -292,24 +292,9 @@
                         "type": "address"
                     },
                     {
-                        "internalType": "uint256[]",
-                        "name": "premiumRatePriorityPremiumRateIds",
-                        "type": "uint256[]"
-                    },
-                    {
-                        "internalType": "uint256[]",
-                        "name": "payoutPriorityPremiumRateIds",
-                        "type": "uint256[]"
-                    },
-                    {
                         "internalType": "uint256",
                         "name": "policyBuyerAllowlistId",
                         "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256[]",
-                        "name": "lpAllowlistId",
-                        "type": "uint256[]"
                     },
                     {
                         "internalType": "uint256",
@@ -319,6 +304,31 @@
                     {
                         "internalType": "uint256",
                         "name": "settlementDiscount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "maxPremiumRatePerSec",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "bidStepPremiumRatePerSec",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "maxAggregatedPoolSlots",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "tailKink",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "tailJumpPremiumRatePerSec",
                         "type": "uint256"
                     }
                 ],

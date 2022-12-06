@@ -145,7 +145,7 @@ export class CAggregatedPool {
   premiumBalance: BigInt;
   nextAggregatedPoolId: BigInt;
   prevAggregatedPoolId: BigInt;
-  premiumRateId: BigInt;
+  premiumRatePerSec: BigInt;
 }
 
 export function getAggregatedPool(
@@ -161,7 +161,7 @@ export function getAggregatedPool(
     premiumBalance: d.value3,
     nextAggregatedPoolId: d.value4,
     prevAggregatedPoolId: d.value5,
-    premiumRateId: d.value6,
+    premiumRatePerSec: d.value6,
   };
 }
 
@@ -188,47 +188,21 @@ export function getRiskPoolData(
   };
 }
 
-export class CMarketCoverDetails {
-  actualCover: BigInt;
-  accruedCharge: BigInt;
-  aggregatedPools: BigInt[];
-  covers: BigInt[];
-}
-
-export function getMarketCoverDetails(
-  contract: RiskPoolsControllerContract,
-  id: BigInt
-): CMarketCoverDetails {
-  //TODO: Revert me (remove try_) once contract issue is fixed.
-  let d = contract.try_actualCoverDetailed(id);
-
-  if (d.reverted) {
-    return {
-      actualCover: BigInt.fromI32(0),
-      accruedCharge: BigInt.fromI32(0),
-      aggregatedPools: [],
-      covers: [],
-    };
-  }
-
-  return {
-    actualCover: d.value.value0,
-    accruedCharge: d.value.value1,
-    aggregatedPools: d.value.value2,
-    covers: d.value.value3,
-  };
-}
-
 export class CMarketMeta {
-  riskTowerRootLevel: BigInt;
+  totalCapacity: BigInt;
   desiredCover: BigInt;
   waitingPeriod: BigInt;
   marketOperatorIncentiveFee: BigInt;
   lastChargeTimestamp: BigInt;
   settlementDiscount: BigInt;
   withdrawDelay: BigInt;
-  premiumRatePriorityRoot: BigInt;
-  payoutPriorityRoot: BigInt;
+  headAggregatedPoolId: BigInt;
+  tailCover: BigInt;
+  maxPremiumRatePerSec: BigInt;
+  bidStepPremiumRatePerSec: BigInt;
+  maxAggregatedPoolSlots: BigInt;
+  tailKink: BigInt;
+  tailJumpPremiumRatePerSec: BigInt;
 }
 
 export function getMarketMeta(
@@ -238,15 +212,20 @@ export function getMarketMeta(
   let d = contract.marketsMeta(id);
 
   return {
-    riskTowerRootLevel: d.value0,
+    totalCapacity: d.value0,
     desiredCover: d.value1,
     waitingPeriod: d.value2,
     marketOperatorIncentiveFee: d.value3,
     lastChargeTimestamp: d.value4,
     settlementDiscount: d.value5,
     withdrawDelay: d.value6,
-    premiumRatePriorityRoot: d.value7,
-    payoutPriorityRoot: d.value8,
+    headAggregatedPoolId: d.value7,
+    tailCover: d.value8,
+    maxPremiumRatePerSec: d.value9,
+    bidStepPremiumRatePerSec: d.value10,
+    maxAggregatedPoolSlots: d.value11,
+    tailKink: d.value12,
+    tailJumpPremiumRatePerSec: d.value13,
   };
 }
 
@@ -372,29 +351,6 @@ export function getCoverReward(
     rootHash: d.value10,
     cid: d.value11,
     proofsCid: d.value12,
-  };
-}
-
-export class CPremiumRate {
-  premiumRateType: i32;
-  baseRatePerSec: BigInt;
-  multiplierPerSec: BigInt;
-  jumpMultiplierPerSec: BigInt;
-  kink: BigInt;
-}
-
-export function getPremiumRate(
-  contract: RiskPoolsControllerContract,
-  id: BigInt,
-): CPremiumRate {
-  let d = contract.premiumRates(id);
-
-  return {
-    premiumRateType: d.value0,
-    baseRatePerSec: d.value1,
-    multiplierPerSec: d.value2,
-    jumpMultiplierPerSec: d.value3,
-    kink: d.value4,
   };
 }
 

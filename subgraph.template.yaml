@@ -35,6 +35,7 @@ dataSources:
         - MarketPoolFee
         - AllowList
         - AllowListAccount
+        - Bid
       abis:
         - name: RiskPoolsController
           file: ./abis/RiskPoolsController.json
@@ -107,12 +108,12 @@ dataSources:
           handler: handleLogAggregatedPoolCreated
         - event: LogPremiumEarned(uint256,uint256,uint256)
           handler: handleLogPremiumEarned
-        - event: LogAggregatedPoolCapacityAllowanceUpdated(uint256,address,uint256)
-          handler: handleLogAggregatedPoolCapacityAllowanceUpdated
-        - event: LogAggregatedPoolRiskPoolCapacityLimitUpdated(uint256,address,uint256)
-          handler: handleLogAggregatedPoolRiskPoolCapacityLimitUpdated
-        - event: LogAggregatedPoolMarketCapacityLimitUpdated(uint256,address,uint256)
-          handler: handleLogAggregatedPoolMarketCapacityLimitUpdated
+        - event: LogMarketCapacityAllowanceUpdated(uint256,address,uint256)
+          handler: handleLogMarketCapacityAllowanceUpdated
+        # - event: LogMarketRiskPoolCapacityLimitUpdated(uint256,address,uint256)
+        #   handler: handleLogMarketRiskPoolCapacityLimitUpdated
+        - event: LogMarketCapacityLimitUpdated(uint256,address,uint256)
+          handler: handleLogMarketCapacityLimitUpdated
         - event: LogRebalance(uint256,address,uint256,uint256)
           handler: handleLogRebalance
         - event: LogRiskPoolRemovedFromAggregatedPool(uint256,address)

@@ -57,7 +57,7 @@ type Product @entity {
   defaultCapitalToken: Bytes
   defaultCoverAdjusterOracle: Bytes
   claimProcessor: Bytes
-  defaultPremiumRateModels: [Bytes!]!
+  # defaultPremiumRateModels: [Bytes!]!
   defaultRatesOracle: Bytes
   withdrawalDelay: BigInt
   withdrawRequestExpiration: BigInt
@@ -102,8 +102,6 @@ type Market @entity {
   status: Int
   premiumMulAccumulator: BigInt
   settlementDiscount: BigInt
-  premiumPoolList: [AggregatedPool!]!
-  sponsorPoolList: [AggregatedPool!]!
 
   rewards: [CoverMiningReward!]! @derivedFrom(field: "market")
 }
@@ -115,15 +113,12 @@ type MarketAggregatedPool @entity {
 
 type AggregatedPool @entity {
   id: ID!
-  premiumRateId: BigInt!
-  premiumRate: PremiumRateModel!
   market: Market!
-  poolMarketRelations: [PoolMarketRelation!]!
-    @derivedFrom(field: "aggregatedPool")
+  poolMarketRelations: [PoolMarketRelation!]! @derivedFrom(field: "aggregatedPool")
   poolList: [String!]!
   rate: BigInt!
   totalCapacity: BigInt!
-  coverage: BigInt!
+  #coverage: BigInt!
   premiumAccumulator: BigInt!
   premiumBalance: BigInt!
   nextAggregatedPoolId: BigInt!
@@ -231,6 +226,9 @@ type Policy @entity {
 }
 
 type PoolMarketRelation @entity {
+  """
+  poolId-marketId
+  """
   id: ID!
   poolId: Bytes!
   market: Market!
@@ -616,6 +614,26 @@ type AllowList @entity {
   createdAt: BigInt!
   createdBy: Bytes!
   updatedAt: BigInt!
+}
+
+type Bid @entity {
+  """
+  marketId-poolId
+  """
+  id: ID!
+  marketId: BigInt!
+  poolId: Bytes!
+
+  minPremiumRatePerSec: BigInt!
+  maxPremiumRatePerSec: BigInt!
+  minCoverBuffer: BigInt!
+  maxCoverBuffer: BigInt!
+  aggregatedPoolId: BigInt!
+  bidOptimization: Int!
+
+  maxCapacityLimit: BigInt!
+  marketCapacityLimit: BigInt!
+  capacityAllowance: BigInt!
 }
 
 type AllowListAccount @entity {
