@@ -60,7 +60,6 @@ import {
   Policy,
   PolicyPermissionToken,
   Pool,
-  PoolMarketRelation,
   Product,
   AccruedFee,
   MarketAccruedFee,
@@ -89,12 +88,10 @@ import {
 } from "./event";
 import {
   Address,
-  BigDecimal,
   BigInt,
   Bytes,
   ethereum,
   log,
-  store,
 } from "@graphprotocol/graph-ts";
 import { createPool, updateFeeRecipientRelation } from "./product";
 import { Product as ProductContract } from "../generated/RiskPoolsController/Product";
@@ -849,14 +846,14 @@ export function handleLogMarketCharge(event: LogMarketCharge): void {
     let poolId = aggPool.poolList[i];
     let pool = Pool.load(poolId)!;
     let pmrId = poolId + "-" + aggPool.id;
-    let pmRelation = PoolMarketRelation.load(pmrId);
+    let bid = Bid.load(aggPool.market + "-" + poolId);
     let id = poolId + "-" + token.toHexString();
 
-    if (!pmRelation || pmRelation.balance.isZero()) {
+    if (!bid || bid.capacity.isZero()) {
       continue;
     }
 
-    let poolPremium = pmRelation.balance
+    let poolPremium = bid.capacity
       .times(event.params.premium)
       .div(aggPool.totalCapacity);
 
@@ -993,24 +990,26 @@ export function handleLogRebalance(event: LogRebalance): void {
     return;
   }
 
-  let id = event.params.riskPool.toHexString() + "-" + aggPool.id;
-  let pmRelation = PoolMarketRelation.load(id);
+  let id = aggPool.market + "-" + event.params.riskPool.toHexString();
+  let bid = Bid.load(id);
 
-  if (!pmRelation) {
-    pmRelation = createPoolMarketRelation(
-      id,
-      event.params.riskPool,
-      aggPool.market,
-    );
+  if (!bid) {
+    return;
   }
 
-  pmRelation.balance = event.params.riskPoolCapacity;
-  pmRelation.save();
+  bid.aggregatedPoolId = event.params.aggregatedPoolId;
+  bid.aggregatedPool = aggPool.id;
+
+  bid.capacity = event.params.riskPoolCapacity;
+
+  bid.save();
 
   const rpcContract = RiskPoolsControllerContract.bind(event.address);
   const oldRate = aggPool.rate;
   aggPool.totalCapacity = event.params.totalAggregatedPoolCapacity;
   aggPool.rate = getAggregatedPool(rpcContract, event.params.aggregatedPoolId).premiumRatePerSec;
+
+  aggPool.save();
 
   const market = Market.load(aggPool.market)!;
 
@@ -1026,16 +1025,14 @@ export function handleLogRebalance(event: LogRebalance): void {
     aggPool.market
   );
 
-  aggPool.save();
-
   addEvent(
     EventType.PoolReBalance,
     event,
     aggPool.market,
     aggPool.id,
-    pmRelation.pool,
+    bid.pool,
     aggPool.totalCapacity.toString(),
-    pmRelation.balance.toString(),
+    bid.capacity.toString(),
     aggPool.totalCapacity.toString()
   );
 }
@@ -1077,18 +1074,17 @@ export function handleLogRiskPoolAddedToAggregatedPool(
     return;
   }
 
-  let id = event.params.riskPool.toHexString() + "-" + aggPool.id;
-  let pmRelation = PoolMarketRelation.load(id);
+  let id = aggPool.market + "-" + event.params.riskPool.toHexString();
+  let bid = Bid.load(id);
 
-  if (!pmRelation) {
-    pmRelation = createPoolMarketRelation(
-      id,
-      event.params.riskPool,
-      aggPool.market,
-    );
-
-    pmRelation.save();
+  if (!bid) {
+    return;
   }
+
+  bid.aggregatedPoolId = event.params.aggregatedPoolId;
+  bid.aggregatedPool = aggPool.id;
+
+  bid.save();
 
   let pool = Pool.load(event.params.riskPool.toHexString());
 
@@ -1268,24 +1264,6 @@ export function updateMarketChargeState(
   }
 }
 
-function createPoolMarketRelation(
-  id: string,
-  poolId: Address,
-  marketId: string,
-): PoolMarketRelation {
-  let pmr = new PoolMarketRelation(id);
-
-  pmr.poolId = poolId;
-  pmr.pool = poolId.toHexString();
-  pmr.market = marketId;
-  pmr.balance = BigInt.fromI32(0);
-  pmr.capacityAllowance = BigInt.fromI32(0);
-  pmr.poolCapacityLimit = BigInt.fromI32(0);
-  pmr.marketCapacityLimit = BigInt.fromI32(0);
-
-  return pmr;
-}
-
 export function handleLogListCreated(
   event: LogListCreated
 ): void {
@@ -1406,17 +1384,21 @@ export function handleLogJoinMarket(event: LogJoinMarket): void {
   let cBid = rpcContract.bid(event.params.marketId, event.params.riskPool);
 
   bid.marketId = marketId;
+  bid.market = marketId;
   bid.poolId = event.params.riskPool;
+  bid.pool = bid.poolId.toHexString();
 
   bid.minPremiumRatePerSec = cBid.minPremiumRatePerSec;
   bid.maxPremiumRatePerSec = cBid.maxPremiumRatePerSec;
   bid.minCoverBuffer = cBid.minCoverBuffer;
   bid.maxCoverBuffer = cBid.maxCoverBuffer;
   bid.aggregatedPoolId = cBid.aggregatedPoolId;
+  bid.aggregatedPool = bid.aggregatedPoolId.isZero() ? null : bid.aggregatedPoolId.toString();
   bid.bidOptimization = cBid.bidOptimization;
   bid.maxCapacityLimit = cBid.maxCapacityLimit;
   bid.marketCapacityLimit = cBid.marketCapacityLimit;
   bid.capacityAllowance = cBid.capacityAllowance;
+  bid.capacity = BigInt.fromI32(0);
 
   bid.save();
 }

@@ -89,7 +89,9 @@ type Market @entity {
   premiumToken: Bytes!
   capitalToken: Bytes!
   insuredToken: Bytes!
-  poolMarketRelations: [PoolMarketRelation!]! @derivedFrom(field: "market")
+
+  bids: [Bid!]! @derivedFrom(field: "market")
+
   latestAccruedTimestamp: BigInt!
   coverAdjusterOracle: Bytes!
   rateOracle: Bytes!
@@ -123,7 +125,6 @@ type MarketAggregatedPool @entity {
 type AggregatedPool @entity {
   id: ID!
   market: Market!
-  poolMarketRelations: [PoolMarketRelation!]! @derivedFrom(field: "aggregatedPool")
   poolList: [String!]!
   rate: BigInt!
   totalCapacity: BigInt!
@@ -234,21 +235,6 @@ type Policy @entity {
   permissionTokens: [PolicyPermissionToken!] @derivedFrom(field: "policy")
 }
 
-type PoolMarketRelation @entity {
-  """
-  poolId-marketId
-  """
-  id: ID!
-  poolId: Bytes!
-  market: Market!
-  balance: BigInt!
-  capacityAllowance: BigInt
-  poolCapacityLimit: BigInt
-  marketCapacityLimit: BigInt
-  pool: Pool
-  aggregatedPool: AggregatedPool!
-}
-
 type Pool @entity {
   id: ID!
   capitalTokenAddress: Bytes!
@@ -275,7 +261,7 @@ type Pool @entity {
   settlements: [PoolSettlement!] @derivedFrom(field: "pool")
   fees: [PoolFee!] @derivedFrom(field: "pool")
   marketFees: [MarketPoolFee!] @derivedFrom(field: "pool")
-  poolMarketRelations: [PoolMarketRelation!] @derivedFrom(field: "pool")
+  bids: [Bid!] @derivedFrom(field: "pool")
   externalPoolList: [String!]!
   externalWalletList: [ExternalWallet!] @derivedFrom(field: "pool")
   externalCapacity: BigInt
@@ -643,6 +629,11 @@ type Bid @entity {
   maxCapacityLimit: BigInt!
   marketCapacityLimit: BigInt!
   capacityAllowance: BigInt!
+
+  capacity: BigInt!
+  aggregatedPool: AggregatedPool
+  market: Market!
+  pool: Pool!
 }
 
 type AllowListAccount @entity {
