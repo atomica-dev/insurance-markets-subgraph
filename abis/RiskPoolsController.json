@@ -311,6 +311,38 @@
             {
                 "indexed": false,
                 "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "riskPool",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "aggregatedPoolId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "capacity",
+                "type": "uint256"
+            }
+        ],
+        "name": "LogJoinMarket",
+        "type": "event",
+        "signature": "0x37fb32acd366909ea61d7e07ad3900881198a451172a88bdf3ae5d1e4448240e"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
                 "name": "policyId",
                 "type": "uint256"
             }
@@ -2565,11 +2597,6 @@
                         "type": "address"
                     },
                     {
-                        "internalType": "address[]",
-                        "name": "defaultPremiumRateModels",
-                        "type": "address[]"
-                    },
-                    {
                         "internalType": "address",
                         "name": "defaultRatesOracle",
                         "type": "address"
@@ -2619,7 +2646,7 @@
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xa574c1da"
+        "signature": "0xe61e66e4"
     },
     {
         "inputs": [
@@ -4322,6 +4349,11 @@
             {
                 "internalType": "uint256",
                 "name": "frontendOperatorFee",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "referralBonus",
                 "type": "uint256"
             },
             {

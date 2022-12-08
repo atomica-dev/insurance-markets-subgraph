@@ -10,6 +10,7 @@ export class CPolicy {
   waitingPeriod: BigInt;
   frontendOperator: Address;
   frontendOperatorFee: BigInt;
+  referralBonus: BigInt;
   referral: Address;
   referralFee: BigInt;
   desiredCover: BigInt;
@@ -30,10 +31,11 @@ export function getPolicy(
     waitingPeriod: d.value4,
     frontendOperator: d.value5,
     frontendOperatorFee: d.value6,
-    referral: d.value7,
-    referralFee: d.value8,
-    desiredCover: d.value9,
-    underlyingCover: d.value10,
+    referralBonus: d.value7,
+    referral: d.value8,
+    referralFee: d.value9,
+    desiredCover: d.value10,
+    underlyingCover: d.value11,
   };
 }
 
@@ -365,6 +367,32 @@ export function getList(
   id: BigInt,
 ): CList {
   let d = contract.lists(id);
+
+  return {
+    type: d.value0,
+    editor: d.value1,
+    descriptionCid: d.value2,
+  }
+};
+
+export class CBid {
+  minPremiumRatePerSec: BigInt;
+  maxPremiumRatePerSec: BigInt;
+  minCoverBuffer: BigInt;
+  maxCoverBuffer: BigInt;
+  aggregatedPoolId: BigInt;
+  maxCapacityLimit: BigInt;
+  marketCapacityLimit: BigInt;
+  capacityAllowance: BigInt;
+
+  bidOptimization: i32;
+}
+
+export function getBid(
+  contract: RiskPoolsControllerContract,
+  id: BigInt,
+): CBid {
+  let d = contract.bid(id);
 
   return {
     type: d.value0,

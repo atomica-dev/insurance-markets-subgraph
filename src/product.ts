@@ -63,8 +63,6 @@ export function handleLogNewMarket(event: LogNewMarket): void {
   market.details =
     titleParams.length > 0 ? titleParams[titleParams.length - 1] : null;
 
-  market.exposure = marketMeta.desiredCover;
-  market.actualCover = BigInt.fromI32(0);
   market.waitingPeriod = marketMeta.waitingPeriod;
   market.marketOperatorIncentiveFee = marketMeta.marketOperatorIncentiveFee;
   market.latestAccruedTimestamp = marketMeta.lastChargeTimestamp;
@@ -80,6 +78,18 @@ export function handleLogNewMarket(event: LogNewMarket): void {
   market.title = marketInfo.title;
   market.isEnabled = rpcContract.marketStatus(marketId) == 0;
 
+  market.totalCapacity = marketMeta.totalCapacity;
+  market.desiredCover = marketMeta.desiredCover;
+  market.waitingPeriod = marketMeta.waitingPeriod;
+  market.withdrawDelay = marketMeta.withdrawDelay;
+  market.headAggregatedPoolId = marketMeta.headAggregatedPoolId;
+  market.tailCover = marketMeta.tailCover;
+  market.maxPremiumRatePerSec = marketMeta.maxPremiumRatePerSec;
+  market.bidStepPremiumRatePerSec = marketMeta.bidStepPremiumRatePerSec;
+  market.maxAggregatedPoolSlots = marketMeta.maxAggregatedPoolSlots;
+  market.tailKink = marketMeta.tailKink;
+  market.tailJumpPremiumRatePerSec = marketMeta.tailJumpPremiumRatePerSec;
+
   market.policyBuyerAllowListId = rpcContract.policyBuyerAllowlistId(marketId);
   market.premiumMulAccumulator = rpcContract.marketsPremiumMulAccumulators(
     marketId
@@ -94,19 +104,19 @@ export function handleLogNewMarket(event: LogNewMarket): void {
 
   if (market.rateOracle) {
     addOraclePair(
-      market.rateOracle!.toHexString(),
+      market.rateOracle.toHexString(),
       market.capitalToken,
       market.premiumToken
     );
     addOraclePair(
-      market.rateOracle!.toHexString(),
+      market.rateOracle.toHexString(),
       market.premiumToken,
       Address.fromHexString(ETH_ADDRESS)
     );
 
     if (market.insuredToken != Address.fromHexString(ZERO_ADDRESS)) {
       addOraclePair(
-        market.rateOracle!.toHexString(),
+        market.rateOracle.toHexString(),
         market.capitalToken,
         market.insuredToken
       );
@@ -257,6 +267,7 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
   policy.frontendOperator = policyInfo.frontendOperator.toHexString();
   policy.foAddress = policyInfo.frontendOperator;
   policy.foFeeRate = policyInfo.frontendOperatorFee;
+  policy.referralBonus = policyInfo.referralBonus;
   policy.referralAddress = policyInfo.referral;
   policy.referralFeeRate = policyInfo.referralFee;
   policy.coverage = policyInfo.desiredCover;
@@ -268,8 +279,6 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
   policy.updatedAt = event.block.timestamp;
 
   policy.save();
-
-  let market = Market.load(policy.market)!;
 
   if (
     getState(EventType.TotalPolicies, policy.market).value == BigInt.fromI32(0)

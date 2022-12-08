@@ -110,12 +110,14 @@ dataSources:
           handler: handleLogPremiumEarned
         - event: LogMarketCapacityAllowanceUpdated(uint256,address,uint256)
           handler: handleLogMarketCapacityAllowanceUpdated
-        # - event: LogMarketRiskPoolCapacityLimitUpdated(uint256,address,uint256)
-        #   handler: handleLogMarketRiskPoolCapacityLimitUpdated
         - event: LogMarketCapacityLimitUpdated(uint256,address,uint256)
           handler: handleLogMarketCapacityLimitUpdated
         - event: LogRebalance(uint256,address,uint256,uint256)
           handler: handleLogRebalance
+        - event: LogCoverDistributed(uint256,uint256)
+          handler: handleLogCoverDistributed
+        - event: LogJoinMarket(uint256,address,uint256,uint256)
+          handler: handleLogJoinMarket
         - event: LogRiskPoolRemovedFromAggregatedPool(uint256,address)
           handler: handleLogRiskPoolRemovedFromAggregatedPool
         - event: LogRiskPoolAddedToAggregatedPool(uint256,address)

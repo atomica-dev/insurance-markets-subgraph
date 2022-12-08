@@ -57,7 +57,6 @@ type Product @entity {
   defaultCapitalToken: Bytes
   defaultCoverAdjusterOracle: Bytes
   claimProcessor: Bytes
-  # defaultPremiumRateModels: [Bytes!]!
   defaultRatesOracle: Bytes
   withdrawalDelay: BigInt
   withdrawRequestExpiration: BigInt
@@ -85,23 +84,33 @@ type Market @entity {
   title: String!
   details: String
   wording: String
-  exposure: BigInt!
-  actualCover: BigInt!
   author: Bytes!
   marketFeeRecipient: Bytes!
   premiumToken: Bytes!
   capitalToken: Bytes!
   insuredToken: Bytes!
   poolMarketRelations: [PoolMarketRelation!]! @derivedFrom(field: "market")
-  latestAccruedTimestamp: BigInt
-  coverAdjusterOracle: Bytes
-  rateOracle: Bytes
-  waitingPeriod: BigInt
-  marketOperatorIncentiveFee: BigInt
-  policyBuyerAllowListId: BigInt
-  status: Int
-  premiumMulAccumulator: BigInt
-  settlementDiscount: BigInt
+  latestAccruedTimestamp: BigInt!
+  coverAdjusterOracle: Bytes!
+  rateOracle: Bytes!
+  waitingPeriod: BigInt!
+  marketOperatorIncentiveFee: BigInt!
+  policyBuyerAllowListId: BigInt!
+  status: Int!
+  premiumMulAccumulator: BigInt!
+  settlementDiscount: BigInt!
+
+  totalCapacity: BigInt!
+  desiredCover: BigInt!
+  withdrawDelay: BigInt!
+  headAggregatedPoolId: BigInt!
+  tailCover: BigInt!
+  maxPremiumRatePerSec: BigInt!
+  bidStepPremiumRatePerSec: BigInt!
+  maxAggregatedPoolSlots: BigInt!
+  tailKink: BigInt!
+  tailJumpPremiumRatePerSec: BigInt!
+  tailAggPoolId: BigInt
 
   rewards: [CoverMiningReward!]! @derivedFrom(field: "market")
 }
@@ -118,7 +127,6 @@ type AggregatedPool @entity {
   poolList: [String!]!
   rate: BigInt!
   totalCapacity: BigInt!
-  #coverage: BigInt!
   premiumAccumulator: BigInt!
   premiumBalance: BigInt!
   nextAggregatedPoolId: BigInt!
@@ -218,6 +226,7 @@ type Policy @entity {
   premiumDeposit: BigInt!
   foAddress: Bytes!
   foFeeRate: BigInt!
+  referralBonus: BigInt!
   foFeeDeposit: BigInt!
   referralAddress: Bytes!
   referralFeeRate: BigInt!
@@ -621,7 +630,7 @@ type Bid @entity {
   marketId-poolId
   """
   id: ID!
-  marketId: BigInt!
+  marketId: String!
   poolId: Bytes!
 
   minPremiumRatePerSec: BigInt!

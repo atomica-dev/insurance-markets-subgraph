@@ -466,13 +466,13 @@ function handleUpdateMarketExchangeRateOracle(event: LogGovernance): void {
 
   if (market.rateOracle) {
     addOraclePair(
-      market.rateOracle!.toHexString(),
+      market.rateOracle.toHexString(),
       market.capitalToken,
       market.premiumToken
     );
   }
   addOraclePair(
-    market.rateOracle!.toHexString(),
+    market.rateOracle.toHexString(),
     market.premiumToken,
     Address.fromHexString(ETH_ADDRESS)
   );

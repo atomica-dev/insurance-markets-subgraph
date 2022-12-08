@@ -36,8 +36,10 @@ import {
   LogArchivedRewardClaimed,
   LogWithdrawAccruedMarketFee,
   LogPremiumEarned,
+  LogCoverDistributed,
 } from "../generated/RiskPoolsController/RiskPoolsController";
 import {
+  LogJoinMarket,
   LogListCreated,
   LogListEdited,
   LogListEditorChanged,
@@ -145,10 +147,6 @@ export function handleLogNewProduct(event: LogNewProduct): void {
   product.payoutRequester = productContract.payoutRequester();
   product.productIncentiveFee = productInfo.value2;
   product.maxMarketIncentiveFee = productInfo.value3;
-
-  // product.defaultPremiumRateModels = changetype<Bytes[]>(
-  //   productContract.getDefaultPremiumRateModels()
-  // );
 
   product.defaultRatesOracle = productContract.defaultRatesOracle();
   product.withdrawalDelay = productContract.withdrawalDelay();
@@ -824,37 +822,6 @@ export function handleLogCoverMiningRewardDeactivated(
   cmReward.save();
 }
 
-// function updateAggPoolCover(
-//   event: ethereum.Event,
-//   aggPool: AggregatedPool,
-//   newCover: BigInt
-// ): void {
-//   const oldCoverage = aggPool.coverage;
-//   aggPool.coverage = newCover;
-//   const oldRate = aggPool.rate;
-//   aggPool.rate = getAggPoolCurrentRate(aggPool, event.address);
-
-//   const oldQuote = oldRate.times(oldCoverage);
-//   const newQuote = aggPool.rate.times(aggPool.coverage);
-
-//   updateAndLogState(
-//     EventType.MarketQuote,
-//     event,
-//     newQuote.minus(oldQuote),
-//     aggPool.market
-//   );
-
-//   aggPool.save();
-
-//   addEvent(
-//     EventType.PoolExposure,
-//     event,
-//     aggPool.market,
-//     aggPool.id,
-//     aggPool.coverage.toString()
-//   );
-// }
-
 export function handleLogPremiumEarned(event: LogPremiumEarned): void {
   const marketId =
     event.address.toHexString() + "-" + event.params.marketId.toString();
@@ -987,23 +954,6 @@ export function handleLogMarketCapacityAllowanceUpdated(
   bid.save();
 }
 
-// export function handleLogMarketRiskPoolCapacityLimitUpdated(
-//   event: LogMarketRiskPoolCapacityLimitUpdated
-// ): void {
-//   let marketId = event.address.toHexString() + "-" + event.params.marketId.toString();
-//   let bidId = marketId + "-" + event.params.riskPool.toHexString();
-
-//   let bid = Bid.load(bidId);
-
-//   if (!bid) {
-//     return;
-//   }
-
-//   bid.riskPoolLimit = event.params.capacityLimit;
-
-//   bid.save();
-// }
-
 export function handleLogMarketCapacityLimitUpdated(
   event: LogMarketCapacityLimitUpdated
 ): void {
@@ -1019,6 +969,21 @@ export function handleLogMarketCapacityLimitUpdated(
   bid.marketCapacityLimit = event.params.capacityLimit;
 
   bid.save();
+}
+
+export function handleLogCoverDistributed(event: LogCoverDistributed): void {
+  let aggPool = AggregatedPool.load(event.params.aggregatedPoolId.toString());
+
+  if (!aggPool) {
+    return;
+  }
+
+  const market = Market.load(aggPool.market)!;
+
+  market.tailCover = event.params.cover;
+  market.tailAggPoolId = event.params.aggregatedPoolId;
+
+  market.save();
 }
 
 export function handleLogRebalance(event: LogRebalance): void {
@@ -1047,15 +1012,19 @@ export function handleLogRebalance(event: LogRebalance): void {
   aggPool.totalCapacity = event.params.totalAggregatedPoolCapacity;
   aggPool.rate = getAggregatedPool(rpcContract, event.params.aggregatedPoolId).premiumRatePerSec;
 
-  // const oldQuote = oldRate.times(aggPool.coverage);
-  // const newQuote = aggPool.rate.times(aggPool.coverage);
+  const market = Market.load(aggPool.market)!;
 
-  // updateAndLogState(
-  //   EventType.MarketQuote,
-  //   event,
-  //   newQuote.minus(oldQuote),
-  //   aggPool.market
-  // );
+  const cover = market.tailAggPoolId === event.params.aggregatedPoolId ? market.tailCover : aggPool.totalCapacity;
+
+  const oldQuote = oldRate.times(cover);
+  const newQuote = aggPool.rate.times(cover);
+
+  updateAndLogState(
+    EventType.MarketQuote,
+    event,
+    newQuote.minus(oldQuote),
+    aggPool.market
+  );
 
   aggPool.save();
 
@@ -1065,7 +1034,7 @@ export function handleLogRebalance(event: LogRebalance): void {
     aggPool.market,
     aggPool.id,
     pmRelation.pool,
-    "0", // aggPool.coverage.toString(),
+    aggPool.totalCapacity.toString(),
     pmRelation.balance.toString(),
     aggPool.totalCapacity.toString()
   );
@@ -1249,14 +1218,6 @@ function updateAggPoolList(curAggId: BigInt, rpcContract: RiskPoolsControllerCon
   return result;
 }
 
-// function getAggPoolCurrentRate(aggPool: AggregatedPool, rpcContractAddress: Address): BigInt {
-//   let rpcContract = RiskPoolsControllerContract.bind(rpcContractAddress);
-
-//   let rate = rpcContract.try_premiumRatePerSec(BigInt.fromString(aggPool.id), aggPool.coverage);
-
-//   return rate.reverted ? BigInt.fromI32(0) : rate.value;
-// }
-
 export function updateMarketChargeState(
   rpcContractAddress: Address,
   marketId: string,
@@ -1271,11 +1232,10 @@ export function updateMarketChargeState(
 
   const marketMeta = getMarketMeta(rpcContract, market.marketId);
 
-  //const coverDetails = getMarketCoverDetails(rpcContract, market.marketId);
-
   market.latestAccruedTimestamp = marketMeta.lastChargeTimestamp;
-  market.exposure = marketMeta.desiredCover;
-  //market.actualCover = coverDetails.actualCover;
+  market.desiredCover = marketMeta.desiredCover;
+  market.totalCapacity = marketMeta.totalCapacity;
+  market.tailCover = marketMeta.tailCover;
 
   market.save();
 
@@ -1284,17 +1244,8 @@ export function updateMarketChargeState(
     event,
     market.id,
     market.id,
-    market.actualCover.toString()
+    (market.totalCapacity.lt(market.desiredCover) ? market.totalCapacity : market.desiredCover).toString(),
   );
-
-  const coverMap = new Map<string, BigInt>();
-
-  // for (let i = 0; i < coverDetails.aggregatedPools.length; i++) {
-  //   coverMap.set(
-  //     coverDetails.aggregatedPools[i].toString(),
-  //     coverDetails.covers[i]
-  //   );
-  // }
 
   const marketAggPool = MarketAggregatedPool.load(market.id);
 
@@ -1314,14 +1265,6 @@ export function updateMarketChargeState(
     aggPool.rate = cAggPool.premiumRatePerSec;
 
     aggPool.save();
-
-    // let poolCover = BigInt.fromI32(0);
-
-    // if (coverMap.has(aggPoolId)) {
-    //   poolCover = coverMap.get(aggPoolId);
-    // }
-
-    // updateAggPoolCover(event, aggPool, poolCover);
   }
 }
 
@@ -1452,4 +1395,28 @@ export function updateAllowListAccounts(allowListId: BigInt, accounts: Address[]
 
     listAccount.save();
   }
+}
+
+export function handleLogJoinMarket(event: LogJoinMarket): void {
+  let marketId = event.address.toHexString() + "-" + event.params.marketId.toString();
+  let bidId = marketId + "-" + event.params.riskPool.toHexString();
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+
+  let bid = new Bid(bidId);
+  let cBid = rpcContract.bid(event.params.marketId, event.params.riskPool);
+
+  bid.marketId = marketId;
+  bid.poolId = event.params.riskPool;
+
+  bid.minPremiumRatePerSec = cBid.minPremiumRatePerSec;
+  bid.maxPremiumRatePerSec = cBid.maxPremiumRatePerSec;
+  bid.minCoverBuffer = cBid.minCoverBuffer;
+  bid.maxCoverBuffer = cBid.maxCoverBuffer;
+  bid.aggregatedPoolId = cBid.aggregatedPoolId;
+  bid.bidOptimization = cBid.bidOptimization;
+  bid.maxCapacityLimit = cBid.maxCapacityLimit;
+  bid.marketCapacityLimit = cBid.marketCapacityLimit;
+  bid.capacityAllowance = cBid.capacityAllowance;
+
+  bid.save();
 }
