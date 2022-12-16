@@ -166,8 +166,7 @@ export function createPool(poolId: Address, event: ethereum.Event): void {
   pool.withdrawRequestExpiration = pContract.withdrawRequestExpiration();
   pool.withdrawDelay = pContract.withdrawDelay();
   pool.lpAllowListId = pContract.allowlistId();
-  //TODO: UNCOMMENT once contract issue is fixed.
-  //pool.lpAllowanceListId = pContract.allowanceListId();
+  pool.lpAllowanceListId = pContract.allowanceListId();
   pool.rewards = [];
   pool.externalPoolList = [];
   pool.externalCapacity = BigInt.fromI32(0);

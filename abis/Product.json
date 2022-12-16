@@ -298,6 +298,11 @@
                     },
                     {
                         "internalType": "uint256",
+                        "name": "policyBuyerAllowanceListId",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
                         "name": "marketOperatorIncentiveFee",
                         "type": "uint256"
                     },
@@ -375,25 +380,6 @@
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "index",
-                "type": "uint256"
-            }
-        ],
-        "name": "defaultPremiumRateModels",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [],
         "name": "defaultPremiumToken",
         "outputs": [
@@ -427,19 +413,6 @@
                 "internalType": "address",
                 "name": "",
                 "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "getDefaultPremiumRateModels",
-        "outputs": [
-            {
-                "internalType": "address[]",
-                "name": "",
-                "type": "address[]"
             }
         ],
         "stateMutability": "view",
