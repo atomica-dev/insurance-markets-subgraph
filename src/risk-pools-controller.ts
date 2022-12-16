@@ -1056,6 +1056,16 @@ export function handleLogRiskPoolRemovedFromAggregatedPool(
 
   aggPool.save();
 
+  let bidId = aggPool.market + "-" + event.params.riskPool.toHexString();
+  let bid = Bid.load(bidId);
+
+  if (bid) {
+    bid.aggregatedPool = null;
+    bid.aggregatedPoolId = BigInt.fromI32(0);
+
+    bid.save();
+  }
+
   addEvent(
     EventType.PoolMarketCount,
     event,
@@ -1148,11 +1158,20 @@ export function handleLogRiskPoolManagerFeeRecipientChanged(
 export function handleLogAggregatedPoolCreated(
   event: LogAggregatedPoolCreated
 ): void {
-  let rpcContract = RiskPoolsControllerContract.bind(event.address);
-  let cAggPool = getAggregatedPool(rpcContract, event.params.aggregatedPoolId);
-  let aggPool = new AggregatedPool(event.params.aggregatedPoolId.toString());
+  let aggPool = createAggregatedPool(event.params.aggregatedPoolId, event.address);
+
+  updateAggPoolList(aggPool.prevAggregatedPoolId, RiskPoolsControllerContract.bind(event.address));
+}
+
+export function createAggregatedPool(
+  aggregatedPoolId: BigInt,
+  rpcContractAddress: Address,
+): AggregatedPool {
+  let rpcContract = RiskPoolsControllerContract.bind(rpcContractAddress);
+  let cAggPool = getAggregatedPool(rpcContract, aggregatedPoolId);
+  let aggPool = new AggregatedPool(aggregatedPoolId.toString());
   let marketId =
-    event.address.toHexString() + "-" + cAggPool.marketId.toString();
+    rpcContractAddress.toHexString() + "-" + cAggPool.marketId.toString();
 
   aggPool.market = marketId;
   aggPool.rate = cAggPool.premiumRatePerSec;
@@ -1177,21 +1196,7 @@ export function handleLogAggregatedPoolCreated(
 
   marketAggPool.save();
 
-  // rebuildMarketPoolList(cAggPool.marketId, event.address);
-}
-
-export function rebuildMarketPoolList(marketNo: BigInt, rpcContractAddress: Address): void {
-  let marketId = rpcContractAddress.toHexString() + "-" + marketNo.toString();
-  let market = Market.load(marketId);
-  let rpcContract = RiskPoolsControllerContract.bind(rpcContractAddress);
-  let marketMeta = getMarketMeta(rpcContract, marketNo);
-
-  if (!market) {
-    return;
-  }
-
-
-  market.save();
+  return aggPool;
 }
 
 function updateAggPoolList(curAggId: BigInt, rpcContract: RiskPoolsControllerContract): string[] {

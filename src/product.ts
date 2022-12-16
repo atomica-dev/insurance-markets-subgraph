@@ -39,7 +39,7 @@ import {
   filterNotEqual,
   ZERO_ADDRESS,
 } from "./utils";
-import { rebuildMarketPoolList, updateMarketChargeState } from "./risk-pools-controller";
+import { createAggregatedPool, updateMarketChargeState } from "./risk-pools-controller";
 
 export function handleLogNewMarket(event: LogNewMarket): void {
   let marketId = event.params.marketId;
@@ -91,6 +91,7 @@ export function handleLogNewMarket(event: LogNewMarket): void {
   market.tailJumpPremiumRatePerSec = marketMeta.tailJumpPremiumRatePerSec;
 
   market.policyBuyerAllowListId = rpcContract.policyBuyerAllowlistId(marketId);
+  market.policyBuyerAllowanceListId = rpcContract.policyBuyerAllowanceListId(marketId);
   market.premiumMulAccumulator = rpcContract.marketsPremiumMulAccumulators(
     marketId
   );
@@ -100,7 +101,7 @@ export function handleLogNewMarket(event: LogNewMarket): void {
 
   market.save();
 
-  rebuildMarketPoolList(marketId, rpcContractAddress);
+  createAggregatedPool(market.headAggregatedPoolId, rpcContractAddress);
 
   if (market.rateOracle) {
     addOraclePair(
@@ -165,6 +166,8 @@ export function createPool(poolId: Address, event: ethereum.Event): void {
   pool.withdrawRequestExpiration = pContract.withdrawRequestExpiration();
   pool.withdrawDelay = pContract.withdrawDelay();
   pool.lpAllowListId = pContract.allowlistId();
+  //TODO: UNCOMMENT once contract issue is fixed.
+  //pool.lpAllowanceListId = pContract.allowanceListId();
   pool.rewards = [];
   pool.externalPoolList = [];
   pool.externalCapacity = BigInt.fromI32(0);

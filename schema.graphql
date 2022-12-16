@@ -98,6 +98,7 @@ type Market @entity {
   waitingPeriod: BigInt!
   marketOperatorIncentiveFee: BigInt!
   policyBuyerAllowListId: BigInt!
+  policyBuyerAllowanceListId: BigInt!
   status: Int!
   premiumMulAccumulator: BigInt!
   settlementDiscount: BigInt!
@@ -256,6 +257,7 @@ type Pool @entity {
   withdrawRequestExpiration: BigInt
   capitalRequirement: BigInt
   lpAllowListId: BigInt
+  lpAllowanceListId: BigInt
   rewards: [Reward!]!
   premiums: [PoolPremium!] @derivedFrom(field: "pool")
   settlements: [PoolSettlement!] @derivedFrom(field: "pool")

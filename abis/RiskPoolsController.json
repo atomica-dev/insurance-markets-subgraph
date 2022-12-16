@@ -1996,12 +1996,12 @@
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "listId_",
+                "name": "listId",
                 "type": "uint256"
             },
             {
                 "internalType": "address",
-                "name": "editor_",
+                "name": "editor",
                 "type": "address"
             }
         ],
@@ -2344,17 +2344,17 @@
             },
             {
                 "internalType": "string",
-                "name": "descriptionCid_",
+                "name": "descriptionCid",
                 "type": "string"
             },
             {
                 "internalType": "address[]",
-                "name": "accounts_",
+                "name": "accounts",
                 "type": "address[]"
             },
             {
                 "internalType": "uint256[]",
-                "name": "values_",
+                "name": "values",
                 "type": "uint256[]"
             }
         ],
@@ -2440,6 +2440,11 @@
                     },
                     {
                         "internalType": "uint256",
+                        "name": "policyBuyerAllowanceListId",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
                         "name": "marketOperatorIncentiveFee",
                         "type": "uint256"
                     }
@@ -2496,7 +2501,7 @@
         ],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xac2c0cf6"
+        "signature": "0x309905a2"
     },
     {
         "inputs": [
@@ -2651,54 +2656,66 @@
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "capitalToken",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "nominatedToken",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "manager",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "managerFeeRecipient",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "managerFee",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "cap",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "withdrawDelay",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "withdrawRequestLifetime",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "allowlistId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "string",
-                "name": "agreement",
-                "type": "string"
+                "components": [
+                    {
+                        "internalType": "address",
+                        "name": "capitalToken",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "nominatedToken",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "manager",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "managerFeeRecipient",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "managerFee",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "cap",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "withdrawDelay",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "withdrawRequestLifetime",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "allowlistId",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "allowanceListId",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "agreement",
+                        "type": "string"
+                    }
+                ],
+                "internalType": "struct IRiskPoolCreatorImpl.CreateRiskPoolParams",
+                "name": "",
+                "type": "tuple"
             }
         ],
         "name": "createRiskPool",
@@ -2711,7 +2728,7 @@
         ],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x6c8a5a23"
+        "signature": "0x12f859ff"
     },
     {
         "inputs": [
@@ -2904,20 +2921,6 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "premiumRateModel",
-                "type": "address"
-            }
-        ],
-        "name": "deregisterPremiumRateModel",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x92bf7dd4"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
                 "name": "syncOracle",
                 "type": "address"
             }
@@ -2997,17 +3000,17 @@
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "listId_",
+                "name": "listId",
                 "type": "uint256"
             },
             {
                 "internalType": "address[]",
-                "name": "accounts_",
+                "name": "accounts",
                 "type": "address[]"
             },
             {
                 "internalType": "uint256[]",
-                "name": "values_",
+                "name": "values",
                 "type": "uint256[]"
             }
         ],
@@ -3603,12 +3606,12 @@
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "listId_",
+                "name": "listId",
                 "type": "uint256"
             },
             {
                 "internalType": "address",
-                "name": "account_",
+                "name": "account",
                 "type": "address"
             }
         ],
@@ -3616,12 +3619,12 @@
         "outputs": [
             {
                 "internalType": "enum IRiskPoolsControllerStorageModel.ListType",
-                "name": "listType_",
+                "name": "listType",
                 "type": "uint8"
             },
             {
                 "internalType": "uint256",
-                "name": "value_",
+                "name": "value",
                 "type": "uint256"
             }
         ],
@@ -4142,6 +4145,32 @@
         "inputs": [
             {
                 "internalType": "uint256",
+                "name": "listId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "passList",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0xdf76adba"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
                 "name": "payoutRequestId",
                 "type": "uint256"
             },
@@ -4437,6 +4466,27 @@
                 "type": "uint256"
             }
         ],
+        "name": "policyBuyerAllowanceListId",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x035fbf80"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            }
+        ],
         "name": "policyBuyerAllowlistId",
         "outputs": [
             {
@@ -4572,27 +4622,6 @@
         "type": "function",
         "constant": true,
         "signature": "0xa8f40a93"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "name": "premiumRateModels",
-        "outputs": [
-            {
-                "internalType": "bool",
-                "name": "",
-                "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true,
-        "signature": "0x42cd0530"
     },
     {
         "inputs": [
@@ -4902,20 +4931,6 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0xbfdd2bbe"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "premiumRateModel",
-                "type": "address"
-            }
-        ],
-        "name": "registerPremiumRateModel",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x0b833beb"
     },
     {
         "inputs": [
