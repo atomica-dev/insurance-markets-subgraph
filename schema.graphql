@@ -26,6 +26,7 @@ type System @entity {
   swapCycleDuration: BigInt!
   swapDuration: BigInt!
   idleDuration: BigInt!
+  maxIterations: BigInt!
 
   status: Int!
 }

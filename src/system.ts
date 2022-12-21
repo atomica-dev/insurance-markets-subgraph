@@ -42,6 +42,7 @@ export function getSystemConfig(id: string): System {
     config.idleDuration = contract.idleDuration();
     config.extPoolDetailsConfidenceInterval =
       contract.externalRiskPoolsConfidenceInterval();
+    config.maxIterations = contract.maxIterations();
 
     config.save();
   }
