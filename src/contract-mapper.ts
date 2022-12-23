@@ -1,4 +1,4 @@
-import { RiskPoolsController as RiskPoolsControllerContract } from "../generated/templates/Product/RiskPoolsController";
+import { RiskPoolsController as RiskPoolsControllerContract } from "../generated/RiskPoolsController/RiskPoolsController";
 import { Pool as RiskPoolContract } from "../generated/templates/Pool/Pool";
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 
@@ -6,7 +6,6 @@ export class CPolicy {
   marketId: BigInt;
   validUntil: BigInt;
   coverChanged: BigInt;
-  issuer: Address;
   waitingPeriod: BigInt;
   frontendOperator: Address;
   frontendOperatorFee: BigInt;
@@ -27,15 +26,14 @@ export function getPolicy(
     marketId: d.value0,
     validUntil: d.value1,
     coverChanged: d.value2,
-    issuer: d.value3,
-    waitingPeriod: d.value4,
-    frontendOperator: d.value5,
-    frontendOperatorFee: d.value6,
-    referralBonus: d.value7,
-    referral: d.value8,
-    referralFee: d.value9,
-    desiredCover: d.value10,
-    underlyingCover: d.value11,
+    waitingPeriod: d.value3,
+    frontendOperator: d.value4,
+    frontendOperatorFee: d.value5,
+    referralBonus: d.value6,
+    referral: d.value7,
+    referralFee: d.value8,
+    desiredCover: d.value9,
+    underlyingCover: d.value10,
   };
 }
 
@@ -83,40 +81,80 @@ export function getPoolBucket(
 }
 
 export class CProduct {
-  wording: string;
   productOperator: Address;
-  productOperatorIncentiveFee: BigInt;
-  maxMarketOperatorIncentiveFee: BigInt;
-  settlement: number;
-  status: number;
+  claimProcessor: Address;
+  payoutRequester: Address;
+  payoutApprover: Address;
+  defaultPremiumToken: Address;
+  defaultCapitalToken: Address;
+  defaultCoverAdjusterOracle: Address;
+  defaultRatesOracle: Address;
+  marketCreationFeeToken: Address;
 };
 
 export function getProduct(
   contract: RiskPoolsControllerContract,
-  id: Address,
+  id: BigInt,
 ): CProduct {
   let d = contract.products(id);
+
   return {
-    wording: d.value0,
-    productOperator: d.value1,
-    productOperatorIncentiveFee: d.value2,
-    maxMarketOperatorIncentiveFee: d.value3,
-    settlement: d.value4,
-    status: d.value5,
+    productOperator: d.value0,
+    claimProcessor: d.value1,
+    payoutRequester: d.value2,
+    payoutApprover: d.value3,
+    defaultPremiumToken: d.value4,
+    defaultCapitalToken: d.value5,
+    defaultCoverAdjusterOracle: d.value6,
+    defaultRatesOracle: d.value7,
+    marketCreationFeeToken: d.value8,
+  };
+}
+
+export class CProductMeta {
+  marketCreationFee: BigInt;
+  productOperatorIncentiveFee: BigInt;
+  maxMarketOperatorIncentiveFee: BigInt;
+  withdrawDelay: BigInt;
+  withdrawRequestExpiration: BigInt;
+  waitingPeriod: BigInt;
+  marketCreatorsListId: BigInt;
+  settlement: number;
+  status: i32;
+  title: string;
+  wording: string;
+}
+
+export function getProductMeta(
+  contract: RiskPoolsControllerContract,
+  id: BigInt,
+): CProductMeta {
+  let d = contract.productsMeta(id);
+
+  return {
+    marketCreationFee: d.value0,
+    productOperatorIncentiveFee: d.value1,
+    maxMarketOperatorIncentiveFee: d.value2,
+    withdrawDelay: d.value3,
+    withdrawRequestExpiration: d.value4,
+    waitingPeriod: d.value5,
+    marketCreatorsListId: d.value6,
+    settlement: d.value7,
+    status: d.value8,
+    title: d.value9,
+    wording: d.value10,
   };
 }
 
 export class CMarket {
   marketOperator: Address;
   marketFeeRecipient: Address;
-  product: Address;
   premiumToken: Address;
   capitalToken: Address;
   insuredToken: Address;
   coverAdjusterOracle: Address;
   ratesOracle: Address;
-  payoutRequester: Address;
-  payoutApprover: Address;
+  productId: BigInt;
   title: string;
 }
 
@@ -125,18 +163,17 @@ export function getMarket(
   id: BigInt
 ): CMarket {
   let d = contract.markets(id);
+
   return {
     marketOperator: d.value0,
     marketFeeRecipient: d.value1,
-    product: d.value2,
-    premiumToken: d.value3,
-    capitalToken: d.value4,
-    insuredToken: d.value5,
-    coverAdjusterOracle: d.value6,
-    ratesOracle: d.value7,
-    payoutRequester: d.value8,
-    payoutApprover: d.value9,
-    title: d.value10,
+    premiumToken: d.value2,
+    capitalToken: d.value3,
+    insuredToken: d.value4,
+    coverAdjusterOracle: d.value5,
+    ratesOracle: d.value6,
+    productId: d.value7,
+    title: d.value8,
   };
 }
 
@@ -367,32 +404,6 @@ export function getList(
   id: BigInt,
 ): CList {
   let d = contract.lists(id);
-
-  return {
-    type: d.value0,
-    editor: d.value1,
-    descriptionCid: d.value2,
-  }
-};
-
-export class CBid {
-  minPremiumRatePerSec: BigInt;
-  maxPremiumRatePerSec: BigInt;
-  minCoverBuffer: BigInt;
-  maxCoverBuffer: BigInt;
-  aggregatedPoolId: BigInt;
-  maxCapacityLimit: BigInt;
-  marketCapacityLimit: BigInt;
-  capacityAllowance: BigInt;
-
-  bidOptimization: i32;
-}
-
-export function getBid(
-  contract: RiskPoolsControllerContract,
-  id: BigInt,
-): CBid {
-  let d = contract.bid(id);
 
   return {
     type: d.value0,

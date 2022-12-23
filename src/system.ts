@@ -30,7 +30,6 @@ export function getSystemConfig(id: string): System {
       contract.maxMarketOperatorIncentiveFee();
     config.policyTokenIssuer = contract.policyTokenIssuer();
     config.policyTokenPermissionIssuer = contract.policyTokenPermissionIssuer();
-    config.allowListAddress = contract.allowlist();
     config.liquidationGasUsage = contract.liquidationGasUsage();
     config.liquidationIncentive = contract.liquidationIncentive();
     config.solvencyMultiplier = contract.solvencyMultiplier();

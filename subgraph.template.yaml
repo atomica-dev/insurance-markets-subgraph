@@ -39,8 +39,6 @@ dataSources:
       abis:
         - name: RiskPoolsController
           file: ./abis/RiskPoolsController.json
-        - name: Product
-          file: ./abis/Product.json
         - name: Pool
           file: ./abis/RiskPool.json
         - name: PolicyTokenIssuer
@@ -48,6 +46,10 @@ dataSources:
         - name: PayoutRequester
           file: ./abis/ClaimProcessor.json
       eventHandlers:
+        - event: LogNewMarketCreated(uint256,uint256)
+          handler: handleLogNewMarket
+        - event: LogNewPolicy(uint256,uint256)
+          handler: handleLogNewPolicy
         - event: LogLiquidation(uint256)
           handler: handleLogLiquidation
         - event: LogPolicyCoverChanged(uint256,uint256,uint256)
@@ -60,7 +62,7 @@ dataSources:
           handler: handleLogMarketIncentiveFeeUpdated
         - event: LogGovernance(uint8,address,address,uint256,uint256,bool)
           handler: handleLogGovernance
-        - event: LogNewProductStatus(address,uint8)
+        - event: LogNewProductStatus(uint256,uint8)
           handler: handleLogNewProductStatus
         - event: LogNewMarketStatus(uint256,uint8)
           handler: handleLogNewMarketStatus
@@ -68,8 +70,10 @@ dataSources:
           handler: handleLogNewSystemStatus
         - event: LogPermissionTokenIssued(uint256,uint256,address)
           handler: handleLogPermissionTokenIssued
-        - event: LogNewProduct(address)
+        - event: LogNewProduct(uint256)
           handler: handleLogNewProduct
+        - event: LogProductChanged(uint8,address,uint256)
+          handler: handleLogProductChanged
         - event: LogPolicyDeposit(uint256,address,uint256,uint256,uint256)
           handler: handleLogPolicyDeposit
         - event: LogPolicyWithdraw(uint256,address,uint256,uint256,uint256)
@@ -155,13 +159,10 @@ templates:
       language: wasm/assemblyscript
       entities:
         - AdjustmentConfiguration
+        - Product
       abis:
         - name: CoverAdjuster
           file: ./abis/CoverAdjuster.json
-        - name: Product
-          file: ./abis/Product.json
-        - name: RiskPoolsController
-          file: ./abis/RiskPoolsController.json
       eventHandlers:
         - event: LogConfigurationCreated(uint256)
           handler: handleLogConfigurationCreated
@@ -190,46 +191,9 @@ templates:
         - name: PayoutRequester
           file: ./abis/ClaimProcessor.json
       eventHandlers:
-        - event: LogClaimSubmitted(address,uint256,string,uint256)
+        - event: LogClaimSubmitted(uint256,uint256,string,uint256)
           handler: handleLogClaimSubmitted
       file: ./src/payout-requester.ts
-  - kind: ethereum/contract
-    name: Product
-    network: ganache
-    source:
-      abi: Product
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - Product
-        - Market
-        - Policy
-        - Event
-        - State
-        - Pool
-        - Charge
-        - PoolMarketRelation
-      abis:
-        - name: Product
-          file: ./abis/Product.json
-        - name: RiskPoolsController
-          file: ./abis/RiskPoolsController.json
-        - name: Pool
-          file: ./abis/RiskPool.json
-        - name: PolicyTokenIssuer
-          file: ./abis/PolicyTokenIssuer.json
-      eventHandlers:
-        - event: LogNewMarket(uint256)
-          handler: handleLogNewMarket
-        - event: LogNewPolicy(uint256,uint256)
-          handler: handleLogNewPolicy
-        - event: LogUintPropUpdated(uint8,uint256)
-          handler: handleLogUintPropUpdated
-        - event: LogAddressPropUpdated(uint8,address)
-          handler: handleLogAddressPropUpdated
-      file: ./src/product.ts
   - kind: ethereum/contract
     name: PolicyTokenIssuer
     network: ganache
@@ -299,14 +263,10 @@ templates:
       abis:
         - name: Pool
           file: ./abis/RiskPool.json
-        - name: Product
-          file: ./abis/Product.json
         - name: RiskPools
           file: ./abis/RiskPoolsController.json
         - name: RiskPoolsController
           file: ./abis/RiskPoolsController.json
-        - name: PolicyTokenIssuer
-          file: ./abis/PolicyTokenIssuer.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer

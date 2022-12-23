@@ -6,7 +6,6 @@ export enum GovernanceLogType {
   DefaultPayoutRequester,
   DefaultPayoutApprover,
   ProductCreatorsAllowlistId,
-  PremiumRateModel,
   ExchangeRateOracle,
   CoverAdjusterOracle,
   SyncOracle,

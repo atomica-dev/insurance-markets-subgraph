@@ -37,8 +37,7 @@ import {
   LogWithdrawAccruedMarketFee,
   LogPremiumEarned,
   LogCoverDistributed,
-} from "../generated/RiskPoolsController/RiskPoolsController";
-import {
+  LogNewPolicy,
   LogJoinMarket,
   LogListCreated,
   LogListEdited,
@@ -48,11 +47,12 @@ import {
   LogPayoutRequestApproved,
   LogPayoutRequestDeclined,
   RiskPoolsController as RiskPoolsControllerContract,
-} from "../generated/templates/Product/RiskPoolsController";
+  LogNewMarketCreated,
+  LogProductChanged,
+} from "../generated/RiskPoolsController/RiskPoolsController";
 import {
   PolicyPermissionTokenIssuer,
   PolicyTokenIssuer,
-  Product as ProductTemplate,
   PayoutRequester as PayoutRequesterTemplate,
 } from "../generated/templates";
 import {
@@ -82,6 +82,7 @@ import {
   addEvent,
   EventType,
   getState,
+  StatusEnum,
   updateAndLogState,
   updateState,
   updateSystemStatus,
@@ -93,8 +94,7 @@ import {
   ethereum,
   log,
 } from "@graphprotocol/graph-ts";
-import { createPool, updateFeeRecipientRelation } from "./product";
-import { Product as ProductContract } from "../generated/RiskPoolsController/Product";
+import { Pool as PoolContract } from "../generated/RiskPoolsController/Pool";
 import { PolicyTokenIssuer as PolicyTokenIssuerContract } from "../generated/RiskPoolsController/PolicyTokenIssuer";
 import { getSystemConfig } from "./system";
 import {
@@ -103,73 +103,429 @@ import {
   getCoverReward,
   getForwardedPayoutRequest,
   getList,
+  getMarket,
   getMarketMeta,
   getPayoutRequest,
   getPolicy,
   getPolicyDeposit,
+  getProduct,
+  getProductMeta,
+  getRiskPoolData,
 } from "./contract-mapper";
 import { claimAllTypeFees, updateAllTypeFees } from "./fee";
 import { GovernanceOperationMap } from "./governance-operations";
-import { addToList, filterNotEqual, WEI_BIGINT } from "./utils";
+import { addToList, addUniqueToList, ETH_ADDRESS, filterNotEqual, WEI_BIGINT, ZERO_ADDRESS } from "./utils";
+import { addOraclePair } from "./rate-oracle";
+import { Pool as PoolTemplate } from "../generated/templates";
+import { ProductOperatorLogType } from "./product-operator-log-type.enum";
+import { SettlementType } from "./settlement-type.enum";
+
+
+export function handleLogNewMarket(event: LogNewMarketCreated): void {
+  let marketId = event.params.marketId;
+  let product = Product.load(event.params.productId.toString())!;
+  let rpcContractAddress = changetype<Address>(product.riskPoolsControllerAddress);
+  let rpcContract = RiskPoolsControllerContract.bind(rpcContractAddress);
+
+  let id = rpcContractAddress.toHexString() + "-" + marketId.toString();
+  let market = new Market(id);
+  let marketInfo = getMarket(rpcContract, marketId);
+  let marketMeta = getMarketMeta(rpcContract, marketId);
+  let productMeta = getProductMeta(rpcContract, event.params.productId);
+  let titleParams = marketInfo.title.split("+");
+
+  market.marketId = marketId;
+  market.product = event.address.toHexString();
+  market.riskPoolsControllerAddress = rpcContractAddress;
+
+  market.wording = productMeta.wording;
+  market.entityList = titleParams.filter((t, i, a) => i != a.length - 1);
+  market.details =
+    titleParams.length > 0 ? titleParams[titleParams.length - 1] : null;
+
+  market.waitingPeriod = marketMeta.waitingPeriod;
+  market.marketOperatorIncentiveFee = marketMeta.marketOperatorIncentiveFee;
+  market.latestAccruedTimestamp = marketMeta.lastChargeTimestamp;
+  market.settlementDiscount = marketMeta.settlementDiscount;
+
+  market.author = marketInfo.marketOperator;
+  market.marketFeeRecipient = marketInfo.marketFeeRecipient;
+  market.premiumToken = marketInfo.premiumToken;
+  market.capitalToken = marketInfo.capitalToken;
+  market.insuredToken = marketInfo.insuredToken;
+  market.coverAdjusterOracle = marketInfo.coverAdjusterOracle;
+  market.rateOracle = marketInfo.ratesOracle;
+  market.title = marketInfo.title;
+  market.isEnabled = rpcContract.marketStatus(marketId) == 0;
+
+  market.totalCapacity = marketMeta.totalCapacity;
+  market.desiredCover = marketMeta.desiredCover;
+  market.waitingPeriod = marketMeta.waitingPeriod;
+  market.withdrawDelay = marketMeta.withdrawDelay;
+  market.headAggregatedPoolId = marketMeta.headAggregatedPoolId;
+  market.tailCover = marketMeta.tailCover;
+  market.maxPremiumRatePerSec = marketMeta.maxPremiumRatePerSec;
+  market.bidStepPremiumRatePerSec = marketMeta.bidStepPremiumRatePerSec;
+  market.maxAggregatedPoolSlots = marketMeta.maxAggregatedPoolSlots;
+  market.tailKink = marketMeta.tailKink;
+  market.tailJumpPremiumRatePerSec = marketMeta.tailJumpPremiumRatePerSec;
+
+  market.policyBuyerAllowListId = rpcContract.policyBuyerAllowlistId(marketId);
+  market.policyBuyerAllowanceListId = rpcContract.policyBuyerAllowanceListId(marketId);
+  market.premiumMulAccumulator = rpcContract.marketsPremiumMulAccumulators(
+    marketId
+  );
+  market.createdAt = event.block.timestamp;
+
+  market.status = StatusEnum.Opened;
+
+  market.save();
+
+  createAggregatedPool(market.headAggregatedPoolId, rpcContractAddress);
+
+  if (market.rateOracle) {
+    addOraclePair(
+      market.rateOracle.toHexString(),
+      market.capitalToken,
+      market.premiumToken
+    );
+    addOraclePair(
+      market.rateOracle.toHexString(),
+      market.premiumToken,
+      Address.fromHexString(ETH_ADDRESS)
+    );
+
+    if (market.insuredToken != Address.fromHexString(ZERO_ADDRESS)) {
+      addOraclePair(
+        market.rateOracle.toHexString(),
+        market.capitalToken,
+        market.insuredToken
+      );
+    }
+  }
+
+  updateAndLogState(EventType.TotalMarkets, event, BigInt.fromI32(1), null);
+  addEvent(EventType.NewMarket, event, id, market.title);
+}
+
+export function createPool(poolId: Address, event: ethereum.Event): void {
+  let pool = new Pool(poolId.toHexString());
+  let pContract = PoolContract.bind(poolId);
+  let btContract = PoolContract.bind(pContract.assetToken()); // It is also ERC20
+  let rpcContract = RiskPoolsControllerContract.bind(pContract.controller());
+  let riskPoolData = getRiskPoolData(rpcContract, poolId);
+
+  pool.riskPoolsControllerAddress = pContract.controller();
+  pool.name = pContract.name();
+  pool.capitalTokenAddress = pContract.assetToken();
+  pool.nominatedTokenAddress = riskPoolData.nominatedToken;
+  pool.capitalTokenBalance = BigInt.fromI32(1);
+  pool.poolTokenBalance = BigInt.fromI32(1);
+  pool.participants = BigInt.fromI32(0);
+  pool.createdAt = event.block.timestamp;
+  pool.createdBy = event.transaction.from;
+  pool.manager = riskPoolData.manager;
+  pool.feeRecipient = riskPoolData.managerFeeRecipient;
+  pool.updatedAt = event.block.timestamp;
+  pool.poolTokenDecimals = !pContract.try_decimals().reverted
+    ? pContract.try_decimals().value
+    : 18;
+  pool.poolTokenSymbol = !pContract.try_symbol().reverted
+    ? pContract.try_symbol().value
+    : "";
+  pool.managerFee = riskPoolData.managerFee;
+  pool.agreement = riskPoolData.agreement;
+  pool.capitalTokenDecimals = !btContract.try_decimals().reverted
+    ? btContract.try_decimals().value
+    : 18;
+  pool.capitalTokenSymbol = !btContract.try_symbol().reverted
+    ? btContract.try_symbol().value
+    : "";
+  pool.capitalRequirement = pContract.cap();
+  pool.markets = [];
+  pool.withdrawRequestExpiration = pContract.withdrawRequestExpiration();
+  pool.withdrawDelay = pContract.withdrawDelay();
+  pool.lpAllowListId = pContract.allowlistId();
+  pool.lpAllowanceListId = pContract.allowanceListId();
+  pool.rewards = [];
+  pool.externalPoolList = [];
+  pool.externalCapacity = BigInt.fromI32(0);
+  pool.totalTransferredOut = BigInt.fromI32(0);
+  pool.physicalSettlementMarketCount = 0;
+
+  pool.save();
+
+  updateFeeRecipientRelation(pool.feeRecipient, poolId);
+
+  PoolTemplate.create(poolId);
+
+  addEvent(
+    EventType.PoolBalance,
+    event,
+    null,
+    pool.id,
+    pool.poolTokenBalance.toString(),
+    pool.capitalTokenBalance.toString(),
+    pool.poolTokenBalance.toString()
+  );
+  updateState(EventType.SystemPoolCount, BigInt.fromI32(1), null);
+}
+
+export function updateFeeRecipientRelation(
+  feeRecipientId: Bytes,
+  riskPoolId: Bytes,
+  oldFeeRecipient: Bytes | null = null
+): void {
+  let id = feeRecipientId.toHexString();
+  let frp = FeeRecipientPool.load(id);
+
+  if (!frp) {
+    frp = new FeeRecipientPool(id);
+    frp.poolList = [];
+  }
+
+  frp.poolList = addUniqueToList(frp.poolList, riskPoolId.toHexString());
+
+  frp.save();
+
+  if (oldFeeRecipient) {
+    let frp = FeeRecipientPool.load(oldFeeRecipient.toHexString());
+
+    if (!frp) {
+      return;
+    }
+
+    frp.poolList = filterNotEqual(frp.poolList, riskPoolId.toHexString());
+
+    frp.save();
+  }
+}
+
+export function handleLogNewPolicy(event: LogNewPolicy): void {
+  let policyId = event.params.policyId;
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+  let piContract = PolicyTokenIssuerContract.bind(
+    rpcContract.policyTokenIssuer()
+  );
+  let policyInfo = getPolicy(rpcContract, policyId);
+  let marketInfo = getMarket(rpcContract, event.params.marketId);
+  let policyBalance = rpcContract.policyBalance(
+    policyId,
+    marketInfo.premiumToken
+  );
+  let depositInfo = getPolicyDeposit(
+    rpcContract,
+    policyId,
+    marketInfo.premiumToken
+  );
+
+  let id =
+    rpcContract.policyTokenIssuer().toHexString() + "-" + policyId.toString();
+  let policy = new Policy(id);
+
+  policy.policyTokenIssuerAddress = rpcContract.policyTokenIssuer();
+  policy.policyId = policyId;
+  policy.productId = event.address.toHexString();
+  policy.originalBalance = depositInfo.premiumFeeDeposit
+    .plus(depositInfo.frontendOperatorFeeDeposit)
+    .plus(depositInfo.referralFeeDeposit);
+  policy.balance = policyBalance;
+  policy.premiumDeposit = depositInfo.premiumFeeDeposit;
+  policy.foFeeDeposit = depositInfo.frontendOperatorFeeDeposit;
+  policy.initialMarketPremiumMulAccumulator = depositInfo.premiumMulAccumulator;
+  policy.referralFeeDeposit = depositInfo.referralFeeDeposit;
+
+  policy.marketId = policyInfo.marketId;
+  policy.market =
+    event.address.toHexString() + "-" + policyInfo.marketId.toString();
+  policy.validUntil = policyInfo.validUntil;
+  policy.validFrom = event.block.timestamp;
+  policy.coverageChanged = policyInfo.coverChanged;
+  policy.issuer = event.transaction.from.toHexString();
+  policy.owner = piContract.ownerOf(policyId).toHexString();
+  policy.waitingPeriod = policyInfo.waitingPeriod;
+  policy.frontendOperator = policyInfo.frontendOperator.toHexString();
+  policy.foAddress = policyInfo.frontendOperator;
+  policy.foFeeRate = policyInfo.frontendOperatorFee;
+  policy.referralBonus = policyInfo.referralBonus;
+  policy.referralAddress = policyInfo.referral;
+  policy.referralFeeRate = policyInfo.referralFee;
+  policy.coverage = policyInfo.desiredCover;
+  policy.underlyingCover = policyInfo.underlyingCover;
+  policy.expired = policy.coverage.equals(BigInt.fromI32(0));
+
+  policy.totalCharged = BigInt.fromI32(0);
+
+  policy.updatedAt = event.block.timestamp;
+
+  policy.save();
+
+  if (
+    getState(EventType.TotalPolicies, policy.market).value == BigInt.fromI32(0)
+  ) {
+    // Until contract issue is fixed it's required to call update coverage manually.
+    updateMarketChargeState(event.address, policy.market, event);
+  }
+
+  addEvent(
+    EventType.NewPolicy,
+    event,
+    policy.market,
+    policy.id,
+    policy.balance.toString(),
+    policy.coverage.toString()
+  );
+  updateAndLogState(
+    EventType.TotalPolicies,
+    event,
+    BigInt.fromI32(1),
+    policy.market
+  );
+  updateAndLogState(
+    EventType.MarketExposure,
+    event,
+    policy.coverage,
+    policy.market
+  );
+
+  updateAndLogState(
+    EventType.MarketPolicyPremium,
+    event,
+    policy.premiumDeposit,
+    policy.market
+  );
+}
+
+export function handleLogProductChanged(event: LogProductChanged): void {
+  /*
+  let product = Product.load(event.params.productId.toString())!;
+
+  switch (event.params.logType) {
+    case ProductOperatorLogType.MarketCreationFeeToken:
+      product.feeToken = event.params.value;
+
+      break;
+    case ProductOperatorLogType.MarketCreationFee:
+      product.marketCreationFeeAmount = event.params.value;
+
+      break;
+    case ProductOperatorLogType.DefaultRatesOracle:
+      product.defaultRatesOracle = event.params.value;
+
+      break;
+    case ProductOperatorLogType.WithdrawDelay:
+      product.withdrawalDelay = event.params.value;
+
+      break;
+    case ProductOperatorLogType.WaitingPeriod:
+      product.waitingPeriod = event.params.value;
+
+      break;
+    case ProductOperatorLogType.CoverAdjusterOracle:
+      product.defaultCoverAdjusterOracle = event.params.value;
+
+      break;
+    case ProductOperatorLogType.DefaultCapitalToken:
+      product.defaultCapitalToken = event.params.value;
+
+      break;
+    case ProductOperatorLogType.DefaultPremiumToken:
+      product.defaultPremiumToken = event.params.value;
+
+      break;
+    case ProductOperatorLogType.ClaimProcessor:
+      product.claimProcessor = event.params.value;
+
+      break;
+    case ProductOperatorLogType.PayoutRequester:
+      product.payoutRequester = event.params.value;
+
+      break;
+    case ProductOperatorLogType.PayoutApprover:
+      product.payoutApprover = event.params.value;
+
+      break;
+    case ProductOperatorLogType.MarketCreatorsAllowlistId:
+      product.marketCreatorsAllowlistId = event.params.value;
+
+      break;
+      product.operator = event.params.value;
+      eventType = EventType.ProductOperator;
+
+    default:
+      log.error("Unknown product prop change {}", [
+        event.params.logType.toString(),
+      ]);
+
+  }
+
+  product.updatedAt = event.block.timestamp;
+
+  product.save();
+
+  if (eventType >= 0) {
+    addEvent(
+      eventType,
+      event,
+      null,
+      event.address.toHexString(),
+      event.params.param1.toHexString(),
+      event.params.param2.toString()
+    );
+  }
+  */
+}
 
 export function handleLogNewProduct(event: LogNewProduct): void {
   getState(EventType.SystemStatus).save();
   getSystemConfig(event.address.toHexString());
 
-  let productAddress = event.params.product;
-  let productContract = ProductContract.bind(productAddress);
-  let riskPoolsControllerAddress = event.address;
-  let riskPoolsControllerContract = RiskPoolsControllerContract.bind(
-    riskPoolsControllerAddress
-  );
+  let productId = event.params.productId;
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
 
-  let productInfo = riskPoolsControllerContract.products(productAddress);
-  let product = new Product(productAddress.toHexString());
+  let productInfo = getProduct(rpcContract, productId);
+  let productMeta = getProductMeta(rpcContract, productId);
+  let product = new Product(productId.toString());
 
-  product.riskPoolsControllerAddress = riskPoolsControllerAddress;
-  product.policyTokenIssuerAddress = riskPoolsControllerContract.policyTokenIssuer();
-  product.title = productContract.title();
-  product.claimProcessor = productContract.claimProcessor();
-  product.treasuryAddress = productContract.treasury();
-  product.allowListAddress = productContract.allowlist();
-  product.wording = productInfo.value0;
-  product.cashSettlementIsEnabled = productContract.cashSettlement();
-  product.physicalSettlementIsEnabled = productContract.physicalSettlement();
-  product.feeToken = productContract.feeToken();
-  product.marketCreationFeeAmount = productContract.marketCreationFeeAmount();
-  product.defaultPremiumToken = productContract.defaultPremiumToken();
-  product.defaultCapitalToken = productContract.defaultCapitalToken();
-  product.defaultCoverAdjusterOracle = productContract.defaultCoverAdjusterOracle();
-  product.payoutApprover = productContract.payoutApprover();
-  product.payoutRequester = productContract.payoutRequester();
-  product.productIncentiveFee = productInfo.value2;
-  product.maxMarketIncentiveFee = productInfo.value3;
+  product.riskPoolsControllerAddress = event.address;
+  product.policyTokenIssuerAddress = rpcContract.policyTokenIssuer();
+  product.title = productMeta.title;
+  product.claimProcessor = productInfo.claimProcessor;
+  product.treasuryAddress = rpcContract.treasury();
+  product.wording = productMeta.wording;
+  product.cashSettlementIsEnabled = productMeta.settlement == SettlementType.Cash;
+  product.physicalSettlementIsEnabled = productMeta.settlement == SettlementType.Physical;
+  product.feeToken = productInfo.marketCreationFeeToken;
+  product.marketCreationFeeAmount = productMeta.marketCreationFee;
+  product.defaultPremiumToken = productInfo.defaultPremiumToken;
+  product.defaultCapitalToken = productInfo.defaultCapitalToken;
+  product.defaultCoverAdjusterOracle = productInfo.defaultCoverAdjusterOracle;
+  product.payoutApprover = productInfo.payoutApprover;
+  product.payoutRequester = productInfo.payoutRequester;
+  product.productIncentiveFee = productMeta.productOperatorIncentiveFee;
+  product.maxMarketIncentiveFee = productMeta.maxMarketOperatorIncentiveFee;
 
-  product.defaultRatesOracle = productContract.defaultRatesOracle();
-  product.withdrawalDelay = productContract.withdrawalDelay();
-  product.withdrawRequestExpiration = productContract.withdrawRequestExpiration();
-  product.waitingPeriod = productContract.waitingPeriod();
-  product.marketCreatorsAllowlistId = productContract.marketCreatorsAllowlistId();
-  product.operator = productInfo.value1;
+  product.defaultRatesOracle = productInfo.defaultRatesOracle;
+  product.withdrawalDelay = productMeta.withdrawDelay;
+  product.withdrawRequestExpiration = productMeta.withdrawRequestExpiration;
+  product.waitingPeriod = productMeta.waitingPeriod;
+  product.marketCreatorsAllowlistId = productMeta.marketCreatorsListId;
+  product.operator = productInfo.productOperator;
 
   product.createdAt = event.block.timestamp;
   product.createdBy = event.transaction.from;
   product.updatedAt = event.block.timestamp;
-  product.status = productInfo.value5;
+  product.status = productMeta.status;
 
   product.save();
 
-  ProductTemplate.create(productAddress);
-  let rpcContract = RiskPoolsControllerContract.bind(
-    riskPoolsControllerAddress
-  );
   PolicyTokenIssuer.create(rpcContract.policyTokenIssuer());
   PolicyPermissionTokenIssuer.create(rpcContract.policyTokenPermissionIssuer());
   PayoutRequesterTemplate.create(changetype<Address>(product.claimProcessor));
 
   updateState(EventType.SystemProductCount, BigInt.fromI32(1), null);
 
-  addEvent(EventType.NewProduct, event, null, productAddress.toHexString());
+  addEvent(EventType.NewProduct, event, null, product.id);
 }
 
 export function handleLogLiquidation(event: LogLiquidation): void {
@@ -267,12 +623,10 @@ function updatePolicyBalances(
 ): void {
   let market = Market.load(marketId)!;
 
-  let productContract = ProductContract.bind(
-    Address.fromString(market.product)
-  );
   let rpcContract = RiskPoolsControllerContract.bind(
-    productContract.riskPoolsController()
+    changetype<Address>(market.riskPoolsControllerAddress)
   );
+
   let ptiAddress = rpcContract.policyTokenIssuer();
   let ptiContract = PolicyTokenIssuerContract.bind(ptiAddress);
 
@@ -333,7 +687,7 @@ export function handleLogNewSystemStatus(event: LogNewSystemStatus): void {
 }
 
 export function handleLogNewProductStatus(event: LogNewProductStatus): void {
-  let product = Product.load(event.params.product.toHexString());
+  let product = Product.load(event.params.productId.toString());
 
   if (!product) {
     return;
@@ -347,7 +701,7 @@ export function handleLogNewProductStatus(event: LogNewProductStatus): void {
     EventType.ProductStatus,
     event,
     null,
-    event.params.product.toHexString(),
+    event.params.productId.toString(),
     event.params.status.toString()
   );
 }
@@ -943,7 +1297,7 @@ export function handleLogMarketCapacityAllowanceUpdated(
   let bid = Bid.load(bidId);
 
   if (!bid) {
-    return;
+    bid = createBid(event.params.marketId, event.params.riskPool, event.address);
   }
 
   bid.capacityAllowance = event.params.capacityAllowance;
@@ -960,7 +1314,7 @@ export function handleLogMarketCapacityLimitUpdated(
   let bid = Bid.load(bidId);
 
   if (!bid) {
-    return;
+    bid = createBid(event.params.marketId, event.params.riskPool, event.address);
   }
 
   bid.marketCapacityLimit = event.params.capacityLimit;
@@ -1381,16 +1735,22 @@ export function updateAllowListAccounts(allowListId: BigInt, accounts: Address[]
 }
 
 export function handleLogJoinMarket(event: LogJoinMarket): void {
-  let marketId = event.address.toHexString() + "-" + event.params.marketId.toString();
-  let bidId = marketId + "-" + event.params.riskPool.toHexString();
-  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+  let bid = createBid(event.params.marketId, event.params.riskPool, event.address);
+
+  bid.save();
+}
+
+function createBid(marketNo: BigInt, riskPoolId: Address, rpcContractAddress: Address): Bid {
+  let marketId = rpcContractAddress.toHexString() + "-" + marketNo.toString();
+  let bidId = marketId + "-" + riskPoolId.toHexString();
+  let rpcContract = RiskPoolsControllerContract.bind(rpcContractAddress);
 
   let bid = new Bid(bidId);
-  let cBid = rpcContract.bid(event.params.marketId, event.params.riskPool);
+  let cBid = rpcContract.bid(marketNo, riskPoolId);
 
   bid.marketId = marketId;
   bid.market = marketId;
-  bid.poolId = event.params.riskPool;
+  bid.poolId = riskPoolId;
   bid.pool = bid.poolId.toHexString();
 
   bid.minPremiumRatePerSec = cBid.minPremiumRatePerSec;
@@ -1405,5 +1765,5 @@ export function handleLogJoinMarket(event: LogJoinMarket): void {
   bid.capacityAllowance = cBid.capacityAllowance;
   bid.capacity = BigInt.fromI32(0);
 
-  bid.save();
+  return bid;
 }

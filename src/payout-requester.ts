@@ -9,7 +9,7 @@ enum ClaimStatus {
 }
 
 export function handleLogClaimSubmitted(event: LogClaimSubmitted): void {
-  let productId = event.params.productId.toHexString();
+  let productId = event.params.productId.toString();
   let policyId = event.params.policyId;
   let votingId = event.params.votingId;
   let product = Product.load(productId);

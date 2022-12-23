@@ -634,9 +634,9 @@
         "inputs": [
             {
                 "indexed": false,
-                "internalType": "address",
-                "name": "product",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
             },
             {
                 "indexed": false,
@@ -647,7 +647,7 @@
         ],
         "name": "LogNewMarketCreated",
         "type": "event",
-        "signature": "0x5176b1b391cf1e84e81cb9f4e974292a7ab666271460cefb5097dae3f8e8a49d"
+        "signature": "0x1f7e7d50482275e1a28eb29fa3a6e4169982cdca7f5dc741edf931f1ca6e95c0"
     },
     {
         "anonymous": false,
@@ -688,6 +688,26 @@
         "inputs": [
             {
                 "indexed": false,
+                "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "policyId",
+                "type": "uint256"
+            }
+        ],
+        "name": "LogNewPolicy",
+        "type": "event",
+        "signature": "0xabc3cbaa4127a1bf54de961a9ab67342542068dbfaeb84d9ac5d3a9e54d7070c"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
                 "internalType": "address",
                 "name": "newPool",
                 "type": "address"
@@ -702,23 +722,23 @@
         "inputs": [
             {
                 "indexed": false,
-                "internalType": "address",
-                "name": "product",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
             }
         ],
         "name": "LogNewProduct",
         "type": "event",
-        "signature": "0x4f3a7ed023d9a5db949ae144642b09e14409ce5860cdc23b2364fabc55b99158"
+        "signature": "0xb15cde5e09c0731b6627f4cea855b72816e08cf9fe396ea607bad92bf26a1d66"
     },
     {
         "anonymous": false,
         "inputs": [
             {
                 "indexed": false,
-                "internalType": "address",
-                "name": "product",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
             },
             {
                 "indexed": false,
@@ -729,7 +749,7 @@
         ],
         "name": "LogNewProductStatus",
         "type": "event",
-        "signature": "0xf2ee8fcab9d925b72ceb2038e5f72f2cbb926322fa3aa37797f545ae4afbc7bb"
+        "signature": "0xcac0fb4d1069bd7bd77811c4e20eb1d1a454bace83bb743eaa53b6ff3c7ad181"
     },
     {
         "anonymous": false,
@@ -1084,6 +1104,32 @@
         "name": "LogPremiumRateCreated",
         "type": "event",
         "signature": "0x9c761a6f06b16caff541958dc40c0b84f38fd5b19ebf139a98dbaa5c798b2c90"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "enum IRiskPoolsControllerStorageModel.ProductOperatorLogType",
+                "name": "logType",
+                "type": "uint8"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "param1",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "param2",
+                "type": "uint256"
+            }
+        ],
+        "name": "LogProductChanged",
+        "type": "event",
+        "signature": "0xf888b3eb9c801a2145c650e4115025a303d77ca5073fbb36e11cd167f4ecaf5e"
     },
     {
         "anonymous": false,
@@ -1507,7 +1553,7 @@
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "policyId_",
+                "name": "policyId",
                 "type": "uint256"
             }
         ],
@@ -1741,19 +1787,54 @@
         "signature": "0xc4b1e4fb"
     },
     {
-        "inputs": [],
-        "name": "allowlist",
-        "outputs": [
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "depositAmount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "desiredCover",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "maxRate",
+                "type": "uint256"
+            },
             {
                 "internalType": "address",
-                "name": "",
+                "name": "frontendOperator",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "referral",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "recipient",
                 "type": "address"
             }
         ],
-        "stateMutability": "view",
+        "name": "applyForPolicy",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "policyId",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable",
         "type": "function",
-        "constant": true,
-        "signature": "0x2b47da52"
+        "signature": "0x5f575a36"
     },
     {
         "inputs": [
@@ -2020,7 +2101,17 @@
             },
             {
                 "internalType": "uint256",
-                "name": "desiredCover_",
+                "name": "desiredCover",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "permissionId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "depositAmount",
                 "type": "uint256"
             }
         ],
@@ -2028,7 +2119,7 @@
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xb4fce5a4"
+        "signature": "0xdc4290f0"
     },
     {
         "inputs": [
@@ -2369,69 +2460,9 @@
             {
                 "components": [
                     {
-                        "internalType": "string",
-                        "name": "title",
-                        "type": "string"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "premiumToken",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "capitalToken",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "insuredToken",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "payoutRequester",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "payoutApprover",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "marketOperator",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "marketFeeRecipient",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "ratesOracle",
-                        "type": "address"
-                    },
-                    {
                         "internalType": "uint256",
-                        "name": "withdrawDelay",
+                        "name": "productId",
                         "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "withdrawRequestExpiration",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "waitingPeriod",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "coverAdjusterOracle",
-                        "type": "address"
                     },
                     {
                         "internalType": "uint256",
@@ -2447,14 +2478,7 @@
                         "internalType": "uint256",
                         "name": "marketOperatorIncentiveFee",
                         "type": "uint256"
-                    }
-                ],
-                "internalType": "struct IMarketImpl.CreateMarketParams",
-                "name": "params",
-                "type": "tuple"
-            },
-            {
-                "components": [
+                    },
                     {
                         "internalType": "uint256",
                         "name": "settlementDiscount",
@@ -2484,10 +2508,35 @@
                         "internalType": "uint256",
                         "name": "tailJumpPremiumRatePerSec",
                         "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "premiumToken",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "capitalToken",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "insuredToken",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "marketFeeRecipient",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "title",
+                        "type": "string"
                     }
                 ],
-                "internalType": "struct IMarketImpl.MarketSettings",
-                "name": "settings",
+                "internalType": "struct IMarketImpl.CreateMarketParams",
+                "name": "params",
                 "type": "tuple"
             }
         ],
@@ -2501,7 +2550,7 @@
         ],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x309905a2"
+        "signature": "0x129042e1"
     },
     {
         "inputs": [
@@ -2557,29 +2606,9 @@
             {
                 "components": [
                     {
-                        "internalType": "string",
-                        "name": "title",
-                        "type": "string"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "cashSettlement",
-                        "type": "bool"
-                    },
-                    {
-                        "internalType": "bool",
-                        "name": "physicalSettlement",
-                        "type": "bool"
-                    },
-                    {
                         "internalType": "address",
-                        "name": "feeToken",
+                        "name": "claimProcessor",
                         "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "marketCreationFeeAmount",
-                        "type": "uint256"
                     },
                     {
                         "internalType": "address",
@@ -2593,12 +2622,7 @@
                     },
                     {
                         "internalType": "address",
-                        "name": "claimProcessor",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "coverAdjusterOracle",
+                        "name": "defaultCoverAdjusterOracle",
                         "type": "address"
                     },
                     {
@@ -2607,8 +2631,28 @@
                         "type": "address"
                     },
                     {
+                        "internalType": "address",
+                        "name": "marketCreationFeeToken",
+                        "type": "address"
+                    },
+                    {
                         "internalType": "uint256",
-                        "name": "withdrawalDelay",
+                        "name": "marketCreationFee",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "productOperatorIncentiveFee",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "maxMarketOperatorIncentiveFee",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "withdrawDelay",
                         "type": "uint256"
                     },
                     {
@@ -2623,35 +2667,41 @@
                     },
                     {
                         "internalType": "uint256",
-                        "name": "marketCreatorsAllowlistId",
+                        "name": "marketCreatorsListId",
                         "type": "uint256"
+                    },
+                    {
+                        "internalType": "enum IRiskPoolsControllerStorageModel.SettlementType",
+                        "name": "settlement",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "title",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "wording",
+                        "type": "string"
                     }
                 ],
-                "internalType": "struct IProductStorageModel.CreateProductParams",
-                "name": "params",
+                "internalType": "struct IProductCreatorImpl.CreateProductParams",
+                "name": "params_",
                 "type": "tuple"
-            },
-            {
-                "internalType": "string",
-                "name": "wording",
-                "type": "string"
-            },
-            {
-                "internalType": "uint256",
-                "name": "productOperatorIncentiveFee",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "maxMarketOperatorIncentiveFee",
-                "type": "uint256"
             }
         ],
         "name": "createProduct",
-        "outputs": [],
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            }
+        ],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xe61e66e4"
+        "signature": "0xb1ac60d2"
     },
     {
         "inputs": [
@@ -3253,37 +3303,6 @@
         "signature": "0x5c47eee2"
     },
     {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "allowlistId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-            }
-        ],
-        "name": "getAllowanceFromAllowlist",
-        "outputs": [
-            {
-                "internalType": "bool",
-                "name": "allowed",
-                "type": "bool"
-            },
-            {
-                "internalType": "uint256",
-                "name": "allowance",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true,
-        "signature": "0x90078fb1"
-    },
-    {
         "inputs": [],
         "name": "governanceIncentiveFee",
         "outputs": [
@@ -3381,56 +3400,6 @@
     {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "marketId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "desiredCover",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "depositAmount",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "issuer",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "frontendOperator",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "referral",
-                "type": "address"
-            }
-        ],
-        "name": "issuePolicy",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "policyId",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x18ec7183"
-    },
-    {
-        "inputs": [
-            {
                 "internalType": "address",
                 "name": "riskPool",
                 "type": "address"
@@ -3521,6 +3490,21 @@
         "type": "function",
         "constant": true,
         "signature": "0xa657e579"
+    },
+    {
+        "inputs": [],
+        "name": "lastProductId",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x8dff9f92"
     },
     {
         "inputs": [
@@ -3838,11 +3822,6 @@
             },
             {
                 "internalType": "address",
-                "name": "product",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
                 "name": "premiumToken",
                 "type": "address"
             },
@@ -3867,14 +3846,9 @@
                 "type": "address"
             },
             {
-                "internalType": "address",
-                "name": "payoutRequester",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "payoutApprover",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
             },
             {
                 "internalType": "string",
@@ -4361,11 +4335,6 @@
                 "type": "uint256"
             },
             {
-                "internalType": "address",
-                "name": "issuer",
-                "type": "address"
-            },
-            {
                 "internalType": "uint256",
                 "name": "waitingPeriod",
                 "type": "uint256"
@@ -4662,9 +4631,9 @@
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "product",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
             }
         ],
         "name": "productIsOpened",
@@ -4678,27 +4647,83 @@
         "stateMutability": "view",
         "type": "function",
         "constant": true,
-        "signature": "0x7a00d63a"
+        "signature": "0xb2080ca0"
     },
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "product",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
             }
         ],
         "name": "products",
         "outputs": [
             {
-                "internalType": "string",
-                "name": "wording",
-                "type": "string"
-            },
-            {
                 "internalType": "address",
                 "name": "productOperator",
                 "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "claimProcessor",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "payoutRequester",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "payoutApprover",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "defaultPremiumToken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "defaultCapitalToken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "defaultCoverAdjusterOracle",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "defaultRatesOracle",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "marketCreationFeeToken",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x7acc0b20"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            }
+        ],
+        "name": "productsMeta",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "marketCreationFee",
+                "type": "uint256"
             },
             {
                 "internalType": "uint256",
@@ -4707,7 +4732,27 @@
             },
             {
                 "internalType": "uint256",
-                "name": "maxMarketOperatorIncentiveFee_",
+                "name": "maxMarketOperatorIncentiveFee",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "withdrawDelay",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "withdrawRequestExpiration",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "waitingPeriod",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "marketCreatorsListId",
                 "type": "uint256"
             },
             {
@@ -4719,12 +4764,22 @@
                 "internalType": "enum IRiskPoolsControllerStorageModel.ProductStatus",
                 "name": "status",
                 "type": "uint8"
+            },
+            {
+                "internalType": "string",
+                "name": "title",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "wording",
+                "type": "string"
             }
         ],
         "stateMutability": "view",
         "type": "function",
         "constant": true,
-        "signature": "0x793a8e71"
+        "signature": "0x7ea35137"
     },
     {
         "inputs": [
@@ -4878,25 +4933,6 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0x88f2e404"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "product",
-                "type": "address"
-            },
-            {
-                "internalType": "string",
-                "name": "wording",
-                "type": "string"
-            }
-        ],
-        "name": "registerExternalProduct",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x8e7495f8"
     },
     {
         "inputs": [
@@ -5857,7 +5893,7 @@
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "policyBuyerReferralBonus_",
+                "name": "policyBuyerReferralBonus",
                 "type": "uint256"
             }
         ],
@@ -5895,6 +5931,25 @@
         "inputs": [
             {
                 "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "claimProcessor",
+                "type": "address"
+            }
+        ],
+        "name": "setProductClaimProcessor",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xca50e86b"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
                 "name": "productCreatorsAllowlistId",
                 "type": "uint256"
             }
@@ -5908,9 +5963,142 @@
     {
         "inputs": [
             {
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            },
+            {
                 "internalType": "address",
-                "name": "product",
+                "name": "capitalToken",
                 "type": "address"
+            }
+        ],
+        "name": "setProductDefaultCapitalToken",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xbae18d8a"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "coverAdjusterOracle",
+                "type": "address"
+            }
+        ],
+        "name": "setProductDefaultCoverAdjusterOracle",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x81cec1f2"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "premiumToken",
+                "type": "address"
+            }
+        ],
+        "name": "setProductDefaultPremiumToken",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x49028dcf"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "defaultRatesOracle",
+                "type": "address"
+            }
+        ],
+        "name": "setProductDefaultRatesOracle",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xb38f319f"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "marketCreationFee",
+                "type": "uint256"
+            }
+        ],
+        "name": "setProductMarketCreationFee",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x21a15ba2"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "marketCreationFeeToken",
+                "type": "address"
+            }
+        ],
+        "name": "setProductMarketCreationFeeToken",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x1a2f42b7"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "marketCreatorsAllowlistId",
+                "type": "uint256"
+            }
+        ],
+        "name": "setProductMarketCreatorsAllowlistId",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xe3c936e9"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
             },
             {
                 "internalType": "uint256",
@@ -5922,14 +6110,14 @@
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xf90a8286"
+        "signature": "0x7be9eb69"
     },
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "product",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
             },
             {
                 "internalType": "address",
@@ -5941,14 +6129,14 @@
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xdf3705f6"
+        "signature": "0x5455193f"
     },
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "product",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
             },
             {
                 "internalType": "uint256",
@@ -5960,14 +6148,52 @@
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xb1b20a50"
+        "signature": "0xae177e5d"
     },
     {
         "inputs": [
             {
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            },
+            {
                 "internalType": "address",
-                "name": "product",
+                "name": "payoutApprover",
                 "type": "address"
+            }
+        ],
+        "name": "setProductPayoutApprover",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x40f38761"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "payoutRequester",
+                "type": "address"
+            }
+        ],
+        "name": "setProductPayoutRequester",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xa4752ce9"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
             },
             {
                 "internalType": "enum IRiskPoolsControllerStorageModel.ProductStatus",
@@ -5979,14 +6205,52 @@
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x33b86538"
+        "signature": "0x846660f4"
     },
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "product",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "waitingPeriod",
+                "type": "uint256"
+            }
+        ],
+        "name": "setProductWaitingPeriod",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x241c47ec"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "withdrawalDelay",
+                "type": "uint256"
+            }
+        ],
+        "name": "setProductWithdrawalDelay",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xc2b4d0c8"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
             },
             {
                 "internalType": "string",
@@ -5998,7 +6262,7 @@
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x35a89e91"
+        "signature": "0xc67fdaa3"
     },
     {
         "inputs": [

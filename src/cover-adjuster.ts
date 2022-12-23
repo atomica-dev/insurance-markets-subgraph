@@ -15,14 +15,14 @@ export function handleLogConfigurationCreated(
   let id = event.address.toHexString() + "-" + event.params.id.toString();
   let ac = new AdjustmentConfiguration(id);
   let cc = contract.getConfig(event.params.id);
-  let product = Product.load(cc.product.toHexString());
+  let product = Product.load(cc.productId.toString());
   let pti =
     product != null ? product.policyTokenIssuerAddress.toHexString() : "";
 
   ac.configId = event.params.id;
   ac.coverAdjuster = event.address;
-  ac.productId = cc.product;
-  ac.product = cc.product.toHexString();
+  ac.productId = cc.productId;
+  ac.product = cc.productId.toString();
   ac.policyId = cc.policyId;
   ac.policy = pti + "-" + cc.policyId.toString();
   ac.tokenId = cc.permissionId;

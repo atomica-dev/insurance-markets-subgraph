@@ -15,7 +15,6 @@ type System @entity {
   maxMarketOperatorIncentiveFee: BigInt!
   policyTokenIssuer: Bytes!
   policyTokenPermissionIssuer: Bytes!
-  allowListAddress: Bytes!
   liquidationGasUsage: BigInt!
   liquidationIncentive: BigInt!
   solvencyMultiplier: BigInt!
@@ -43,7 +42,6 @@ type Product @entity {
   riskPoolsControllerAddress: Bytes!
   policyTokenIssuerAddress: Bytes!
   treasuryAddress: Bytes!
-  allowListAddress: Bytes
   payoutRequester: Bytes
   payoutApprover: Bytes
   productIncentiveFee: BigInt
@@ -481,7 +479,7 @@ type AdjustmentConfiguration @entity {
   id: ID!
   configId: BigInt!
   coverAdjuster: Bytes!
-  productId: Bytes!
+  productId: BigInt!
   product: Product
   policyId: BigInt!
   policy: Policy

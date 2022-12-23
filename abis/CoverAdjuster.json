@@ -3,7 +3,12 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "operator",
+                "name": "operator_",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "riskPoolsController_",
                 "type": "address"
             }
         ],
@@ -128,9 +133,9 @@
         "name": "configs",
         "outputs": [
             {
-                "internalType": "address",
-                "name": "product",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
             },
             {
                 "internalType": "uint256",
@@ -248,9 +253,9 @@
     {
         "inputs": [
             {
-                "internalType": "address",
+                "internalType": "uint256",
                 "name": "",
-                "type": "address"
+                "type": "uint256"
             },
             {
                 "internalType": "uint256",
@@ -269,7 +274,22 @@
         "stateMutability": "view",
         "type": "function",
         "constant": true,
-        "signature": "0x056acf19"
+        "signature": "0xdb544849"
+    },
+    {
+        "inputs": [],
+        "name": "riskPoolsController",
+        "outputs": [
+            {
+                "internalType": "contract IRiskPoolsController",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x67b33f37"
     },
     {
         "inputs": [
@@ -295,9 +315,9 @@
             {
                 "components": [
                     {
-                        "internalType": "address",
-                        "name": "product",
-                        "type": "address"
+                        "internalType": "uint256",
+                        "name": "productId",
+                        "type": "uint256"
                     },
                     {
                         "internalType": "uint256",
@@ -329,7 +349,7 @@
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xa07c3a9d"
+        "signature": "0x1ee0840a"
     },
     {
         "inputs": [
@@ -372,9 +392,9 @@
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "product_",
-                "type": "address"
+                "internalType": "uint256",
+                "name": "productId_",
+                "type": "uint256"
             },
             {
                 "internalType": "uint256",
@@ -391,7 +411,7 @@
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x28811c36"
+        "signature": "0xc3bf5051"
     },
     {
         "inputs": [
@@ -446,9 +466,9 @@
             {
                 "components": [
                     {
-                        "internalType": "address",
-                        "name": "product",
-                        "type": "address"
+                        "internalType": "uint256",
+                        "name": "productId",
+                        "type": "uint256"
                     },
                     {
                         "internalType": "uint256",

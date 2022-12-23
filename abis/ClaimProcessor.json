@@ -16,9 +16,9 @@
         "inputs": [
             {
                 "indexed": false,
-                "internalType": "address",
+                "internalType": "uint256",
                 "name": "productId",
-                "type": "address"
+                "type": "uint256"
             },
             {
                 "indexed": false,
@@ -41,7 +41,7 @@
         ],
         "name": "LogClaimSubmitted",
         "type": "event",
-        "signature": "0x4f7b4b6d40967e16951f8bd64e9f92993e8753cb589b0de62ed080e47e58f1fb"
+        "signature": "0x3044df451c5f22bbb66ab6eb6e0eb9d81ba63f84e51455f4a9c5454ff51f5724"
     },
     {
         "inputs": [],
@@ -87,9 +87,9 @@
     {
         "inputs": [
             {
-                "internalType": "address",
+                "internalType": "uint256",
                 "name": "productId_",
-                "type": "address"
+                "type": "uint256"
             },
             {
                 "internalType": "uint256",
@@ -106,6 +106,6 @@
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x34dc3c66"
+        "signature": "0x06964de7"
     }
 ]

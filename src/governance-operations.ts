@@ -8,12 +8,13 @@ import {
 } from "../generated/schema";
 import { GovernanceLogType } from "./governance-type.enum";
 import { CoverAdjuster as CoverAdjusterTemplate } from "../generated/templates";
-import { RiskPoolsController as RiskPoolsControllerContract } from "../generated/templates/Product/RiskPoolsController";
+import { RiskPoolsController as RiskPoolsControllerContract } from "../generated/RiskPoolsController/RiskPoolsController";
 import { getSystemConfig } from "./system";
 import { addOraclePair } from "./rate-oracle";
 import { Address } from "@graphprotocol/graph-ts";
 import { addUniqueToList, ETH_ADDRESS, filterNotEqual } from "./utils";
 import { addEvent, EventType } from "./event";
+import { getProductMeta } from "./contract-mapper";
 
 export const GovernanceOperationMap = new Map<
   GovernanceLogType,
@@ -310,10 +311,12 @@ function handleUpdateMaxProductOperatorIncentiveFee(
 }
 
 function handleUpdateMaxMarketOperatorIncentiveFee(event: LogGovernance): void {
-  let product = Product.load(event.params.param1.toHexString());
+  let productId = event.params.param3.toString();
+  let fee = event.params.param4;
+  let product = Product.load(productId);
 
   if (product != null) {
-    product.maxMarketIncentiveFee = event.params.param3;
+    product.maxMarketIncentiveFee = fee;
     product.save();
 
     return;
@@ -321,7 +324,7 @@ function handleUpdateMaxMarketOperatorIncentiveFee(event: LogGovernance): void {
 
   let config = getSystemConfig(event.address.toHexString());
 
-  config.maxMarketOperatorIncentiveFee = event.params.param3;
+  config.maxMarketOperatorIncentiveFee = fee;
   config.save();
 
   addEvent(
@@ -329,7 +332,7 @@ function handleUpdateMaxMarketOperatorIncentiveFee(event: LogGovernance): void {
     event,
     null,
     config.id,
-    event.params.param3.toString()
+    fee.toString()
   );
 }
 
@@ -530,15 +533,15 @@ function handleUpdateRiskPoolLpAllowlistId(event: LogGovernance): void {
 }
 
 function handleUpdateProductWording(event: LogGovernance): void {
-  let address = event.params.param1;
-  let product = Product.load(address.toHexString());
+  let productId = event.params.param3;
+  let product = Product.load(productId.toString());
   let rpcContract = RiskPoolsControllerContract.bind(event.address);
 
   if (!product) {
     return;
   }
 
-  product.wording = rpcContract.products(address).value0;
+  product.wording = getProductMeta(rpcContract, productId).wording;
 
   product.save();
 
@@ -546,13 +549,14 @@ function handleUpdateProductWording(event: LogGovernance): void {
     EventType.ProductWording,
     event,
     null,
-    address.toHexString(),
-    rpcContract.products(address).value0
+    product.id,
+    product.wording,
   );
 }
 
 function handleUpdateProductOperator(event: LogGovernance): void {
-  let product = Product.load(event.params.param1.toHexString());
+  let productId = event.params.param3.toString();
+  let product = Product.load(productId);
 
   if (!product) {
     return;
@@ -561,6 +565,14 @@ function handleUpdateProductOperator(event: LogGovernance): void {
   product.operator = event.params.param2;
 
   product.save();
+
+  addEvent(
+    EventType.ProductOperator,
+    event,
+    null,
+    product.id,
+    product.operator.toHexString(),
+  );
 }
 
 function handleUpdateMarketOperator(event: LogGovernance): void {
@@ -577,13 +589,15 @@ function handleUpdateMarketOperator(event: LogGovernance): void {
 }
 
 function handleUpdateProductOperatorIncentiveFee(event: LogGovernance): void {
-  let product = Product.load(event.params.param1.toHexString());
+  let productId = event.params.param3.toString();
+  let fee = event.params.param4;
+  let product = Product.load(productId);
 
   if (!product) {
     return;
   }
 
-  product.productIncentiveFee = event.params.param3;
+  product.productIncentiveFee = fee;
 
   product.save();
 
@@ -591,27 +605,29 @@ function handleUpdateProductOperatorIncentiveFee(event: LogGovernance): void {
     EventType.ProductOperatorIncentiveFee,
     event,
     null,
-    event.params.param1.toHexString(),
-    event.params.param3.toString()
+    productId,
+    fee.toString()
   );
 }
 
 function handleUpdateProductMaxMarketIncentiveFee(event: LogGovernance): void {
-  let product = Product.load(event.params.param1.toHexString());
+  let productId = event.params.param3.toString();
+  let fee = event.params.param4;
+  let product = Product.load(productId);
 
   if (!product) {
     return;
   }
 
-  product.maxMarketIncentiveFee = event.params.param3;
+  product.maxMarketIncentiveFee = fee;
   product.save();
 
   addEvent(
     EventType.ProductMaxMarketOperatorIncentiveFee,
     event,
     null,
-    event.params.param1.toHexString(),
-    event.params.param3.toString()
+    productId,
+    fee.toString()
   );
 }
 
