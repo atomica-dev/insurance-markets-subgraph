@@ -135,7 +135,7 @@ export function handleLogNewMarket(event: LogNewMarketCreated): void {
   let titleParams = marketInfo.title.split("+");
 
   market.marketId = marketId;
-  market.product = event.address.toHexString();
+  market.product = event.params.productId.toString();
   market.riskPoolsControllerAddress = rpcContractAddress;
 
   market.wording = productMeta.wording;
