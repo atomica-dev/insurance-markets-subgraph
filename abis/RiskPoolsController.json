@@ -1116,6 +1116,12 @@
             },
             {
                 "indexed": false,
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
                 "internalType": "address",
                 "name": "param1",
                 "type": "address"
@@ -1129,7 +1135,7 @@
         ],
         "name": "LogProductChanged",
         "type": "event",
-        "signature": "0xf888b3eb9c801a2145c650e4115025a303d77ca5073fbb36e11cd167f4ecaf5e"
+        "signature": "0x2e8aff3cdb2a4a3d462f9dcb3a95e78b152380c547b0f1359b1c5c303710692d"
     },
     {
         "anonymous": false,

@@ -397,60 +397,57 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
 }
 
 export function handleLogProductChanged(event: LogProductChanged): void {
-  /*
   let product = Product.load(event.params.productId.toString())!;
 
   switch (event.params.logType) {
     case ProductOperatorLogType.MarketCreationFeeToken:
-      product.feeToken = event.params.value;
+      product.feeToken = event.params.param1;
 
       break;
     case ProductOperatorLogType.MarketCreationFee:
-      product.marketCreationFeeAmount = event.params.value;
+      product.marketCreationFeeAmount = event.params.param2;
 
       break;
     case ProductOperatorLogType.DefaultRatesOracle:
-      product.defaultRatesOracle = event.params.value;
+      product.defaultRatesOracle = event.params.param1;
 
       break;
     case ProductOperatorLogType.WithdrawDelay:
-      product.withdrawalDelay = event.params.value;
+      product.withdrawalDelay = event.params.param2;
 
       break;
     case ProductOperatorLogType.WaitingPeriod:
-      product.waitingPeriod = event.params.value;
+      product.waitingPeriod = event.params.param2;
 
       break;
     case ProductOperatorLogType.CoverAdjusterOracle:
-      product.defaultCoverAdjusterOracle = event.params.value;
+      product.defaultCoverAdjusterOracle = event.params.param1;
 
       break;
     case ProductOperatorLogType.DefaultCapitalToken:
-      product.defaultCapitalToken = event.params.value;
+      product.defaultCapitalToken = event.params.param1;
 
       break;
     case ProductOperatorLogType.DefaultPremiumToken:
-      product.defaultPremiumToken = event.params.value;
+      product.defaultPremiumToken = event.params.param1;
 
       break;
     case ProductOperatorLogType.ClaimProcessor:
-      product.claimProcessor = event.params.value;
+      product.claimProcessor = event.params.param1;
 
       break;
     case ProductOperatorLogType.PayoutRequester:
-      product.payoutRequester = event.params.value;
+      product.payoutRequester = event.params.param1;
 
       break;
     case ProductOperatorLogType.PayoutApprover:
-      product.payoutApprover = event.params.value;
+      product.payoutApprover = event.params.param1;
 
       break;
     case ProductOperatorLogType.MarketCreatorsAllowlistId:
-      product.marketCreatorsAllowlistId = event.params.value;
+      product.marketCreatorsAllowlistId = event.params.param2;
 
       break;
-      product.operator = event.params.value;
-      eventType = EventType.ProductOperator;
 
     default:
       log.error("Unknown product prop change {}", [
@@ -463,17 +460,15 @@ export function handleLogProductChanged(event: LogProductChanged): void {
 
   product.save();
 
-  if (eventType >= 0) {
-    addEvent(
-      eventType,
-      event,
-      null,
-      event.address.toHexString(),
-      event.params.param1.toHexString(),
+  addEvent(
+    event.params.logType,
+    event,
+    null,
+    event.address.toHexString(),
+    event.params.param1.toHexString() != ZERO_ADDRESS ?
+      event.params.param1.toHexString() :
       event.params.param2.toString()
-    );
-  }
-  */
+  );
 }
 
 export function handleLogNewProduct(event: LogNewProduct): void {

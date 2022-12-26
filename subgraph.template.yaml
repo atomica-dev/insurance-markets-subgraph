@@ -72,7 +72,7 @@ dataSources:
           handler: handleLogPermissionTokenIssued
         - event: LogNewProduct(uint256)
           handler: handleLogNewProduct
-        - event: LogProductChanged(uint8,address,uint256)
+        - event: LogProductChanged(uint8,uint256,address,uint256)
           handler: handleLogProductChanged
         - event: LogPolicyDeposit(uint256,address,uint256,uint256,uint256)
           handler: handleLogPolicyDeposit
