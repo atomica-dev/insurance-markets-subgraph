@@ -123,7 +123,8 @@ import { SettlementType } from "./settlement-type.enum";
 
 export function handleLogNewMarket(event: LogNewMarketCreated): void {
   let marketId = event.params.marketId;
-  let product = Product.load(event.params.productId.toString())!;
+  let productId = `${event.address.toHexString()}-${event.params.productId.toString()}`;
+  let product = Product.load(productId)!;
   let rpcContractAddress = changetype<Address>(product.riskPoolsControllerAddress);
   let rpcContract = RiskPoolsControllerContract.bind(rpcContractAddress);
 
@@ -135,7 +136,7 @@ export function handleLogNewMarket(event: LogNewMarketCreated): void {
   let titleParams = marketInfo.title.split("+");
 
   market.marketId = marketId;
-  market.product = event.params.productId.toString();
+  market.product = productId;
   market.riskPoolsControllerAddress = rpcContractAddress;
 
   market.wording = productMeta.wording;
@@ -322,10 +323,11 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
   let id =
     rpcContract.policyTokenIssuer().toHexString() + "-" + policyId.toString();
   let policy = new Policy(id);
+  let productId = `${event.address.toHexString()}-${marketInfo.productId.toString()}`;
 
   policy.policyTokenIssuerAddress = rpcContract.policyTokenIssuer();
   policy.policyId = policyId;
-  policy.productId = event.address.toHexString();
+  policy.productId = productId;
   policy.originalBalance = depositInfo.premiumFeeDeposit
     .plus(depositInfo.frontendOperatorFeeDeposit)
     .plus(depositInfo.referralFeeDeposit);
@@ -397,7 +399,8 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
 }
 
 export function handleLogProductChanged(event: LogProductChanged): void {
-  let product = Product.load(event.params.productId.toString())!;
+  let productId = `${event.address.toHexString()}-${event.params.productId.toString()}`;
+  let product = Product.load(productId)!;
 
   switch (event.params.logType) {
     case ProductOperatorLogType.MarketCreationFeeToken:
@@ -475,13 +478,14 @@ export function handleLogNewProduct(event: LogNewProduct): void {
   getState(EventType.SystemStatus).save();
   getSystemConfig(event.address.toHexString());
 
-  let productId = event.params.productId;
+  let productId = `${event.address.toHexString()}-${event.params.productId.toString()}`;
   let rpcContract = RiskPoolsControllerContract.bind(event.address);
 
-  let productInfo = getProduct(rpcContract, productId);
-  let productMeta = getProductMeta(rpcContract, productId);
-  let product = new Product(productId.toString());
+  let productInfo = getProduct(rpcContract, event.params.productId);
+  let productMeta = getProductMeta(rpcContract, event.params.productId);
+  let product = new Product(productId);
 
+  product.productId = event.params.productId;
   product.riskPoolsControllerAddress = event.address;
   product.policyTokenIssuerAddress = rpcContract.policyTokenIssuer();
   product.title = productMeta.title;
@@ -682,7 +686,8 @@ export function handleLogNewSystemStatus(event: LogNewSystemStatus): void {
 }
 
 export function handleLogNewProductStatus(event: LogNewProductStatus): void {
-  let product = Product.load(event.params.productId.toString());
+  let productId = `${event.address.toHexString()}-${event.params.productId.toString()}`;
+  let product = Product.load(productId);
 
   if (!product) {
     return;
@@ -696,7 +701,7 @@ export function handleLogNewProductStatus(event: LogNewProductStatus): void {
     EventType.ProductStatus,
     event,
     null,
-    event.params.productId.toString(),
+    productId,
     event.params.status.toString()
   );
 }

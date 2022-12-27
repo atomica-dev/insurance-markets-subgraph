@@ -39,6 +39,7 @@ type PolicyPermissionToken @entity {
 
 type Product @entity {
   id: ID!
+  productId: BigInt!
   riskPoolsControllerAddress: Bytes!
   policyTokenIssuerAddress: Bytes!
   treasuryAddress: Bytes!
@@ -216,7 +217,7 @@ type Policy @entity {
   totalCharged: BigInt!
   expired: Boolean
   waitingPeriod: BigInt
-  claims: [Claim!] @derivedFrom(field: "policy")
+  #claims: [Claim!] @derivedFrom(field: "policy")
   frontendOperator: FrontendOperator
   updatedAt: BigInt
   liquidatedAt: BigInt
@@ -446,8 +447,7 @@ type Claim @entity {
   id: ID!
   policyId: BigInt
   votingId: BigInt
-  policy: Policy!
-  product: Product!
+  productNo: BigInt
   submittedBy: Bytes!
   submittedAt: BigInt!
   status: Int
