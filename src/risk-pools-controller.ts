@@ -91,6 +91,7 @@ import {
   Address,
   BigInt,
   Bytes,
+  DataSourceContext,
   ethereum,
   log,
 } from "@graphprotocol/graph-ts";
@@ -119,6 +120,7 @@ import { addOraclePair } from "./rate-oracle";
 import { Pool as PoolTemplate } from "../generated/templates";
 import { ProductOperatorLogType } from "./product-operator-log-type.enum";
 import { SettlementType } from "./settlement-type.enum";
+import { RPC_CONTRACT_ADDRESS_CONTEXT_KEY } from "./payout-requester";
 
 
 export function handleLogNewMarket(event: LogNewMarketCreated): void {
@@ -518,9 +520,13 @@ export function handleLogNewProduct(event: LogNewProduct): void {
 
   product.save();
 
+  let context = new DataSourceContext();
+
+  context.setString(RPC_CONTRACT_ADDRESS_CONTEXT_KEY, event.address.toHexString());
+
   PolicyTokenIssuer.create(rpcContract.policyTokenIssuer());
   PolicyPermissionTokenIssuer.create(rpcContract.policyTokenPermissionIssuer());
-  PayoutRequesterTemplate.create(changetype<Address>(product.claimProcessor));
+  PayoutRequesterTemplate.createWithContext(changetype<Address>(product.claimProcessor), context);
 
   updateState(EventType.SystemProductCount, BigInt.fromI32(1), null);
 

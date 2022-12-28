@@ -217,7 +217,7 @@ type Policy @entity {
   totalCharged: BigInt!
   expired: Boolean
   waitingPeriod: BigInt
-  #claims: [Claim!] @derivedFrom(field: "policy")
+  claims: [Claim!] @derivedFrom(field: "policy")
   frontendOperator: FrontendOperator
   updatedAt: BigInt
   liquidatedAt: BigInt
@@ -445,9 +445,10 @@ type WithdrawRequest @entity {
 
 type Claim @entity {
   id: ID!
-  policyId: BigInt
+  policyId: BigInt!
   votingId: BigInt
-  productNo: BigInt
+  policy: Policy!
+  product: Product!
   submittedBy: Bytes!
   submittedAt: BigInt!
   status: Int
