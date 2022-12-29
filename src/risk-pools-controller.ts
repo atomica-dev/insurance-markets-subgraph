@@ -1205,8 +1205,7 @@ export function handleLogMarketCharge(event: LogMarketCharge): void {
   for (let i = 0; i < aggPool.poolList.length; i++) {
     let poolId = aggPool.poolList[i];
     let pool = Pool.load(poolId)!;
-    let pmrId = poolId + "-" + aggPool.id;
-    let bid = Bid.load(aggPool.market + "-" + poolId);
+    let bid = Bid.load(`${aggPool.market}-${poolId}`);
     let id = poolId + "-" + token.toHexString();
 
     if (!bid || bid.capacity.isZero()) {
@@ -1297,14 +1296,7 @@ export function handleLogWithdrawAccruedMarketFee(
 export function handleLogMarketCapacityAllowanceUpdated(
   event: LogMarketCapacityAllowanceUpdated
 ): void {
-  let marketId = event.address.toHexString() + "-" + event.params.marketId.toString();
-  let bidId = marketId + "-" + event.params.riskPool.toHexString();
-
-  let bid = Bid.load(bidId);
-
-  if (!bid) {
-    bid = createBid(event.params.marketId, event.params.riskPool, event.address);
-  }
+  let bid = getOrCreateBid(event.params.marketId, event.params.riskPool, event.address);
 
   bid.capacityAllowance = event.params.capacityAllowance;
 
@@ -1314,14 +1306,7 @@ export function handleLogMarketCapacityAllowanceUpdated(
 export function handleLogMarketCapacityLimitUpdated(
   event: LogMarketCapacityLimitUpdated
 ): void {
-  let marketId = event.address.toHexString() + "-" + event.params.marketId.toString();
-  let bidId = marketId + "-" + event.params.riskPool.toHexString();
-
-  let bid = Bid.load(bidId);
-
-  if (!bid) {
-    bid = createBid(event.params.marketId, event.params.riskPool, event.address);
-  }
+  let bid = getOrCreateBid(event.params.marketId, event.params.riskPool, event.address);
 
   bid.marketCapacityLimit = event.params.capacityLimit;
 
@@ -1741,23 +1726,29 @@ export function updateAllowListAccounts(allowListId: BigInt, accounts: Address[]
 }
 
 export function handleLogJoinMarket(event: LogJoinMarket): void {
-  let bid = createBid(event.params.marketId, event.params.riskPool, event.address);
+  let bid = getOrCreateBid(event.params.marketId, event.params.riskPool, event.address);
 
   bid.save();
 }
 
-function createBid(marketNo: BigInt, riskPoolId: Address, rpcContractAddress: Address): Bid {
+function getOrCreateBid(marketNo: BigInt, riskPoolId: Address, rpcContractAddress: Address): Bid {
   let marketId = rpcContractAddress.toHexString() + "-" + marketNo.toString();
-  let bidId = marketId + "-" + riskPoolId.toHexString();
+  let bidId = `${marketId}-${riskPoolId.toHexString()}`;
   let rpcContract = RiskPoolsControllerContract.bind(rpcContractAddress);
 
-  let bid = new Bid(bidId);
-  let cBid = rpcContract.bid(marketNo, riskPoolId);
+  let bid = Bid.load(bidId);
 
-  bid.marketId = marketId;
-  bid.market = marketId;
-  bid.poolId = riskPoolId;
-  bid.pool = bid.poolId.toHexString();
+  if (!bid) {
+    bid = new Bid(bidId);
+
+    bid.marketId = marketId;
+    bid.market = marketId;
+    bid.poolId = riskPoolId;
+    bid.pool = bid.poolId.toHexString();
+    bid.capacity = BigInt.fromI32(0);
+  }
+
+  let cBid = rpcContract.bid(marketNo, riskPoolId);
 
   bid.minPremiumRatePerSec = cBid.minPremiumRatePerSec;
   bid.maxPremiumRatePerSec = cBid.maxPremiumRatePerSec;
@@ -1769,7 +1760,6 @@ function createBid(marketNo: BigInt, riskPoolId: Address, rpcContractAddress: Ad
   bid.maxCapacityLimit = cBid.maxCapacityLimit;
   bid.marketCapacityLimit = cBid.marketCapacityLimit;
   bid.capacityAllowance = cBid.capacityAllowance;
-  bid.capacity = BigInt.fromI32(0);
 
   return bid;
 }
