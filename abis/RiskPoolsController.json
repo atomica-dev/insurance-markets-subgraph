@@ -156,6 +156,78 @@
         "inputs": [
             {
                 "indexed": false,
+                "internalType": "address",
+                "name": "msgSender",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "bytes4",
+                "name": "msgSig",
+                "type": "bytes4"
+            },
+            {
+                "indexed": false,
+                "internalType": "bytes",
+                "name": "msgData",
+                "type": "bytes"
+            }
+        ],
+        "name": "LogExecuted",
+        "type": "event",
+        "signature": "0x8f5cb45f7b4868c91dd22c88b06012d2e1bcfbcb74118c71130adc86fada07df"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "bytes4",
+                "name": "msgSig",
+                "type": "bytes4"
+            },
+            {
+                "indexed": false,
+                "internalType": "bytes",
+                "name": "msgData",
+                "type": "bytes"
+            }
+        ],
+        "name": "LogExecutionDeclined",
+        "type": "event",
+        "signature": "0xdc370acb2b07e45073d29b87f6e310f016469d7b1e141d5157588ab459c78e7a"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "msgSender",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "bytes4",
+                "name": "msgSig",
+                "type": "bytes4"
+            },
+            {
+                "indexed": false,
+                "internalType": "bytes",
+                "name": "msgData",
+                "type": "bytes"
+            }
+        ],
+        "name": "LogExecutionDelayed",
+        "type": "event",
+        "signature": "0x9da4b2e03356f32e916a82509993c0740505b959e30721760621564194b3203b"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
                 "internalType": "uint256",
                 "name": "policyId",
                 "type": "uint256"
@@ -2834,6 +2906,25 @@
     {
         "inputs": [
             {
+                "internalType": "bytes4",
+                "name": "msgSig",
+                "type": "bytes4"
+            },
+            {
+                "internalType": "bytes",
+                "name": "msgData",
+                "type": "bytes"
+            }
+        ],
+        "name": "declineExecution",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xa6664ae1"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "uint256",
                 "name": "forwardedPayoutRequestId",
                 "type": "uint256"
@@ -2888,6 +2979,27 @@
         "type": "function",
         "constant": true,
         "signature": "0x96dba6cc"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "hash",
+                "type": "bytes32"
+            }
+        ],
+        "name": "delayedExecutions",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "delayedAt",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x96cc45ef"
     },
     {
         "inputs": [
@@ -3110,6 +3222,21 @@
         "type": "function",
         "constant": true,
         "signature": "0x078df67d"
+    },
+    {
+        "inputs": [],
+        "name": "executionDelay",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true,
+        "signature": "0x8b257989"
     },
     {
         "inputs": [],
@@ -5640,6 +5767,20 @@
         "inputs": [
             {
                 "internalType": "uint256",
+                "name": "executionDelay",
+                "type": "uint256"
+            }
+        ],
+        "name": "setExecutionDelay",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xe4917d9f"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
                 "name": "value",
                 "type": "uint256"
             }
@@ -5649,20 +5790,6 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0xf31f978b"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "frontendOperatorFee",
-                "type": "uint256"
-            }
-        ],
-        "name": "setFrontendOperatorFee",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x3d06250b"
     },
     {
         "inputs": [
@@ -5762,6 +5889,25 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0x5016e42c"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "allowanceListId",
+                "type": "uint256"
+            }
+        ],
+        "name": "setMarketPolicyBuyerAllowancelistId",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x367f80a5"
     },
     {
         "inputs": [
@@ -5898,20 +6044,6 @@
     {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "policyBuyerReferralBonus",
-                "type": "uint256"
-            }
-        ],
-        "name": "setPolicyBuyerReferralBonus",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0xe37c1ffc"
-    },
-    {
-        "inputs": [
-            {
                 "internalType": "address",
                 "name": "riskPool",
                 "type": "address"
@@ -6032,7 +6164,7 @@
             },
             {
                 "internalType": "address",
-                "name": "defaultRatesOracle",
+                "name": "ratesOracle",
                 "type": "address"
             }
         ],
@@ -6269,20 +6401,6 @@
         "stateMutability": "nonpayable",
         "type": "function",
         "signature": "0xc67fdaa3"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "referralFee",
-                "type": "uint256"
-            }
-        ],
-        "name": "setReferralFee",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x713494d7"
     },
     {
         "inputs": [
