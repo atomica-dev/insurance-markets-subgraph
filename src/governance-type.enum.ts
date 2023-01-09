@@ -1,6 +1,7 @@
 export enum GovernanceLogType {
   // General
   NewOperator,
+  ExecutionDelay,
   NewAllowanceManager,
   Treasury,
   DefaultPayoutRequester,
@@ -30,6 +31,7 @@ export enum GovernanceLogType {
   ProductWording,
   MarketExchangeRateOracle,
   MarketPolicyBuyerAllowlistId,
+  MarketPolicyBuyerAllowancelistId,
 
   // Fees
   ProductOperatorIncentiveFee,

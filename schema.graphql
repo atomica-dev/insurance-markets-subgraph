@@ -26,6 +26,7 @@ type System @entity {
   swapDuration: BigInt!
   idleDuration: BigInt!
   maxIterations: BigInt!
+  executionDelay: BigInt!
 
   status: Int!
 }
@@ -35,6 +36,26 @@ type PolicyPermissionToken @entity {
   policyId: BigInt
   owner: Bytes
   policy: Policy
+}
+
+type DelayedExecution @entity {
+  # sig-data
+  id: ID!
+  sig: Bytes!
+  data: Bytes!
+  requestedBy: Bytes!
+  requestedAt: BigInt!
+}
+
+type DelayedExecutionHistory @entity {
+  id: ID!
+  sig: Bytes!
+  data: Bytes!
+  requestedBy: Bytes!
+  requestedAt: BigInt!
+  executedAt: BigInt!
+  executedBy: Bytes!
+  isDeclined: Boolean!
 }
 
 type Product @entity {
@@ -91,6 +112,7 @@ type Market @entity {
   insuredToken: Bytes!
 
   bids: [Bid!]! @derivedFrom(field: "market")
+  aggregatedPools: [AggregatedPool!]! @derivedFrom(field: "market")
 
   latestAccruedTimestamp: BigInt!
   coverAdjusterOracle: Bytes!

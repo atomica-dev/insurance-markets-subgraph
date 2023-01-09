@@ -28,6 +28,10 @@ GovernanceOperationMap.set(
   handleUpdateNewOperator
 );
 GovernanceOperationMap.set(
+  GovernanceLogType.ExecutionDelay,
+  handleUpdateExecutionDelay
+);
+GovernanceOperationMap.set(
   GovernanceLogType.NewAllowanceManager,
   handleUpdateNewAllowanceManager
 );
@@ -87,7 +91,11 @@ GovernanceOperationMap.set(
 );
 GovernanceOperationMap.set(
   GovernanceLogType.MarketPolicyBuyerAllowlistId,
-  handleUpdateMarketPolicyBuyerAllowlistId
+  handleUpdateMarketPolicyBuyerAllowListId
+);
+GovernanceOperationMap.set(
+  GovernanceLogType.MarketPolicyBuyerAllowancelistId,
+  handleUpdateMarketPolicyBuyerAllowanceListId
 );
 GovernanceOperationMap.set(
   GovernanceLogType.RiskPoolLpAllowlistId,
@@ -200,6 +208,21 @@ function handleUpdateNewOperator(event: LogGovernance): void {
     null,
     config.id,
     event.params.param1.toHexString()
+  );
+}
+
+function handleUpdateExecutionDelay(event: LogGovernance): void {
+  let config = getSystemConfig(event.address.toHexString());
+
+  config.executionDelay = event.params.param3;
+  config.save();
+
+  addEvent(
+    EventType.ExecutionDelay,
+    event,
+    null,
+    config.id,
+    event.params.param3.toString()
   );
 }
 
@@ -507,7 +530,7 @@ function handleUpdateRiskPoolWithdrawRequestExpiration(
   pool.save();
 }
 
-function handleUpdateMarketPolicyBuyerAllowlistId(event: LogGovernance): void {
+function handleUpdateMarketPolicyBuyerAllowListId(event: LogGovernance): void {
   let id = event.address.toHexString() + "-" + event.params.param3.toString();
   let market = Market.load(id);
 
@@ -516,6 +539,19 @@ function handleUpdateMarketPolicyBuyerAllowlistId(event: LogGovernance): void {
   }
 
   market.policyBuyerAllowListId = event.params.param4;
+
+  market.save();
+}
+
+function handleUpdateMarketPolicyBuyerAllowanceListId(event: LogGovernance): void {
+  let id = event.address.toHexString() + "-" + event.params.param3.toString();
+  let market = Market.load(id);
+
+  if (!market) {
+    return;
+  }
+
+  market.policyBuyerAllowanceListId = event.params.param4;
 
   market.save();
 }

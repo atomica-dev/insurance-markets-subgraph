@@ -36,6 +36,7 @@ export enum EventType {
   //#region Governance
 
   NewOperator,
+  ExecutionDelay,
   SystemStatus,
   Treasury,
   GovernanceIncentiveFee,
@@ -163,6 +164,8 @@ function getEventTypeString(eventType: EventType): string {
 
     case EventType.NewOperator:
       return "NewOperator";
+    case EventType.ExecutionDelay:
+      return "ExecutionDelay";
     case EventType.SystemStatus:
       return "SystemStatus";
     case EventType.Treasury:

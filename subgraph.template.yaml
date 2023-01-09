@@ -70,6 +70,8 @@ dataSources:
           handler: handleLogNewSystemStatus
         - event: LogPermissionTokenIssued(uint256,uint256,address)
           handler: handleLogPermissionTokenIssued
+        - event: LogPermissionTokenRevoked(uint256,uint256)
+          handler: handleLogPermissionTokenRevoked
         - event: LogNewProduct(uint256)
           handler: handleLogNewProduct
         - event: LogProductChanged(uint8,uint256,address,uint256)
@@ -146,6 +148,12 @@ dataSources:
           handler: handleLogListEdited
         - event: LogListEditorChanged(uint256)
           handler: handleLogListEditorChanged
+        - event: LogExecutionDelayed(address,bytes4,bytes)
+          handler: handleLogExecutionDelayed
+        - event: LogExecuted(address,bytes4,bytes)
+          handler: handleLogExecuted
+        - event: LogExecutionDeclined(bytes4,bytes)
+          handler: handleLogExecutionDeclined
       file: ./src/risk-pools-controller.ts
 templates:
   - kind: ethereum/contract

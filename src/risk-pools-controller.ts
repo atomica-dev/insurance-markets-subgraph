@@ -49,6 +49,10 @@ import {
   RiskPoolsController as RiskPoolsControllerContract,
   LogNewMarketCreated,
   LogProductChanged,
+  LogPermissionTokenRevoked,
+  LogExecutionDelayed,
+  LogExecuted,
+  LogExecutionDeclined,
 } from "../generated/RiskPoolsController/RiskPoolsController";
 import {
   PolicyPermissionTokenIssuer,
@@ -77,6 +81,8 @@ import {
   AllowList,
   AllowListAccount,
   Bid,
+  DelayedExecution,
+  DelayedExecutionHistory,
 } from "../generated/schema";
 import {
   addEvent,
@@ -94,6 +100,7 @@ import {
   DataSourceContext,
   ethereum,
   log,
+  store,
 } from "@graphprotocol/graph-ts";
 import { Pool as PoolContract } from "../generated/RiskPoolsController/Pool";
 import { PolicyTokenIssuer as PolicyTokenIssuerContract } from "../generated/RiskPoolsController/PolicyTokenIssuer";
@@ -739,6 +746,12 @@ export function handleLogPermissionTokenIssued(
   pToken.owner = event.params.receiver;
 
   pToken.save();
+}
+
+export function handleLogPermissionTokenRevoked(
+  event: LogPermissionTokenRevoked
+): void {
+  store.remove("PolicyPermissionToken", event.params.permissionId.toString());
 }
 
 export function handleLogPolicyDeposit(event: LogPolicyDeposit): void {
@@ -1504,8 +1517,12 @@ export function handleLogAggregatedPoolCreated(
   event: LogAggregatedPoolCreated
 ): void {
   let aggPool = createAggregatedPool(event.params.aggregatedPoolId, event.address);
+  let prevAggId = aggPool.prevAggregatedPoolId;
 
-  updateAggPoolList(aggPool.prevAggregatedPoolId, RiskPoolsControllerContract.bind(event.address));
+  updateAggPoolList(
+    prevAggId.isZero() ? event.params.aggregatedPoolId : prevAggId,
+    RiskPoolsControllerContract.bind(event.address),
+  );
 }
 
 export function createAggregatedPool(
@@ -1762,4 +1779,48 @@ function getOrCreateBid(marketNo: BigInt, riskPoolId: Address, rpcContractAddres
   bid.capacityAllowance = cBid.capacityAllowance;
 
   return bid;
+}
+
+export function handleLogExecutionDelayed(event: LogExecutionDelayed): void {
+  let id = `${event.params.msgSig}-${event.params.msgData}`;
+  let de = new DelayedExecution(id);
+
+  de.sig = event.params.msgSig;
+  de.data = event.params.msgData;
+  de.requestedBy = event.transaction.from;
+  de.requestedAt = event.block.timestamp;
+
+  de.save();
+}
+
+export function handleLogExecuted(event: LogExecuted): void {
+  finishDelayedExecution(event.params.msgSig, event.params.msgData, event, false);
+}
+
+export function handleLogExecutionDeclined(event: LogExecutionDeclined): void {
+  finishDelayedExecution(event.params.msgSig, event.params.msgData, event, true);
+}
+
+function finishDelayedExecution(sig: Bytes, data: Bytes, event: ethereum.Event, isDeclined: boolean): void {
+  let id = `${sig.toHexString()}-${data.toHexString()}`;
+  let de = DelayedExecution.load(id);
+
+  if (!de) {
+    return;
+  }
+
+  let dehId = updateState(EventType.ExecutionDelay, BigInt.fromI32(1), null).toString();
+  let deh = new DelayedExecutionHistory(dehId);
+
+  deh.sig = de.sig;
+  deh.data = de.data;
+  deh.requestedBy = de.requestedBy;
+  deh.requestedAt = de.requestedAt;
+  deh.executedBy = event.transaction.from;
+  deh.executedAt = event.block.timestamp;
+  deh.isDeclined = isDeclined;
+
+  deh.save();
+
+  store.remove("DelayedExecution", id);
 }
