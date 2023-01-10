@@ -1782,7 +1782,7 @@ function getOrCreateBid(marketNo: BigInt, riskPoolId: Address, rpcContractAddres
 }
 
 export function handleLogExecutionDelayed(event: LogExecutionDelayed): void {
-  let id = `${event.params.msgSig}-${event.params.msgData}`;
+  let id = `${event.params.msgSig.toHexString()}-${event.params.msgData.toHexString()}`;
   let de = new DelayedExecution(id);
 
   de.sig = event.params.msgSig;
