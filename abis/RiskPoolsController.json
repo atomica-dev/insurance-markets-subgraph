@@ -2836,6 +2836,11 @@
                         "type": "uint256"
                     },
                     {
+                        "internalType": "uint256",
+                        "name": "depositAmount",
+                        "type": "uint256"
+                    },
+                    {
                         "internalType": "string",
                         "name": "agreement",
                         "type": "string"
@@ -2856,7 +2861,7 @@
         ],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x12f859ff"
+        "signature": "0xcebeff55"
     },
     {
         "inputs": [
