@@ -98,6 +98,7 @@ type Market @entity {
   id: ID!
   marketId: BigInt!
   product: Product!
+  productId: BigInt!
   riskPoolsControllerAddress: Bytes!
   entityList: [String!]
   isEnabled: Boolean!
@@ -224,7 +225,8 @@ type Policy @entity {
   id: ID!
   policyTokenIssuerAddress: Bytes!
   policyId: BigInt!
-  productId: String
+  product: Product!
+  productId: BigInt!
   market: Market!
   marketId: BigInt
   owner: String!

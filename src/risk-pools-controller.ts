@@ -146,6 +146,7 @@ export function handleLogNewMarket(event: LogNewMarketCreated): void {
 
   market.marketId = marketId;
   market.product = productId;
+  market.productId = event.params.productId;
   market.riskPoolsControllerAddress = rpcContractAddress;
 
   market.wording = productMeta.wording;
@@ -336,7 +337,8 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
 
   policy.policyTokenIssuerAddress = rpcContract.policyTokenIssuer();
   policy.policyId = policyId;
-  policy.productId = productId;
+  policy.product = productId;
+  policy.productId = marketInfo.productId;
   policy.originalBalance = depositInfo.premiumFeeDeposit
     .plus(depositInfo.frontendOperatorFeeDeposit)
     .plus(depositInfo.referralFeeDeposit);
