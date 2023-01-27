@@ -267,6 +267,8 @@ export function handleLogContributeSettlement(
     event.params.amount.toString(),
     event.params.token.toHexString()
   );
+
+  updatePoolCapacity(event.address, event);
 }
 
 export function handleLogForwardPayoutRequest(
@@ -591,8 +593,12 @@ export function handleLogForwardCommitLoss(event: LogForwardCommitLoss): void {
 }
 
 export function handleLogCapacityChanged(event: LogCapacityChanged): void {
-  let pool = Pool.load(event.address.toHexString())!;
-  let pContract = PoolContract.bind(event.address);
+  updatePoolCapacity(event.address, event);
+}
+
+function updatePoolCapacity(poolAddress: Address, event: ethereum.Event): void {
+  let pool = Pool.load(poolAddress.toHexString())!;
+  let pContract = PoolContract.bind(poolAddress);
   let oldBalance = pool.capitalTokenBalance;
   let stats = pContract.stats();
 
