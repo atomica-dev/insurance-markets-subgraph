@@ -16,10 +16,7 @@ export class CPolicy {
   underlyingCover: BigInt;
 }
 
-export function getPolicy(
-  contract: RiskPoolsControllerContract,
-  id: BigInt
-): CPolicy {
+export function getPolicy(contract: RiskPoolsControllerContract, id: BigInt): CPolicy {
   let d = contract.policies(id);
 
   return {
@@ -44,11 +41,7 @@ export class CPolicyDeposit {
   premiumMulAccumulator: BigInt;
 }
 
-export function getPolicyDeposit(
-  contract: RiskPoolsControllerContract,
-  id: BigInt,
-  token: Address
-): CPolicyDeposit {
+export function getPolicyDeposit(contract: RiskPoolsControllerContract, id: BigInt, token: Address): CPolicyDeposit {
   let d = contract.policyDeposits(id, token);
 
   return {
@@ -66,17 +59,14 @@ export class PoolBucket {
   settlementTotalBalance: BigInt;
 }
 
-export function getPoolBucket(
-  contract: RiskPoolContract,
-  token: Address,
-): PoolBucket {
+export function getPoolBucket(contract: RiskPoolContract, token: Address): PoolBucket {
   let b = contract.buckets(token);
 
   return {
     premiumAccumulator: b.value0,
     settlementAccumulator: b.value1,
     premiumTotalBalance: b.value2,
-    settlementTotalBalance: b.value3
+    settlementTotalBalance: b.value3,
   };
 }
 
@@ -90,12 +80,9 @@ export class CProduct {
   defaultCoverAdjusterOracle: Address;
   defaultRatesOracle: Address;
   marketCreationFeeToken: Address;
-};
+}
 
-export function getProduct(
-  contract: RiskPoolsControllerContract,
-  id: BigInt,
-): CProduct {
+export function getProduct(contract: RiskPoolsControllerContract, id: BigInt): CProduct {
   let d = contract.products(id);
 
   return {
@@ -125,10 +112,7 @@ export class CProductMeta {
   wording: string;
 }
 
-export function getProductMeta(
-  contract: RiskPoolsControllerContract,
-  id: BigInt,
-): CProductMeta {
+export function getProductMeta(contract: RiskPoolsControllerContract, id: BigInt): CProductMeta {
   let d = contract.productsMeta(id);
 
   return {
@@ -158,10 +142,7 @@ export class CMarket {
   title: string;
 }
 
-export function getMarket(
-  contract: RiskPoolsControllerContract,
-  id: BigInt
-): CMarket {
+export function getMarket(contract: RiskPoolsControllerContract, id: BigInt): CMarket {
   let d = contract.markets(id);
 
   return {
@@ -187,10 +168,7 @@ export class CAggregatedPool {
   premiumRatePerSec: BigInt;
 }
 
-export function getAggregatedPool(
-  contract: RiskPoolsControllerContract,
-  id: BigInt,
-): CAggregatedPool {
+export function getAggregatedPool(contract: RiskPoolsControllerContract, id: BigInt): CAggregatedPool {
   let d = contract.aggregatedPools(id);
 
   return {
@@ -212,10 +190,7 @@ export class CRiskPoolData {
   agreement: string;
 }
 
-export function getRiskPoolData(
-  contract: RiskPoolsControllerContract,
-  id: Address
-): CRiskPoolData {
+export function getRiskPoolData(contract: RiskPoolsControllerContract, id: Address): CRiskPoolData {
   let d = contract.riskPools(id);
 
   return {
@@ -244,10 +219,7 @@ export class CMarketMeta {
   tailJumpPremiumRatePerSec: BigInt;
 }
 
-export function getMarketMeta(
-  contract: RiskPoolsControllerContract,
-  id: BigInt
-): CMarketMeta {
+export function getMarketMeta(contract: RiskPoolsControllerContract, id: BigInt): CMarketMeta {
   let d = contract.marketsMeta(id);
 
   return {
@@ -280,10 +252,7 @@ export class CPayoutRequest {
   data: string;
 }
 
-export function getPayoutRequest(
-  contract: RiskPoolsControllerContract,
-  id: BigInt
-): CPayoutRequest {
+export function getPayoutRequest(contract: RiskPoolsControllerContract, id: BigInt): CPayoutRequest {
   let d = contract.payoutRequests(id);
 
   return {
@@ -310,10 +279,7 @@ export class CForwardedPayoutRequest {
   status: i32;
 }
 
-export function getForwardedPayoutRequest(
-  contract: RiskPoolsControllerContract,
-  id: BigInt
-): CForwardedPayoutRequest {
+export function getForwardedPayoutRequest(contract: RiskPoolsControllerContract, id: BigInt): CForwardedPayoutRequest {
   let d = contract.forwardedPayoutRequests(id);
 
   return {
@@ -337,11 +303,7 @@ export class CRiskPoolConnection {
   active: boolean;
 }
 
-export function getRiskPoolConnection(
-  contract: RiskPoolContract,
-  chain: BigInt,
-  id: Address
-): CRiskPoolConnection {
+export function getRiskPoolConnection(contract: RiskPoolContract, chain: BigInt, id: Address): CRiskPoolConnection {
   let d = contract.riskPoolsConnections(chain, id);
 
   return {
@@ -370,10 +332,7 @@ export class CCoverReward {
   proofsCid: string;
 }
 
-export function getCoverReward(
-  contract: RiskPoolsControllerContract,
-  id: BigInt,
-): CCoverReward {
+export function getCoverReward(contract: RiskPoolsControllerContract, id: BigInt): CCoverReward {
   let d = contract.rewards(id);
 
   return {
@@ -399,15 +358,12 @@ export class CList {
   descriptionCid: string;
 }
 
-export function getList(
-  contract: RiskPoolsControllerContract,
-  id: BigInt,
-): CList {
+export function getList(contract: RiskPoolsControllerContract, id: BigInt): CList {
   let d = contract.lists(id);
 
   return {
     type: d.value0,
     editor: d.value1,
     descriptionCid: d.value2,
-  }
-};
+  };
+}

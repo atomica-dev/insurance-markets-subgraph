@@ -1,4 +1,3 @@
-
 export enum ProductOperatorLogType {
   MarketCreationFeeToken,
   MarketCreationFee,

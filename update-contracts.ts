@@ -6,8 +6,8 @@ const OUT_PATH = "./subgraph.yaml";
 const DEFAULT_NETWORK = "5";
 const ENV_TO_NETWORK: any = {
   "srm-dev": "5",
-  "mainnet": "1",
-  "ganache": "7777",
+  mainnet: "1",
+  ganache: "7777",
   "srm-staging": "5",
   "local-mumbai": "80001",
   "local-goerli": "5",
@@ -55,12 +55,14 @@ function getConfigValue(name: string, networkId: string, value: string = "addres
 }
 
 function updateSubgraphYaml() {
-  const targetNetwork = Object.values(NETWORK_NAMES).some(value => value === NETWORK) ? NETWORK : NETWORK_NAMES[NETWORK || ENV_TO_NETWORK[ENV] || DEFAULT_NETWORK];
+  const targetNetwork = Object.values(NETWORK_NAMES).some((value) => value === NETWORK)
+    ? NETWORK
+    : NETWORK_NAMES[NETWORK || ENV_TO_NETWORK[ENV] || DEFAULT_NETWORK];
 
   console.log(`Environment: ${ENV}, Chain: ${targetNetwork}`);
 
   if (!ENV || !targetNetwork) {
-    console.error('Error: Can not find specified config.');
+    console.error("Error: Can not find specified config.");
     process.exit(1);
   }
 
@@ -91,10 +93,7 @@ function updateManualFiles() {
     let source = fs.readFileSync(file, "utf8");
 
     for (const contract of getContractNames(ENV)) {
-      source = source.replace(
-        new RegExp(`__${contract}__`, "g"),
-        getConfigValue(contract, targetNetworkId)
-      );
+      source = source.replace(new RegExp(`__${contract}__`, "g"), getConfigValue(contract, targetNetworkId));
     }
 
     fs.writeFileSync(file, source);

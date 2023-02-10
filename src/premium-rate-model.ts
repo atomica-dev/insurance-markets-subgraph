@@ -19,36 +19,23 @@ export function createRateModel(id: string, cPremiumRate: CPremiumRate): void {
   model.type = cPremiumRate.premiumRateType;
   let valueOf100 = BigInt.fromI32(100);
 
-  model.rate0 = BigDecimal.fromString(
-    cPremiumRate.baseRatePerSec
-      .times(SECONDS_IN_A_YEAR)
-      .times(valueOf100)
-      .toString()
-  ).div(WEI_DECIMALS);
+  model.rate0 = BigDecimal.fromString(cPremiumRate.baseRatePerSec.times(SECONDS_IN_A_YEAR).times(valueOf100).toString()).div(WEI_DECIMALS);
 
-  model.util1 = BigDecimal.fromString(
-    cPremiumRate.kink.times(valueOf100).toString()
-  ).div(WEI_DECIMALS);
+  model.util1 = BigDecimal.fromString(cPremiumRate.kink.times(valueOf100).toString()).div(WEI_DECIMALS);
 
   if (model.type === PremiumRateType.Linear) {
-    model.rate1 = BigDecimal.fromString(
-      cPremiumRate.multiplierPerSec
-        .times(SECONDS_IN_A_YEAR)
-        .toString()
-    ).div(WEI_DECIMALS).plus(model.rate0!);
+    model.rate1 = BigDecimal.fromString(cPremiumRate.multiplierPerSec.times(SECONDS_IN_A_YEAR).toString()).div(WEI_DECIMALS).plus(model.rate0!);
   }
 
   if (model.type === PremiumRateType.Dynamic) {
-    model.rate1 = BigDecimal.fromString(
-      cPremiumRate.multiplierPerSec
-        .times(SECONDS_IN_A_YEAR)
-        .toString()
-    ).div(WEI_DECIMALS).times(model.util1!).plus(model.rate0!);
-    model.rate2 = BigDecimal.fromString(
-      cPremiumRate.multiplierPerSec
-        .times(SECONDS_IN_A_YEAR)
-        .toString()
-    ).div(WEI_DECIMALS).times(BigDecimal.fromString("1").minus(model.util1!)).plus(model.rate1!);
+    model.rate1 = BigDecimal.fromString(cPremiumRate.multiplierPerSec.times(SECONDS_IN_A_YEAR).toString())
+      .div(WEI_DECIMALS)
+      .times(model.util1!)
+      .plus(model.rate0!);
+    model.rate2 = BigDecimal.fromString(cPremiumRate.multiplierPerSec.times(SECONDS_IN_A_YEAR).toString())
+      .div(WEI_DECIMALS)
+      .times(BigDecimal.fromString("1").minus(model.util1!))
+      .plus(model.rate1!);
   }
 
   model.save();

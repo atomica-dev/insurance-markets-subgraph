@@ -12,9 +12,7 @@ export function isOracleExist(id: string): boolean {
   return oracle != null;
 }
 
-export function getOracle(
-  id: string
-): RateOracle {
+export function getOracle(id: string): RateOracle {
   let oracle = RateOracle.load(id);
 
   if (oracle === null) {
@@ -42,8 +40,7 @@ export function getPairId(from: Bytes, to: Bytes): string {
 }
 
 export function addOraclePair(oracleId: string, from: Bytes, to: Bytes): void {
-  if (oracleId == "0x0000000000000000000000000000000000000000" ||
-    from == to) {
+  if (oracleId == "0x0000000000000000000000000000000000000000" || from == to) {
     return;
   }
 
@@ -72,9 +69,10 @@ export function updateOracleRates(oracleId: string, timestamp: BigInt): void {
   }
 }
 
-function _updatePairRate(contract: RateOracleContract, pair: string, oracleId: string, timestamp: BigInt):void {
+function _updatePairRate(contract: RateOracleContract, pair: string, oracleId: string, timestamp: BigInt): void {
   let fromTo = pair.split("-");
-  let from = fromTo[0], to = fromTo[1];
+  let from = fromTo[0],
+    to = fromTo[1];
   let fa = Address.fromString(from);
   let ta = Address.fromString(to);
 

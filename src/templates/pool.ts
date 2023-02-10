@@ -50,10 +50,7 @@ import { addToList, filterNotEqual, ZERO_ADDRESS } from "../utils";
 export function handleTransfer(event: Transfer): void {
   let pool = Pool.load(event.address.toHexString())!;
 
-  if (
-    event.params.to.toHexString() == ZERO_ADDRESS ||
-    event.params.from.toHexString() == ZERO_ADDRESS
-  ) {
+  if (event.params.to.toHexString() == ZERO_ADDRESS || event.params.from.toHexString() == ZERO_ADDRESS) {
     return;
   }
 
@@ -76,13 +73,7 @@ export function handleTransfer(event: Transfer): void {
   if (sender.tokenBalance.isZero()) {
     pool.participants = pool.participants.minus(BigInt.fromI32(1));
 
-    addEvent(
-      EventType.TotalPoolParticipants,
-      event,
-      null,
-      pool.id,
-      pool.participants.toString()
-    );
+    addEvent(EventType.TotalPoolParticipants, event, null, pool.id, pool.participants.toString());
   }
 
   pool.save();
@@ -96,17 +87,13 @@ export function handleLogDeposit(event: LogDeposit): void {
   let account = PoolParticipant.load(pool.id + event.params.usr.toHexString());
   let oldBalance = pool.capitalTokenBalance;
 
-  pool.poolTokenBalance = pool.poolTokenBalance.plus(
-    event.params.poolTokenAmount
-  );
+  pool.poolTokenBalance = pool.poolTokenBalance.plus(event.params.poolTokenAmount);
 
   if (account === null) {
     account = addPoolParticipant(pool, event.params.usr.toHexString(), event);
   }
 
-  account.tokenBalance = account.tokenBalance.plus(
-    event.params.poolTokenAmount
-  );
+  account.tokenBalance = account.tokenBalance.plus(event.params.poolTokenAmount);
 
   pool.save();
   account.save();
@@ -119,7 +106,7 @@ export function handleLogDeposit(event: LogDeposit): void {
     account.tokenBalance.toString(),
     account.user,
     account.poolId,
-    event.params.capitalTokenAmount.toString()
+    event.params.capitalTokenAmount.toString(),
   );
 
   addEvent(
@@ -129,15 +116,10 @@ export function handleLogDeposit(event: LogDeposit): void {
     pool.id,
     pool.poolTokenBalance.toString(),
     pool.capitalTokenBalance.toString(),
-    pool.capitalTokenBalance.minus(oldBalance).toString()
+    pool.capitalTokenBalance.minus(oldBalance).toString(),
   );
 
-  updateState(
-    EventType.SystemPoolBalance,
-    event.params.capitalTokenAmount,
-    null,
-    pool.capitalTokenAddress.toHexString()
-  );
+  updateState(EventType.SystemPoolBalance, event.params.capitalTokenAmount, null, pool.capitalTokenAddress.toHexString());
 }
 
 export function handleLogWithdraw(event: LogWithdraw): void {
@@ -145,27 +127,17 @@ export function handleLogWithdraw(event: LogWithdraw): void {
   let account = PoolParticipant.load(pool.id + event.params.usr.toHexString());
   let oldBalance = pool.capitalTokenBalance;
 
-  pool.poolTokenBalance = pool.poolTokenBalance.minus(
-    event.params.poolTokenAmount
-  );
+  pool.poolTokenBalance = pool.poolTokenBalance.minus(event.params.poolTokenAmount);
 
   pool.save();
 
   if (account != null) {
-    account.tokenBalance = account.tokenBalance.minus(
-      event.params.poolTokenAmount
-    );
+    account.tokenBalance = account.tokenBalance.minus(event.params.poolTokenAmount);
 
     if (account.tokenBalance.isZero()) {
       pool.participants = pool.participants.minus(BigInt.fromI32(1));
 
-      addEvent(
-        EventType.TotalPoolParticipants,
-        event,
-        null,
-        pool.id,
-        pool.participants.toString()
-      );
+      addEvent(EventType.TotalPoolParticipants, event, null, pool.id, pool.participants.toString());
     }
 
     account.save();
@@ -178,7 +150,7 @@ export function handleLogWithdraw(event: LogWithdraw): void {
       account.tokenBalance.toString(),
       account.user,
       account.poolId,
-      event.params.capitalTokenAmount.neg().toString()
+      event.params.capitalTokenAmount.neg().toString(),
     );
 
     addEvent(
@@ -188,16 +160,11 @@ export function handleLogWithdraw(event: LogWithdraw): void {
       pool.id,
       pool.poolTokenBalance.toString(),
       pool.capitalTokenBalance.toString(),
-      pool.capitalTokenBalance.minus(oldBalance).toString()
+      pool.capitalTokenBalance.minus(oldBalance).toString(),
     );
   }
 
-  updateState(
-    EventType.SystemPoolBalance,
-    event.params.capitalTokenAmount.neg(),
-    null,
-    pool.capitalTokenAddress.toHexString()
-  );
+  updateState(EventType.SystemPoolBalance, event.params.capitalTokenAmount.neg(), null, pool.capitalTokenAddress.toHexString());
 }
 
 export function handleLogContributePremium(event: LogContributePremium): void {
@@ -221,26 +188,12 @@ export function handleLogContributePremium(event: LogContributePremium): void {
 
   let marketId = pool.riskPoolsControllerAddress.toHexString() + "-" + event.params.marketId.toString();
 
-  addEvent(
-    EventType.PoolEarnedPremium,
-    event,
-    marketId,
-    pool.id,
-    event.params.amount.toString(),
-    event.params.token.toHexString()
-  );
+  addEvent(EventType.PoolEarnedPremium, event, marketId, pool.id, event.params.amount.toString(), event.params.token.toHexString());
 
-  marketPremiumEarned(
-    marketId,
-    event.params.amount,
-    event.params.token,
-    event
-  );
+  marketPremiumEarned(marketId, event.params.amount, event.params.token, event);
 }
 
-export function handleLogContributeSettlement(
-  event: LogContributeSettlement
-): void {
+export function handleLogContributeSettlement(event: LogContributeSettlement): void {
   let pool = Pool.load(event.address.toHexString())!;
 
   let id = pool.id + "-" + event.params.token.toHexString();
@@ -259,22 +212,11 @@ export function handleLogContributeSettlement(
 
   pp.save();
 
-  addEvent(
-    EventType.PoolReceivedSettlement,
-    event,
-    null,
-    pool.id,
-    event.params.amount.toString(),
-    event.params.token.toHexString()
-  );
+  addEvent(EventType.PoolReceivedSettlement, event, null, pool.id, event.params.amount.toString(), event.params.token.toHexString());
 }
 
-export function handleLogForwardPayoutRequest(
-  event: LogForwardPayoutRequest
-): void {
-  let id = event.params.payoutRequestId.toString() + "-" +
-  event.params.forwardChainId.toString() + "-" +
-  event.params.forwardRiskPool.toHexString();
+export function handleLogForwardPayoutRequest(event: LogForwardPayoutRequest): void {
+  let id = event.params.payoutRequestId.toString() + "-" + event.params.forwardChainId.toString() + "-" + event.params.forwardRiskPool.toHexString();
   let request = new OutgoingPayoutRequest(id);
 
   request.poolId = event.address;
@@ -296,19 +238,10 @@ export function handleLogRequestCapital(event: LogRequestCapital): void {
     Pool balance mustn't be changed here, as it is updated in LogCapacityChanged event.
   */
 
-  updateState(
-    EventType.SystemPoolBalance,
-    event.params.amount.neg(),
-    null,
-    pool.capitalTokenAddress.toHexString()
-  );
+  updateState(EventType.SystemPoolBalance, event.params.amount.neg(), null, pool.capitalTokenAddress.toHexString());
 }
 
-function addPoolParticipant(
-  pool: Pool,
-  userId: string,
-  event: ethereum.Event
-): PoolParticipant {
+function addPoolParticipant(pool: Pool, userId: string, event: ethereum.Event): PoolParticipant {
   let account = new PoolParticipant(pool.id + userId);
 
   account.tokenBalance = BigInt.fromI32(0);
@@ -317,49 +250,31 @@ function addPoolParticipant(
 
   pool.participants = pool.participants.plus(BigInt.fromI32(1));
 
-  addEvent(
-    EventType.TotalPoolParticipants,
-    event,
-    null,
-    pool.id,
-    pool.participants.toString()
-  );
+  addEvent(EventType.TotalPoolParticipants, event, null, pool.id, pool.participants.toString());
 
   return account;
 }
 
-export function handleLogConnectedRiskPoolsDataUpdated(
-  event: LogConnectedRiskPoolsDataUpdated
-): void {
+export function handleLogConnectedRiskPoolsDataUpdated(event: LogConnectedRiskPoolsDataUpdated): void {
   let pool = Pool.load(event.address.toHexString())!;
   let pContract = PoolContract.bind(event.address);
 
-  pool.externalStatLastUpdated = event.block.timestamp
+  pool.externalStatLastUpdated = event.block.timestamp;
 
   pool.externalCapacity = event.params.capacity;
   pool.poolTokenBalance = pContract.totalSupply();
 
   pool.save();
 
-  addEvent(
-    EventType.PoolExternalBalance,
-    event,
-    null,
-    pool.id,
-    event.params.capacity.toString(),
-  );
+  addEvent(EventType.PoolExternalBalance, event, null, pool.id, event.params.capacity.toString());
 }
 
-export function handleLogSettlementDistributionUpdated(
-  event: LogSettlementDistributionUpdated
-): void {
+export function handleLogSettlementDistributionUpdated(event: LogSettlementDistributionUpdated): void {
   let pool = Pool.load(event.address.toHexString())!;
   let pContract = PoolContract.bind(event.address);
 
   pool.settlementRootHashLastUpdated =
-    pool.settlementRootHash != event.params.rootHash.toHexString()
-      ? event.block.timestamp
-      : pool.settlementRootHashLastUpdated;
+    pool.settlementRootHash != event.params.rootHash.toHexString() ? event.block.timestamp : pool.settlementRootHashLastUpdated;
 
   pool.settlementRootHash = event.params.rootHash.toHexString();
   pool.settlementDataUrl = pContract.settlementDistributionUri();
@@ -367,16 +282,12 @@ export function handleLogSettlementDistributionUpdated(
   pool.save();
 }
 
-export function handleLogPremiumDistributionUpdated(
-  event: LogPremiumDistributionUpdated
-): void {
+export function handleLogPremiumDistributionUpdated(event: LogPremiumDistributionUpdated): void {
   let pool = Pool.load(event.address.toHexString())!;
   let pContract = PoolContract.bind(event.address);
 
   pool.premiumRootHashLastUpdated =
-    pool.premiumRootHash != event.params.rootHash.toHexString()
-      ? event.block.timestamp
-      : pool.premiumRootHashLastUpdated;
+    pool.premiumRootHash != event.params.rootHash.toHexString() ? event.block.timestamp : pool.premiumRootHashLastUpdated;
 
   pool.premiumRootHash = event.params.rootHash.toHexString();
   pool.premiumDataUrl = pContract.premiumDistributionUri();
@@ -384,18 +295,11 @@ export function handleLogPremiumDistributionUpdated(
   pool.save();
 }
 
-export function handleLogRequestRiskPoolSync(
-  event: LogRequestRiskPoolSync
-): void {
-  event.params.riskPool
+export function handleLogRequestRiskPoolSync(event: LogRequestRiskPoolSync): void {
+  event.params.riskPool;
 }
 
-export function addExternalPool(
-  poolAddress: Address,
-  chainId: BigInt,
-  riskPool: Address,
-  event: ethereum.Event,
-): void {
+export function addExternalPool(poolAddress: Address, chainId: BigInt, riskPool: Address, event: ethereum.Event): void {
   let pool = Pool.load(poolAddress.toHexString())!;
   let epId = chainId.toString() + "-" + riskPool.toHexString();
   let l = pool.externalPoolList;
@@ -405,81 +309,34 @@ export function addExternalPool(
 
     pool.save();
 
-    addEvent(
-      EventType.ExternalPoolConnectionChanged,
-      event,
-      null,
-      pool.id,
-      chainId.toString(),
-      riskPool.toHexString(),
-      "+"
-    );
+    addEvent(EventType.ExternalPoolConnectionChanged, event, null, pool.id, chainId.toString(), riskPool.toHexString(), "+");
   }
 }
 
-export function handleLogCancelRiskPoolSync(
-  event: LogCancelRiskPoolSync
-): void {
+export function handleLogCancelRiskPoolSync(event: LogCancelRiskPoolSync): void {
   let pool = Pool.load(event.address.toHexString())!;
-  let epId =
-    event.params.chainId.toString() +
-    "-" +
-    event.params.riskPool_.toHexString();
+  let epId = event.params.chainId.toString() + "-" + event.params.riskPool_.toHexString();
 
   pool.externalPoolList = filterNotEqual(pool.externalPoolList, epId);
 
   pool.save();
 
-  addEvent(
-    EventType.ExternalPoolConnectionChanged,
-    event,
-    null,
-    pool.id,
-    event.params.chainId.toString(),
-    event.params.riskPool_.toHexString(),
-    "-"
-  );
+  addEvent(EventType.ExternalPoolConnectionChanged, event, null, pool.id, event.params.chainId.toString(), event.params.riskPool_.toHexString(), "-");
 }
 
-export function handleLogAcceptRiskPoolSync(
-  event: LogAcceptRiskPoolSync
-): void {
-  addExternalPool(
-    event.address,
-    event.params.chainId,
-    event.params.riskPool,
-    event,
-  );
+export function handleLogAcceptRiskPoolSync(event: LogAcceptRiskPoolSync): void {
+  addExternalPool(event.address, event.params.chainId, event.params.riskPool, event);
 
-  createOrUpdatePoolWallet(
-    event.params.chainId,
-    event.params.riskPool,
-    event.address
-  );
+  createOrUpdatePoolWallet(event.params.chainId, event.params.riskPool, event.address);
 }
 
-export function handleLogAcknowledgeRiskPoolSync(
-  event: LogAcknowledgeRiskPoolSync
-): void {
-  addExternalPool(
-    event.address,
-    event.params.chainId,
-    event.params.riskPool_,
-    event,
-  );
+export function handleLogAcknowledgeRiskPoolSync(event: LogAcknowledgeRiskPoolSync): void {
+  addExternalPool(event.address, event.params.chainId, event.params.riskPool_, event);
 
-  createOrUpdatePoolWallet(
-    event.params.chainId,
-    event.params.riskPool_,
-    event.address
-  );
+  createOrUpdatePoolWallet(event.params.chainId, event.params.riskPool_, event.address);
 }
 
-function createOrUpdatePoolWallet(
-  chainId: BigInt,
-  poolId: Address,
-  poolAddress: Address
-): void {
+function createOrUpdatePoolWallet(chainId: BigInt, poolId: Address, poolAddress: Address): void {
   let pContract = PoolContract.bind(poolAddress);
   let ePoolConfig = getRiskPoolConnection(pContract, chainId, poolId);
 
@@ -490,12 +347,7 @@ function createOrUpdatePoolWallet(
 
   pool.save();
 
-  let id =
-    poolAddress.toHexString() +
-    "-" +
-    chainId.toString() +
-    "-" +
-    poolId.toHexString();
+  let id = poolAddress.toHexString() + "-" + chainId.toString() + "-" + poolId.toHexString();
 
   let w = ExternalWallet.load(id);
 
@@ -519,27 +371,15 @@ function createOrUpdatePoolWallet(
 }
 
 export function handleLogTransferReserve(event: LogTransferReserve): void {
-  createOrUpdatePoolWallet(
-    event.params.toChainId,
-    event.params.toRiskPool,
-    event.address
-  );
+  createOrUpdatePoolWallet(event.params.toChainId, event.params.toRiskPool, event.address);
 }
 
-export function handleLogPullFromRefundWallet(
-  event: LogPullFromRefundWallet
-): void {
-  createOrUpdatePoolWallet(
-    event.params.forChainId,
-    event.params.forRiskPool,
-    event.address
-  );
+export function handleLogPullFromRefundWallet(event: LogPullFromRefundWallet): void {
+  createOrUpdatePoolWallet(event.params.forChainId, event.params.forRiskPool, event.address);
 }
 
 export function handleLogCommitLoss(event: LogCommitLoss): void {
-  let id = event.block.number.toString() + "-" +
-    event.params.fromChainId.toString() + "-" +
-    event.params.fromRiskPool.toHexString();
+  let id = event.block.number.toString() + "-" + event.params.fromChainId.toString() + "-" + event.params.fromRiskPool.toHexString();
   let loss = new IncomingLoss(id);
 
   loss.poolId = event.address;
@@ -550,16 +390,11 @@ export function handleLogCommitLoss(event: LogCommitLoss): void {
 
   loss.save();
 
-  createOrUpdatePoolWallet(
-    event.params.fromChainId,
-    event.params.fromRiskPool,
-    event.address
-  );
+  createOrUpdatePoolWallet(event.params.fromChainId, event.params.fromRiskPool, event.address);
 }
 
 export function handleLogCapitalReleased(event: LogCapitalReleased): void {
-  let id = event.block.number.toString() + "-" +
-    event.transactionLogIndex.toString();
+  let id = event.block.number.toString() + "-" + event.transactionLogIndex.toString();
   let loss = new PoolOwnLoss(id);
 
   loss.poolId = event.address;
@@ -570,9 +405,7 @@ export function handleLogCapitalReleased(event: LogCapitalReleased): void {
 }
 
 export function handleLogForwardCommitLoss(event: LogForwardCommitLoss): void {
-  let id = event.block.number.toString() + "-" +
-    event.params.toChainId.toString() + "-" +
-    event.params.toRiskPool.toHexString();
+  let id = event.block.number.toString() + "-" + event.params.toChainId.toString() + "-" + event.params.toRiskPool.toHexString();
   let loss = new OutgoingLoss(id);
 
   loss.poolId = event.address;
@@ -583,11 +416,7 @@ export function handleLogForwardCommitLoss(event: LogForwardCommitLoss): void {
 
   loss.save();
 
-  createOrUpdatePoolWallet(
-    event.params.toChainId,
-    event.params.toRiskPool,
-    event.address
-  );
+  createOrUpdatePoolWallet(event.params.toChainId, event.params.toRiskPool, event.address);
 }
 
 export function handleLogCapacityChanged(event: LogCapacityChanged): void {
@@ -610,14 +439,12 @@ export function handleLogCapacityChanged(event: LogCapacityChanged): void {
       pool.id,
       pool.poolTokenBalance.toString(),
       pool.capitalTokenBalance.toString(),
-      pool.capitalTokenBalance.minus(oldBalance).toString()
+      pool.capitalTokenBalance.minus(oldBalance).toString(),
     );
   }
 }
 
-export function handleLogNewRewardDistribution(
-  event: LogNewRewardDistribution
-): void {
+export function handleLogNewRewardDistribution(event: LogNewRewardDistribution): void {
   let pContract = PoolContract.bind(event.address);
   let id = event.address.toHexString() + "-" + event.params.rewardId.toString();
   let reward = new Reward(id);
@@ -629,15 +456,9 @@ export function handleLogNewRewardDistribution(
   reward.amount = event.params.rewardAmount;
   reward.creator = cReward.value0;
   reward.rewardToken = cReward.value1;
-  reward.rewardTokenDecimals = !rContract.try_decimals().reverted
-    ? rContract.try_decimals().value
-    : 18;
-  reward.rewardTokenSymbol = !rContract.try_symbol().reverted
-    ? rContract.try_symbol().value
-    : "";
-  reward.rewardTokenName = !rContract.try_name().reverted
-    ? rContract.try_name().value
-    : "";
+  reward.rewardTokenDecimals = !rContract.try_decimals().reverted ? rContract.try_decimals().value : 18;
+  reward.rewardTokenSymbol = !rContract.try_symbol().reverted ? rContract.try_symbol().value : "";
+  reward.rewardTokenName = !rContract.try_name().reverted ? rContract.try_name().value : "";
   reward.startedAt = cReward.value2;
   reward.endedAt = cReward.value3;
   reward.ratePerSecond = cReward.value4;
@@ -672,15 +493,8 @@ enum WithdrawRequestStatus {
   Withdrawn,
 }
 
-export function handleLogWithdrawRequestCreated(
-  event: LogWithdrawRequestCreated
-): void {
-  let id =
-    event.params.applicant.toHexString() +
-    "-" +
-    event.address.toHexString() +
-    "-" +
-    event.params.id.toString();
+export function handleLogWithdrawRequestCreated(event: LogWithdrawRequestCreated): void {
+  let id = event.params.applicant.toHexString() + "-" + event.address.toHexString() + "-" + event.params.id.toString();
   let request = new WithdrawRequest(id);
 
   request.num = event.params.id;
@@ -693,15 +507,8 @@ export function handleLogWithdrawRequestCreated(
   request.save();
 }
 
-export function handleLogWithdrawRequestCancelled(
-  event: LogWithdrawRequestCancelled
-): void {
-  let id =
-    event.params.applicant.toHexString() +
-    "-" +
-    event.address.toHexString() +
-    "-" +
-    event.params.id.toString();
+export function handleLogWithdrawRequestCancelled(event: LogWithdrawRequestCancelled): void {
+  let id = event.params.applicant.toHexString() + "-" + event.address.toHexString() + "-" + event.params.id.toString();
   let request = WithdrawRequest.load(id)!;
 
   request.status = WithdrawRequestStatus.Cancelled;
@@ -709,15 +516,8 @@ export function handleLogWithdrawRequestCancelled(
   request.save();
 }
 
-export function handleLogWithdrawRequestProcessed(
-  event: LogWithdrawRequestProcessed
-): void {
-  let id =
-    event.params.applicant.toHexString() +
-    "-" +
-    event.address.toHexString() +
-    "-" +
-    event.params.id.toString();
+export function handleLogWithdrawRequestProcessed(event: LogWithdrawRequestProcessed): void {
+  let id = event.params.applicant.toHexString() + "-" + event.address.toHexString() + "-" + event.params.id.toString();
   let request = WithdrawRequest.load(id)!;
 
   request.status = WithdrawRequestStatus.Withdrawn;
@@ -725,9 +525,7 @@ export function handleLogWithdrawRequestProcessed(
   request.save();
 }
 
-export function handleLogWithdrawDelayUpdated(
-  event: LogWithdrawDelayUpdated
-): void {
+export function handleLogWithdrawDelayUpdated(event: LogWithdrawDelayUpdated): void {
   let pool = Pool.load(event.address.toHexString())!;
 
   pool.withdrawDelay = event.params.withdrawDelay;
@@ -735,9 +533,7 @@ export function handleLogWithdrawDelayUpdated(
   pool.save();
 }
 
-export function handleLogWithdrawRequestExpirationUpdated(
-  event: LogWithdrawRequestExpirationUpdated
-): void {
+export function handleLogWithdrawRequestExpirationUpdated(event: LogWithdrawRequestExpirationUpdated): void {
   let pool = Pool.load(event.address.toHexString())!;
 
   pool.withdrawRequestExpiration = event.params.withdrawRequestExpiration;
