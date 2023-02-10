@@ -1311,7 +1311,7 @@ export function handleLogWithdrawAccruedMarketFee(
 export function handleLogMarketCapacityAllowanceUpdated(
   event: LogMarketCapacityAllowanceUpdated
 ): void {
-  let bid = getOrCreateBid(event.params.marketId, event.params.riskPool, event.address);
+  let bid = getOrCreateBid(event.params.marketId, event.params.riskPool, event.address, event.block.timestamp);
 
   bid.capacityAllowance = event.params.capacityAllowance;
 
@@ -1321,7 +1321,7 @@ export function handleLogMarketCapacityAllowanceUpdated(
 export function handleLogMarketCapacityLimitUpdated(
   event: LogMarketCapacityLimitUpdated
 ): void {
-  let bid = getOrCreateBid(event.params.marketId, event.params.riskPool, event.address);
+  let bid = getOrCreateBid(event.params.marketId, event.params.riskPool, event.address, event.block.timestamp);
 
   bid.marketCapacityLimit = event.params.capacityLimit;
 
@@ -1745,12 +1745,12 @@ export function updateAllowListAccounts(allowListId: BigInt, accounts: Address[]
 }
 
 export function handleLogJoinMarket(event: LogJoinMarket): void {
-  let bid = getOrCreateBid(event.params.marketId, event.params.riskPool, event.address);
+  let bid = getOrCreateBid(event.params.marketId, event.params.riskPool, event.address, event.block.timestamp);
 
   bid.save();
 }
 
-function getOrCreateBid(marketNo: BigInt, riskPoolId: Address, rpcContractAddress: Address): Bid {
+function getOrCreateBid(marketNo: BigInt, riskPoolId: Address, rpcContractAddress: Address, timestamp: BigInt): Bid {
   let marketId = rpcContractAddress.toHexString() + "-" + marketNo.toString();
   let bidId = `${marketId}-${riskPoolId.toHexString()}`;
   let rpcContract = RiskPoolsControllerContract.bind(rpcContractAddress);
@@ -1765,6 +1765,7 @@ function getOrCreateBid(marketNo: BigInt, riskPoolId: Address, rpcContractAddres
     bid.poolId = riskPoolId;
     bid.pool = bid.poolId.toHexString();
     bid.capacity = BigInt.fromI32(0);
+    bid.createdAt = timestamp;
   }
 
   let cBid = rpcContract.bid(marketNo, riskPoolId);
@@ -1779,6 +1780,7 @@ function getOrCreateBid(marketNo: BigInt, riskPoolId: Address, rpcContractAddres
   bid.maxCapacityLimit = cBid.maxCapacityLimit;
   bid.marketCapacityLimit = cBid.marketCapacityLimit;
   bid.capacityAllowance = cBid.capacityAllowance;
+  bid.updatedAt = timestamp;
 
   return bid;
 }

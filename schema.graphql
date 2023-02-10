@@ -660,6 +660,9 @@ type Bid @entity {
   aggregatedPool: AggregatedPool
   market: Market!
   pool: Pool!
+
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }
 
 type AllowListAccount @entity {
