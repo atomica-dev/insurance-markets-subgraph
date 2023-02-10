@@ -140,7 +140,9 @@ export function handleLogNewMarket(event: LogNewMarketCreated): void {
   let marketId = event.params.marketId;
   let productId = `${event.address.toHexString()}-${event.params.productId.toString()}`;
   let product = Product.load(productId)!;
-  let rpcContractAddress = changetype<Address>(product.riskPoolsControllerAddress);
+  let rpcContractAddress = changetype<Address>(
+    product.riskPoolsControllerAddress
+  );
   let rpcContract = RiskPoolsControllerContract.bind(rpcContractAddress);
 
   let id = rpcContractAddress.toHexString() + "-" + marketId.toString();
@@ -191,7 +193,9 @@ export function handleLogNewMarket(event: LogNewMarketCreated): void {
   market.policyBuyerAllowanceListId = rpcContract.policyBuyerAllowanceListId(
     marketId
   );
-  market.premiumMulAccumulator = rpcContract.marketsPremiumMulAccumulators(marketId);
+  market.premiumMulAccumulator = rpcContract.marketsPremiumMulAccumulators(
+    marketId
+  );
   market.createdAt = event.block.timestamp;
 
   market.status = StatusEnum.Opened;
@@ -321,13 +325,23 @@ export function updateFeeRecipientRelation(
 export function handleLogNewPolicy(event: LogNewPolicy): void {
   let policyId = event.params.policyId;
   let rpcContract = RiskPoolsControllerContract.bind(event.address);
-  let piContract = PolicyTokenIssuerContract.bind(rpcContract.policyTokenIssuer());
+  let piContract = PolicyTokenIssuerContract.bind(
+    rpcContract.policyTokenIssuer()
+  );
   let policyInfo = getPolicy(rpcContract, policyId);
   let marketInfo = getMarket(rpcContract, event.params.marketId);
-  let policyBalance = rpcContract.policyBalance(policyId, marketInfo.premiumToken);
-  let depositInfo = getPolicyDeposit(rpcContract, policyId, marketInfo.premiumToken);
+  let policyBalance = rpcContract.policyBalance(
+    policyId,
+    marketInfo.premiumToken
+  );
+  let depositInfo = getPolicyDeposit(
+    rpcContract,
+    policyId,
+    marketInfo.premiumToken
+  );
 
-  let id = rpcContract.policyTokenIssuer().toHexString() + "-" + policyId.toString();
+  let id =
+    rpcContract.policyTokenIssuer().toHexString() + "-" + policyId.toString();
   let policy = new Policy(id);
   let productId = `${event.address.toHexString()}-${marketInfo.productId.toString()}`;
 
@@ -345,7 +359,8 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
   policy.referralFeeDeposit = depositInfo.referralFeeDeposit;
 
   policy.marketId = policyInfo.marketId;
-  policy.market = event.address.toHexString() + "-" + policyInfo.marketId.toString();
+  policy.market =
+    event.address.toHexString() + "-" + policyInfo.marketId.toString();
   policy.validUntil = policyInfo.validUntil;
   policy.validFrom = event.block.timestamp;
   policy.coverageChanged = policyInfo.coverChanged;
@@ -368,7 +383,9 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
 
   policy.save();
 
-  if (getState(EventType.TotalPolicies, policy.market).value == BigInt.fromI32(0)) {
+  if (
+    getState(EventType.TotalPolicies, policy.market).value == BigInt.fromI32(0)
+  ) {
     // Until contract issue is fixed it's required to call update coverage manually.
     updateMarketChargeState(event.address, policy.market, event);
   }
@@ -387,7 +404,12 @@ export function handleLogNewPolicy(event: LogNewPolicy): void {
     BigInt.fromI32(1),
     policy.market
   );
-  updateAndLogState(EventType.MarketExposure, event, policy.coverage, policy.market);
+  updateAndLogState(
+    EventType.MarketExposure,
+    event,
+    policy.coverage,
+    policy.market
+  );
 
   updateAndLogState(
     EventType.MarketPolicyPremium,
@@ -452,7 +474,9 @@ export function handleLogProductChanged(event: LogProductChanged): void {
       break;
 
     default:
-      log.error("Unknown product prop change {}", [event.params.logType.toString()]);
+      log.error("Unknown product prop change {}", [
+        event.params.logType.toString(),
+      ]);
   }
 
   product.updatedAt = event.block.timestamp;
@@ -488,7 +512,8 @@ export function handleLogNewProduct(event: LogNewProduct): void {
   product.claimProcessor = productInfo.claimProcessor;
   product.treasuryAddress = rpcContract.treasury();
   product.wording = productMeta.wording;
-  product.cashSettlementIsEnabled = productMeta.settlement == SettlementType.Cash;
+  product.cashSettlementIsEnabled =
+    productMeta.settlement == SettlementType.Cash;
   product.physicalSettlementIsEnabled =
     productMeta.settlement == SettlementType.Physical;
   product.feeToken = productInfo.marketCreationFeeToken;
@@ -517,7 +542,10 @@ export function handleLogNewProduct(event: LogNewProduct): void {
 
   let context = new DataSourceContext();
 
-  context.setString(RPC_CONTRACT_ADDRESS_CONTEXT_KEY, event.address.toHexString());
+  context.setString(
+    RPC_CONTRACT_ADDRESS_CONTEXT_KEY,
+    event.address.toHexString()
+  );
 
   PolicyTokenIssuer.create(rpcContract.policyTokenIssuer());
   PolicyPermissionTokenIssuer.create(rpcContract.policyTokenPermissionIssuer());
@@ -580,7 +608,9 @@ function updatePolicyCoverage(
   );
 }
 
-export function handleLogPolicyCoverChanged(event: LogPolicyCoverChanged): void {
+export function handleLogPolicyCoverChanged(
+  event: LogPolicyCoverChanged
+): void {
   let rpcContract = RiskPoolsController.bind(event.address);
   let id =
     rpcContract.policyTokenIssuer().toHexString() +
@@ -606,7 +636,9 @@ export function marketPremiumEarned(
   updateAndLogState(EventType.MarketEarnedPremium, event, premium, marketId);
 }
 
-export function handleLogMarketStatusChanged(event: LogMarketStatusChanged): void {
+export function handleLogMarketStatusChanged(
+  event: LogMarketStatusChanged
+): void {
   let id = event.address.toHexString() + "-" + event.params.marketId.toString();
 
   let market = Market.load(id)!;
@@ -616,7 +648,10 @@ export function handleLogMarketStatusChanged(event: LogMarketStatusChanged): voi
   market.save();
 }
 
-function updatePolicyBalances(marketId: string, backTokenAddress: Address): void {
+function updatePolicyBalances(
+  marketId: string,
+  backTokenAddress: Address
+): void {
   let market = Market.load(marketId)!;
 
   let rpcContract = RiskPoolsControllerContract.bind(
@@ -638,7 +673,10 @@ function updatePolicyBalances(marketId: string, backTokenAddress: Address): void
     }
 
     let oldBalance = policy.balance;
-    let result = rpcContract.try_policyBalance(policy.policyId, backTokenAddress);
+    let result = rpcContract.try_policyBalance(
+      policy.policyId,
+      backTokenAddress
+    );
     let balance = !result.reverted ? result.value : BigInt.fromI32(0);
 
     policy.balance = balance;
@@ -664,7 +702,9 @@ export function handleLogGovernance(event: LogGovernance): void {
     return;
   }
 
-  log.warning("Unknown governance update {}", [event.params.logType.toString()]);
+  log.warning("Unknown governance update {}", [
+    event.params.logType.toString(),
+  ]);
 }
 
 export function handleLogNewSystemStatus(event: LogNewSystemStatus): void {
@@ -763,7 +803,8 @@ export function handleLogPolicyDeposit(event: LogPolicyDeposit): void {
 
 function loadPolicyByRpc(rpcAddress: Address, policyId: BigInt): Policy | null {
   let rpcContract = RiskPoolsControllerContract.bind(rpcAddress);
-  let id = rpcContract.policyTokenIssuer().toHexString() + "-" + policyId.toString();
+  let id =
+    rpcContract.policyTokenIssuer().toHexString() + "-" + policyId.toString();
 
   return Policy.load(id);
 }
@@ -791,7 +832,11 @@ export function handleLogPolicyWithdraw(event: LogPolicyWithdraw): void {
   );
 }
 
-function updatePolicy(id: string, rpcAddress: Address, event: ethereum.Event): void {
+function updatePolicy(
+  id: string,
+  rpcAddress: Address,
+  event: ethereum.Event
+): void {
   let policy = Policy.load(id)!;
 
   let rpcContract = RiskPoolsControllerContract.bind(rpcAddress);
@@ -895,7 +940,9 @@ function increaseFeeRecipientBalance(
 
 export function handleLogWithdrawFee(event: LogWithdrawFee): void {
   let id =
-    event.params.requester.toHexString() + "-" + event.params.erc20.toHexString();
+    event.params.requester.toHexString() +
+    "-" +
+    event.params.erc20.toHexString();
   let af = AccruedFee.load(id);
 
   if (!af) {
@@ -940,7 +987,8 @@ export function handleLogPayout(event: LogPayout): void {
   let p = new Payout(id.toString());
 
   p.marketId = event.params.marketId;
-  p.market = event.address.toHexString() + "-" + event.params.marketId.toString();
+  p.market =
+    event.address.toHexString() + "-" + event.params.marketId.toString();
   p.capitalToken = event.params.capitalToken;
   p.amount = event.params.paidoutAmount;
   p.recipient = event.params.recipient;
@@ -1003,7 +1051,9 @@ export function handleLogNewForwardedPayoutRequest(
 
   let r = getForwardedPayoutRequest(rpcContract, event.params.payoutRequestId);
 
-  let request = new IncomingPayoutRequest(event.params.payoutRequestId.toString());
+  let request = new IncomingPayoutRequest(
+    event.params.payoutRequestId.toString()
+  );
 
   request.sourceChainId = r.sourceChainId;
   request.sourcePayoutRequestId = r.sourcePayoutRequestId;
@@ -1047,7 +1097,8 @@ export function handleLogNewReward(event: LogNewReward): void {
   let reward = getCoverReward(rpcContract, event.params.rewardId);
   let cmReward = new CoverMiningReward(event.params.rewardId.toString());
 
-  cmReward.market = event.address.toHexString() + "-" + reward.marketId.toString();
+  cmReward.market =
+    event.address.toHexString() + "-" + reward.marketId.toString();
   cmReward.amount = reward.amount;
   cmReward.creator = event.transaction.from;
   cmReward.rewardToken = reward.erc20;
@@ -1062,7 +1113,9 @@ export function handleLogNewReward(event: LogNewReward): void {
   cmReward.save();
 }
 
-export function handleLogIncreaseRewardAmount(event: LogIncreaseRewardAmount): void {
+export function handleLogIncreaseRewardAmount(
+  event: LogIncreaseRewardAmount
+): void {
   let cmReward = CoverMiningReward.load(event.params.rewardId.toString());
 
   if (!cmReward) {
@@ -1502,7 +1555,10 @@ export function handleLogRiskPoolManagerFeeRecipientChanged(
 export function handleLogAggregatedPoolCreated(
   event: LogAggregatedPoolCreated
 ): void {
-  let aggPool = createAggregatedPool(event.params.aggregatedPoolId, event.address);
+  let aggPool = createAggregatedPool(
+    event.params.aggregatedPoolId,
+    event.address
+  );
   let prevAggId = aggPool.prevAggregatedPoolId;
 
   updateAggPoolList(
@@ -1615,7 +1671,10 @@ export function updateMarketChargeState(
     if (!aggPool) {
       continue;
     }
-    const cAggPool = getAggregatedPool(rpcContract, BigInt.fromString(aggPoolId));
+    const cAggPool = getAggregatedPool(
+      rpcContract,
+      BigInt.fromString(aggPoolId)
+    );
 
     aggPool.rate = cAggPool.premiumRatePerSec;
 
@@ -1695,7 +1754,10 @@ function getAddressFromData(offset: i32, data: Uint8Array): Address {
   return changetype<Address>(data.slice(offset + 12, offset + 32));
 }
 
-function getAddressArrayFromData(startOffset: i32, data: Uint8Array): Address[] {
+function getAddressArrayFromData(
+  startOffset: i32,
+  data: Uint8Array
+): Address[] {
   const length = getNumberFromData(startOffset, data);
   const result: Address[] = [];
 
@@ -1799,11 +1861,21 @@ export function handleLogExecutionDelayed(event: LogExecutionDelayed): void {
 }
 
 export function handleLogExecuted(event: LogExecuted): void {
-  finishDelayedExecution(event.params.msgSig, event.params.msgData, event, false);
+  finishDelayedExecution(
+    event.params.msgSig,
+    event.params.msgData,
+    event,
+    false
+  );
 }
 
 export function handleLogExecutionDeclined(event: LogExecutionDeclined): void {
-  finishDelayedExecution(event.params.msgSig, event.params.msgData, event, true);
+  finishDelayedExecution(
+    event.params.msgSig,
+    event.params.msgData,
+    event,
+    true
+  );
 }
 
 function finishDelayedExecution(
