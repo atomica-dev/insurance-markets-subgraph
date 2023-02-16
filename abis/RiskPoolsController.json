@@ -2611,9 +2611,14 @@
                         "internalType": "string",
                         "name": "title",
                         "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "details",
+                        "type": "string"
                     }
                 ],
-                "internalType": "struct IMarketImpl.CreateMarketParams",
+                "internalType": "struct ICreateMarketImpl.CreateMarketParams",
                 "name": "params",
                 "type": "tuple"
             }
@@ -2628,7 +2633,7 @@
         ],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0x129042e1"
+        "signature": "0xf60da939"
     },
     {
         "inputs": [
@@ -3991,6 +3996,11 @@
             {
                 "internalType": "string",
                 "name": "title",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "details",
                 "type": "string"
             }
         ],
@@ -5846,6 +5856,25 @@
                 "type": "uint256"
             },
             {
+                "internalType": "string",
+                "name": "details",
+                "type": "string"
+            }
+        ],
+        "name": "setMarketDetails",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xf02c14d4"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "marketId",
+                "type": "uint256"
+            },
+            {
                 "internalType": "address",
                 "name": "marketFeeRecipient",
                 "type": "address"
@@ -6378,15 +6407,34 @@
             },
             {
                 "internalType": "uint256",
-                "name": "withdrawalDelay",
+                "name": "withdrawDelay",
                 "type": "uint256"
             }
         ],
-        "name": "setProductWithdrawalDelay",
+        "name": "setProductWithdrawDelay",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xc2b4d0c8"
+        "signature": "0x2134ebd1"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "productId",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "withdrawRequestExpiration",
+                "type": "uint256"
+            }
+        ],
+        "name": "setProductWithdrawRequestExpiration",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xb0ab3a48"
     },
     {
         "inputs": [
