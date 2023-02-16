@@ -3,9 +3,7 @@ import { BigInt } from "@graphprotocol/graph-ts";
 export const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-export const WEI_BIGINT = BigInt.fromI32(1000000000).times(
-  BigInt.fromI32(1000000000)
-);
+export const WEI_BIGINT = BigInt.fromI32(1000000000).times(BigInt.fromI32(1000000000));
 
 export function filterNotEqual(array: string[], item: string): string[] {
   let res: string[] = [];

@@ -8,9 +8,7 @@ export function getSystemConfig(id: string): System {
   if (config === null) {
     config = new System(id);
 
-    let contract = RiskPoolsControllerContract.bind(
-      Address.fromString(id)
-    );
+    let contract = RiskPoolsControllerContract.bind(Address.fromString(id));
 
     config.rateOracleList = [];
     config.coverAdjusterOracleList = [];
@@ -24,10 +22,8 @@ export function getSystemConfig(id: string): System {
     config.defaultPayoutRequester = contract.defaultPayoutRequester();
     config.productCreatorsAllowlistId = contract.productCreatorsAllowlistId();
     config.defaultPayoutApprover = contract.defaultPayoutApprover();
-    config.maxProductOperatorIncentiveFee =
-      contract.maxProductOperatorIncentiveFee();
-    config.maxMarketOperatorIncentiveFee =
-      contract.maxMarketOperatorIncentiveFee();
+    config.maxProductOperatorIncentiveFee = contract.maxProductOperatorIncentiveFee();
+    config.maxMarketOperatorIncentiveFee = contract.maxMarketOperatorIncentiveFee();
     config.policyTokenIssuer = contract.policyTokenIssuer();
     config.policyTokenPermissionIssuer = contract.policyTokenPermissionIssuer();
     config.liquidationGasUsage = contract.liquidationGasUsage();
@@ -39,8 +35,7 @@ export function getSystemConfig(id: string): System {
     config.swapCycleDuration = contract.swapCycleDuration();
     config.swapDuration = contract.swapDuration();
     config.idleDuration = contract.idleDuration();
-    config.extPoolDetailsConfidenceInterval =
-      contract.externalRiskPoolsConfidenceInterval();
+    config.extPoolDetailsConfidenceInterval = contract.externalRiskPoolsConfidenceInterval();
     config.maxIterations = contract.maxIterations();
     config.executionDelay = contract.executionDelay();
 

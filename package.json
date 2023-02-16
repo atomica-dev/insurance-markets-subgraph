@@ -6,6 +6,7 @@
     "create-local": "graph create atomica-dev/srm --node http://127.0.0.1:8020",
     "codegen": "graph codegen",
     "build": "graph build",
+    "prettier": "npx prettier --write ./**/*",
     "auth": "graph auth https://api.thegraph.com/deploy/ $GRAPH_AUTH_TOKEN",
     "update-subgraph-yaml": "ts-node --skipProject update-contracts.ts",
     "deploy": "graph deploy $GRAPH_LOCATION --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token $GRAPH_AUTH_TOKEN",

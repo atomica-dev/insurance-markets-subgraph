@@ -266,11 +266,7 @@ function getEventTypeString(eventType: EventType): string {
   return eventType.toString();
 }
 
-export function getState(
-  type: EventType,
-  marketId: string = "",
-  key: string = ""
-): State {
+export function getState(type: EventType, marketId: string = "", key: string = ""): State {
   let id = getEventTypeString(type) + "-" + marketId + "-" + key;
   let state = State.load(id);
 
@@ -286,13 +282,7 @@ export function getState(
   return state;
 }
 
-export function updateState(
-  type: EventType,
-  delta: BigInt,
-  marketId: string | null,
-  key: string = "",
-  newValue: BigInt | null = null
-): BigInt {
+export function updateState(type: EventType, delta: BigInt, marketId: string | null, key: string = "", newValue: BigInt | null = null): BigInt {
   let m: string = marketId ? marketId : "";
   let state = getState(type, m, key);
 
@@ -313,16 +303,9 @@ export function updateAndLogState(
   delta: BigInt,
   marketId: string | null,
   key: string = "",
-  newValue: BigInt | null = null
+  newValue: BigInt | null = null,
 ): void {
-  addEvent(
-    type,
-    event,
-    marketId,
-    key,
-    updateState(type, delta, marketId, key, newValue).toString(),
-    delta.toString()
-  );
+  addEvent(type, event, marketId, key, updateState(type, delta, marketId, key, newValue).toString(), delta.toString());
 }
 
 export function addEvent(
@@ -334,19 +317,11 @@ export function addEvent(
   value2: string | null = null,
   value3: string | null = null,
   value4: string | null = null,
-  value5: string | null = null
+  value5: string | null = null,
 ): void {
   let m: string = marketId ? marketId : "";
 
-  let e = new Event(
-    getEventTypeString(type) +
-      event.transaction.hash.toHexString() +
-      event.transaction.index.toString() +
-      "-" +
-      m +
-      "-" +
-      key
-  );
+  let e = new Event(getEventTypeString(type) + event.transaction.hash.toHexString() + event.transaction.index.toString() + "-" + m + "-" + key);
 
   e.market = marketId;
   e.key = key;
@@ -376,11 +351,5 @@ export enum StatusEnum {
 }
 
 export function updateSystemStatus(newStatus: StatusEnum): void {
-  updateState(
-    EventType.SystemStatus,
-    BigInt.fromI32(0),
-    "",
-    "",
-    BigInt.fromI32(newStatus)
-  );
+  updateState(EventType.SystemStatus, BigInt.fromI32(0), "", "", BigInt.fromI32(newStatus));
 }

@@ -60,5 +60,5 @@ export enum GovernanceLogType {
   ExternalRiskPoolsConfidenceInterval,
 
   SwapCycle,
-  SettlementDiscount
+  SettlementDiscount,
 }

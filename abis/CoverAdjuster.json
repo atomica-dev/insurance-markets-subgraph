@@ -1,509 +1,509 @@
 [
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "operator_",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "riskPoolsController_",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "constructor",
-        "signature": "constructor"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "adjustmentFrequency",
-                "type": "uint256"
-            }
-        ],
-        "name": "LogAdjustmentFrequencyUpdated",
-        "type": "event",
-        "signature": "0x4d21a57b2c79e195f8d7a6aee1c2a624793eddd9a8ee36aa5d945781e194dacf"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "id",
-                "type": "uint256"
-            }
-        ],
-        "name": "LogConfigurationCreated",
-        "type": "event",
-        "signature": "0x18b6df4be7f2a5fa8d695f52b78390c885c675b036387b5edba63a9e23ab00a3"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "id",
-                "type": "uint256"
-            }
-        ],
-        "name": "LogConfigurationRemoved",
-        "type": "event",
-        "signature": "0x50e722c10916556617cb8fcf93f621ff14cb4154c1ae169a4b1b44bcecd2005e"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "id",
-                "type": "uint256"
-            }
-        ],
-        "name": "LogConfigurationUpdated",
-        "type": "event",
-        "signature": "0x1180f2885f6d371b2d5e2132b90781b468bf4b1d0a2aeb72081ee7908d13562e"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "id",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "cover",
-                "type": "uint256"
-            }
-        ],
-        "name": "LogPolicyAdjusted",
-        "type": "event",
-        "signature": "0x3ac171188f952b309b4770742d5de3cb48591f408f6686deefa537345ee770e5"
-    },
-    {
-        "inputs": [],
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "operator_",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "riskPoolsController_",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor",
+    "signature": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "adjustmentFrequency",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
+        "type": "uint256"
+      }
+    ],
+    "name": "LogAdjustmentFrequencyUpdated",
+    "type": "event",
+    "signature": "0x4d21a57b2c79e195f8d7a6aee1c2a624793eddd9a8ee36aa5d945781e194dacf"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "LogConfigurationCreated",
+    "type": "event",
+    "signature": "0x18b6df4be7f2a5fa8d695f52b78390c885c675b036387b5edba63a9e23ab00a3"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "LogConfigurationRemoved",
+    "type": "event",
+    "signature": "0x50e722c10916556617cb8fcf93f621ff14cb4154c1ae169a4b1b44bcecd2005e"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "LogConfigurationUpdated",
+    "type": "event",
+    "signature": "0x1180f2885f6d371b2d5e2132b90781b468bf4b1d0a2aeb72081ee7908d13562e"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "cover",
+        "type": "uint256"
+      }
+    ],
+    "name": "LogPolicyAdjusted",
+    "type": "event",
+    "signature": "0x3ac171188f952b309b4770742d5de3cb48591f408f6686deefa537345ee770e5"
+  },
+  {
+    "inputs": [],
+    "name": "adjustmentFrequency",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true,
+    "signature": "0xde5ab37f"
+  },
+  {
+    "inputs": [],
+    "name": "configCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true,
+    "signature": "0xa0620634"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "configs",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "productId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "policyId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "permissionId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxCover",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxRate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lastAdjustmentAt",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true,
+    "signature": "0x0098fa22"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "name": "onERC721Received",
+    "outputs": [
+      {
+        "internalType": "bytes4",
+        "name": "",
+        "type": "bytes4"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x150b7a02"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "operatorList",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true,
+    "signature": "0x7475ba0d"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "permissionTokenUsage",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true,
+    "signature": "0xa93046cd"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "policyAdjustedAt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true,
+    "signature": "0xdb544849"
+  },
+  {
+    "inputs": [],
+    "name": "riskPoolsController",
+    "outputs": [
+      {
+        "internalType": "contract IRiskPoolsController",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true,
+    "signature": "0x67b33f37"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "enabled",
+        "type": "bool"
+      }
+    ],
+    "name": "setOperatorEnabled",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x39e84283"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "productId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "policyId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "permissionId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxCover",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxRate",
+            "type": "uint256"
+          }
         ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true,
-        "signature": "0xde5ab37f"
-    },
-    {
-        "inputs": [],
-        "name": "configCount",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
+        "internalType": "struct ICoverAdjuster.AddPolicyAdjustmentConfigurationParams",
+        "name": "params_",
+        "type": "tuple"
+      }
+    ],
+    "name": "addPolicyAdjustmentConfiguration",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x1ee0840a"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxCover",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxRate",
+        "type": "uint256"
+      }
+    ],
+    "name": "updatePolicyAdjustmentConfiguration",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x217c20aa"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "configId_",
+        "type": "uint256"
+      }
+    ],
+    "name": "removePolicyAdjustmentConfiguration",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x0739199a"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "productId_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "policyId_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "permissionId_",
+        "type": "uint256"
+      }
+    ],
+    "name": "returnPermissionToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xc3bf5051"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "configId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "cover",
+            "type": "uint256"
+          }
         ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true,
-        "signature": "0xa0620634"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
+        "internalType": "struct CoverAdjuster.AdjustPoliciesParams[]",
+        "name": "params",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "adjustPolicies",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x68cc92ab"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "adjustmentFrequency_",
+        "type": "uint256"
+      }
+    ],
+    "name": "setAdjustmentFrequency",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xcff51748"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "getConfig",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "productId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "policyId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "permissionId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxCover",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lastAdjustmentAt",
+            "type": "uint256"
+          }
         ],
-        "name": "configs",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "productId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "policyId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "permissionId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "maxCover",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "maxRate",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "lastAdjustmentAt",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true,
-        "signature": "0x0098fa22"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "internalType": "bytes",
-                "name": "",
-                "type": "bytes"
-            }
-        ],
-        "name": "onERC721Received",
-        "outputs": [
-            {
-                "internalType": "bytes4",
-                "name": "",
-                "type": "bytes4"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x150b7a02"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "name": "operatorList",
-        "outputs": [
-            {
-                "internalType": "bool",
-                "name": "",
-                "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true,
-        "signature": "0x7475ba0d"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "permissionTokenUsage",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true,
-        "signature": "0xa93046cd"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "policyAdjustedAt",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true,
-        "signature": "0xdb544849"
-    },
-    {
-        "inputs": [],
-        "name": "riskPoolsController",
-        "outputs": [
-            {
-                "internalType": "contract IRiskPoolsController",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true,
-        "signature": "0x67b33f37"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "user",
-                "type": "address"
-            },
-            {
-                "internalType": "bool",
-                "name": "enabled",
-                "type": "bool"
-            }
-        ],
-        "name": "setOperatorEnabled",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x39e84283"
-    },
-    {
-        "inputs": [
-            {
-                "components": [
-                    {
-                        "internalType": "uint256",
-                        "name": "productId",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "policyId",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "permissionId",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "maxCover",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "maxRate",
-                        "type": "uint256"
-                    }
-                ],
-                "internalType": "struct ICoverAdjuster.AddPolicyAdjustmentConfigurationParams",
-                "name": "params_",
-                "type": "tuple"
-            }
-        ],
-        "name": "addPolicyAdjustmentConfiguration",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x1ee0840a"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "id",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "maxCover",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "maxRate",
-                "type": "uint256"
-            }
-        ],
-        "name": "updatePolicyAdjustmentConfiguration",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x217c20aa"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "configId_",
-                "type": "uint256"
-            }
-        ],
-        "name": "removePolicyAdjustmentConfiguration",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x0739199a"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "productId_",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "policyId_",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "permissionId_",
-                "type": "uint256"
-            }
-        ],
-        "name": "returnPermissionToken",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0xc3bf5051"
-    },
-    {
-        "inputs": [
-            {
-                "components": [
-                    {
-                        "internalType": "uint256",
-                        "name": "configId",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "cover",
-                        "type": "uint256"
-                    }
-                ],
-                "internalType": "struct CoverAdjuster.AdjustPoliciesParams[]",
-                "name": "params",
-                "type": "tuple[]"
-            }
-        ],
-        "name": "adjustPolicies",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0x68cc92ab"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "adjustmentFrequency_",
-                "type": "uint256"
-            }
-        ],
-        "name": "setAdjustmentFrequency",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function",
-        "signature": "0xcff51748"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "id",
-                "type": "uint256"
-            }
-        ],
-        "name": "getConfig",
-        "outputs": [
-            {
-                "components": [
-                    {
-                        "internalType": "uint256",
-                        "name": "productId",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "policyId",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "permissionId",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "maxCover",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "maxRate",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "lastAdjustmentAt",
-                        "type": "uint256"
-                    }
-                ],
-                "internalType": "struct CoverAdjuster.AdjustmentConfiguration",
-                "name": "",
-                "type": "tuple"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true,
-        "signature": "0xa81b2f8d"
-    }
+        "internalType": "struct CoverAdjuster.AdjustmentConfiguration",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true,
+    "signature": "0xa81b2f8d"
+  }
 ]

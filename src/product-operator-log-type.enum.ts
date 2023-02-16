@@ -11,5 +11,5 @@ export enum ProductOperatorLogType {
   ClaimProcessor,
   PayoutRequester,
   PayoutApprover,
-  MarketCreatorsAllowlistId
+  MarketCreatorsAllowlistId,
 }

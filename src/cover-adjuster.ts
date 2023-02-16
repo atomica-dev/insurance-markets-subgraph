@@ -8,17 +8,14 @@ import {
 } from "../generated/templates/CoverAdjuster/CoverAdjuster";
 import { log, store } from "@graphprotocol/graph-ts";
 
-export function handleLogConfigurationCreated(
-  event: LogConfigurationCreated
-): void {
+export function handleLogConfigurationCreated(event: LogConfigurationCreated): void {
   let contract = CoverAdjusterContract.bind(event.address);
   let id = event.address.toHexString() + "-" + event.params.id.toString();
   let ac = new AdjustmentConfiguration(id);
   let cc = contract.getConfig(event.params.id);
   let productId = `${contract.riskPoolsController().toHexString()}-${cc.productId.toString()}`;
   let product = Product.load(productId);
-  let pti =
-    product != null ? product.policyTokenIssuerAddress.toHexString() : "";
+  let pti = product != null ? product.policyTokenIssuerAddress.toHexString() : "";
 
   ac.configId = event.params.id;
   ac.coverAdjuster = event.address;
@@ -34,17 +31,13 @@ export function handleLogConfigurationCreated(
   ac.save();
 }
 
-export function handleLogConfigurationRemoved(
-  event: LogConfigurationRemoved
-): void {
+export function handleLogConfigurationRemoved(event: LogConfigurationRemoved): void {
   let id = event.address.toHexString() + "-" + event.params.id.toString();
 
   store.remove("AdjustmentConfiguration", id);
 }
 
-export function handleLogConfigurationUpdated(
-  event: LogConfigurationUpdated
-): void {
+export function handleLogConfigurationUpdated(event: LogConfigurationUpdated): void {
   let id = event.address.toHexString() + "-" + event.params.id.toString();
   let ac = AdjustmentConfiguration.load(id)!;
   let contract = CoverAdjusterContract.bind(event.address);
