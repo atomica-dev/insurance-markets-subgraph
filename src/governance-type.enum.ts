@@ -45,6 +45,7 @@ export enum GovernanceLogType {
   MarketFeeRecipient,
 
   // Market
+  MarketDetails,
   MarketCoverAdjusterOracle,
 
   // Frontend operators

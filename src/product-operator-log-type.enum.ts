@@ -1,9 +1,9 @@
-
 export enum ProductOperatorLogType {
   MarketCreationFeeToken,
   MarketCreationFee,
   DefaultRatesOracle,
   WithdrawDelay,
+  WithdrawRequestExpiration,
   WaitingPeriod,
   CoverAdjusterOracle,
   DefaultCapitalToken,
@@ -11,5 +11,5 @@ export enum ProductOperatorLogType {
   ClaimProcessor,
   PayoutRequester,
   PayoutApprover,
-  MarketCreatorsAllowlistId,
+  MarketCreatorsAllowlistId
 }

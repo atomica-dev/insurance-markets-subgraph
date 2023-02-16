@@ -156,6 +156,7 @@ export class CMarket {
   ratesOracle: Address;
   productId: BigInt;
   title: string;
+  details: string;
 }
 
 export function getMarket(
@@ -174,6 +175,7 @@ export function getMarket(
     ratesOracle: d.value6,
     productId: d.value7,
     title: d.value8,
+    details: d.value9,
   };
 }
 

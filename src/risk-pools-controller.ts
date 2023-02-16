@@ -430,6 +430,10 @@ export function handleLogProductChanged(event: LogProductChanged): void {
       product.withdrawalDelay = event.params.param2;
 
       break;
+    case ProductOperatorLogType.WithdrawRequestExpiration:
+      product.withdrawRequestExpiration = event.params.param2;
+
+      break;
     case ProductOperatorLogType.WaitingPeriod:
       product.waitingPeriod = event.params.param2;
 

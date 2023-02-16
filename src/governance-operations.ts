@@ -69,66 +69,7 @@ GovernanceOperationMap.set(
   handleUpdateCoverAdjusterOracle
 );
 GovernanceOperationMap.set(GovernanceLogType.SyncOracle, handleSyncOracle);
-GovernanceOperationMap.set(
-  GovernanceLogType.MarketCoverAdjusterOracle,
-  handleUpdateMarketCoverAdjusterOracle
-);
-GovernanceOperationMap.set(
-  GovernanceLogType.ExternalProduct,
-  handleUpdateExternalProduct
-);
-GovernanceOperationMap.set(
-  GovernanceLogType.MarketExchangeRateOracle,
-  handleUpdateMarketExchangeRateOracle
-);
-GovernanceOperationMap.set(
-  GovernanceLogType.RiskPoolWithdrawDelay,
-  handleUpdateRiskPoolWithdrawDelay
-);
-GovernanceOperationMap.set(
-  GovernanceLogType.RiskPoolWithdrawRequestExpiration,
-  handleUpdateRiskPoolWithdrawRequestExpiration
-);
-GovernanceOperationMap.set(
-  GovernanceLogType.MarketPolicyBuyerAllowlistId,
-  handleUpdateMarketPolicyBuyerAllowListId
-);
-GovernanceOperationMap.set(
-  GovernanceLogType.MarketPolicyBuyerAllowancelistId,
-  handleUpdateMarketPolicyBuyerAllowanceListId
-);
-GovernanceOperationMap.set(
-  GovernanceLogType.RiskPoolLpAllowlistId,
-  handleUpdateRiskPoolLpAllowlistId
-);
-GovernanceOperationMap.set(
-  GovernanceLogType.ProductWording,
-  handleUpdateProductWording
-);
-GovernanceOperationMap.set(
-  GovernanceLogType.ProductOperator,
-  handleUpdateProductOperator
-);
-GovernanceOperationMap.set(
-  GovernanceLogType.MarketOperator,
-  handleUpdateMarketOperator
-);
-GovernanceOperationMap.set(
-  GovernanceLogType.ProductOperatorIncentiveFee,
-  handleUpdateProductOperatorIncentiveFee
-);
-GovernanceOperationMap.set(
-  GovernanceLogType.ProductMaxMarketIncentiveFee,
-  handleUpdateProductMaxMarketIncentiveFee
-);
-GovernanceOperationMap.set(
-  GovernanceLogType.MarketOperatorIncentiveFee,
-  handleUpdateMarketOperatorIncentiveFee
-);
-GovernanceOperationMap.set(
-  GovernanceLogType.LiquidationGasUsage,
-  handleUpdateLiquidationGasUsage
-);
+GovernanceOperationMap.set(GovernanceLogType.MarketDetails, handleMarketDetails);
 
 GovernanceOperationMap.set(
   GovernanceLogType.LiquidationIncentive,
@@ -443,6 +384,20 @@ function handleSyncOracle(event: LogGovernance): void {
     config.id,
     event.params.param1.toHexString()
   );
+}
+
+function handleMarketDetails(event: LogGovernance): void {
+  let id = event.address.toHexString() + "-" + event.params.param3.toString();
+  let market = Market.load(id);
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+
+  if (!market) {
+    return;
+  }
+
+  market.additionalDetails = getMarket(rpcContract, event.params.param3).details;
+
+  market.save();
 }
 
 function handleUpdateMarketCoverAdjusterOracle(event: LogGovernance): void {
