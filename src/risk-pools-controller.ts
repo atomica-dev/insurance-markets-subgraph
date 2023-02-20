@@ -129,8 +129,8 @@ export function handleLogNewMarket(event: LogNewMarketCreated): void {
   market.riskPoolsControllerAddress = rpcContractAddress;
 
   market.wording = productMeta.wording;
-  market.entityList = titleParams.filter((t, i, a) => i != a.length - 1);
-  market.details = titleParams.length > 0 ? titleParams[titleParams.length - 1] : null;
+  market.entityList = titleParams;
+  market.details = marketInfo.details;
 
   market.waitingPeriod = marketMeta.waitingPeriod;
   market.marketOperatorIncentiveFee = marketMeta.marketOperatorIncentiveFee;
@@ -145,7 +145,6 @@ export function handleLogNewMarket(event: LogNewMarketCreated): void {
   market.coverAdjusterOracle = marketInfo.coverAdjusterOracle;
   market.rateOracle = marketInfo.ratesOracle;
   market.title = marketInfo.title;
-  market.additionalDetails = marketInfo.details;
   market.isEnabled = rpcContract.marketStatus(marketId) == 0;
 
   market.totalCapacity = marketMeta.totalCapacity;

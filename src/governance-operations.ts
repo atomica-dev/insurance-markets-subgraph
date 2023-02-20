@@ -237,7 +237,7 @@ function handleMarketDetails(event: LogGovernance): void {
     return;
   }
 
-  market.additionalDetails = getMarket(rpcContract, event.params.param3).details;
+  market.details = getMarket(rpcContract, event.params.param3).details;
 
   market.save();
 }

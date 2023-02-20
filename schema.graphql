@@ -104,8 +104,7 @@ type Market @entity {
   isEnabled: Boolean!
   createdAt: BigInt!
   title: String!
-  additionalDetails: String
-  details: String
+  details: String!
   wording: String
   author: Bytes!
   marketFeeRecipient: Bytes!
