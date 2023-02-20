@@ -129,7 +129,9 @@ export function handleLogNewMarket(event: LogNewMarketCreated): void {
   market.riskPoolsControllerAddress = rpcContractAddress;
 
   market.wording = productMeta.wording;
-  market.entityList = titleParams;
+  market.entityList = titleParams.filter((t, i, a) => t != "" || i != a.length - 1);
+  //TODO: remove prev. line, uncomment next one once new contract && ui are deployed
+  //market.entityList = titleParams;
   market.details = marketInfo.details;
 
   market.waitingPeriod = marketMeta.waitingPeriod;
