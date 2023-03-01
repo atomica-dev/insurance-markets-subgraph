@@ -1220,6 +1220,12 @@
       },
       {
         "indexed": false,
+        "internalType": "uint256",
+        "name": "prevAggregatedPoolId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "riskPool",
         "type": "address"
@@ -1239,7 +1245,7 @@
     ],
     "name": "LogRebalance",
     "type": "event",
-    "signature": "0x8af3cf2978a74d330c270f6ff3d9de38ba4a0bd234270dbeaf0549e997b0f71e"
+    "signature": "0xf19adfdf2a155252b9f3e3f6d4c949335dea009785037dc701af336de9da61e7"
   },
   {
     "anonymous": false,

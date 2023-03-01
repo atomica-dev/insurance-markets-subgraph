@@ -118,7 +118,7 @@ dataSources:
           handler: handleLogMarketCapacityAllowanceUpdated
         - event: LogMarketCapacityLimitUpdated(uint256,address,uint256)
           handler: handleLogMarketCapacityLimitUpdated
-        - event: LogRebalance(uint256,address,uint256,uint256)
+        - event: LogRebalance(uint256,uint256,address,uint256,uint256)
           handler: handleLogRebalance
         - event: LogCoverDistributed(uint256,uint256)
           handler: handleLogCoverDistributed
