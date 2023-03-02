@@ -5,8 +5,8 @@
       "RiskPoolsController": "0xd145F16173eA4cfE812917a71852F813a0E9e7b7"
     },
     "srm-staging": {
-      "defaultStartBlock": 7715830,
-      "RiskPoolsController": "0x468245732a14ae827Ae20325ebc04153C210a02C"
+      "defaultStartBlock": 32607963,
+      "RiskPoolsController": "0x0A4A7Df4e11B08a4FC6fABb249476d3e26A8c66b"
     },
     "srm-production": {
       "defaultStartBlock": 34002868,
@@ -30,8 +30,8 @@
       "RiskPoolsController": "0x89481aaE571b83b58d58d0fAE8aC1c9c07ab10e9"
     },
     "local-mumbai": {
-      "defaultStartBlock": 32095960,
-      "RiskPoolsController": "0x40245C59a2E154d34862a8d892d4829BB8633721"
+      "defaultStartBlock": 32579969,
+      "RiskPoolsController": "0xBc56c8E990432154194e2052Bf04C34428CFd32E"
     }
   }
 }
