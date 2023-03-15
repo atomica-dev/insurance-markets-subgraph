@@ -73,7 +73,6 @@ import {
   PoolFee,
   MarketPoolFee,
   FeeRecipientPool,
-  MarketAggregatedPool,
   AllowList,
   AllowListAccount,
   Bid,
@@ -102,12 +101,13 @@ import {
 } from "./contract-mapper";
 import { claimAllTypeFees, updateAllTypeFees } from "./fee";
 import { GovernanceOperationMap } from "./governance-operations";
-import { addToList, addUniqueToList, ETH_ADDRESS, filterNotEqual, WEI_BIGINT, ZERO_ADDRESS, min } from "./utils";
+import { addToList, addUniqueToList, ETH_ADDRESS, filterNotEqual, WEI_BIGINT, ZERO_ADDRESS } from "./utils";
 import { addOraclePair } from "./rate-oracle";
 import { Pool as PoolTemplate } from "../generated/templates";
 import { ProductOperatorLogType } from "./product-operator-log-type.enum";
 import { SettlementType } from "./settlement-type.enum";
 import { RPC_CONTRACT_ADDRESS_CONTEXT_KEY } from "./payout-requester";
+import { getMarketRateAndActualCover } from "./market-rate-utils";
 
 export function handleLogNewMarket(event: LogNewMarketCreated): void {
   let marketId = event.params.marketId;
@@ -1135,7 +1135,7 @@ export function handleLogRebalance(event: LogRebalance): void {
       aggPool.market,
       aggPool.id,
       bid.pool,
-      aggPool.totalCapacity.toString(),
+      aggPool.totalCapacity.toString(), // TODO: should be cover
       bid.capacity.toString(),
       aggPool.totalCapacity.toString(),
     );
@@ -1150,7 +1150,7 @@ export function handleLogRebalance(event: LogRebalance): void {
       prevAggPool.market,
       prevAggPool.id,
       bid.pool,
-      prevAggPool.totalCapacity.toString(),
+      prevAggPool.totalCapacity.toString(), // TODO: should be cover
       bid.capacity.toString(),
       prevAggPool.totalCapacity.toString(),
     );
@@ -1273,18 +1273,6 @@ export function createAggregatedPool(aggregatedPoolId: BigInt, rpcContractAddres
 
   aggPool.save();
 
-  let marketAggPool = MarketAggregatedPool.load(marketId);
-
-  if (!marketAggPool) {
-    marketAggPool = new MarketAggregatedPool(marketId);
-
-    marketAggPool.list = [];
-  }
-
-  marketAggPool.list = addToList(marketAggPool.list, aggPool.id);
-
-  marketAggPool.save();
-
   return aggPool;
 }
 
@@ -1308,98 +1296,6 @@ function updateAggPoolList(curAggId: BigInt, rpcContract: RiskPoolsControllerCon
   return result;
 }
 
-function getTailRate(
-  premiumRatePerSec: BigInt,
-  totalCapacity: BigInt,
-  cover: BigInt,
-  tailKink: BigInt,
-  maxPremiumRatePerSec: BigInt,
-  tailJumpPremiumRatePerSec: BigInt,
-): BigInt {
-  let rate = BigInt.fromI32(0);
-  if (!tailKink.isZero()) {
-    // dynamic
-    const utilization = cover.isZero() ? BigInt.fromI32(0) : cover.times(WEI_BIGINT).div(totalCapacity);
-
-    const baseRatePerSec = premiumRatePerSec;
-    const multiplierPerSec = maxPremiumRatePerSec
-      .minus(baseRatePerSec)
-      .times(WEI_BIGINT)
-      .div(tailKink);
-
-    if (utilization.le(tailKink)) {
-      rate = utilization
-        .times(multiplierPerSec)
-        .div(WEI_BIGINT)
-        .plus(baseRatePerSec);
-    } else {
-      const jumpMultiplierPerSec = tailJumpPremiumRatePerSec
-        .minus(maxPremiumRatePerSec)
-        .times(WEI_BIGINT)
-        .div(WEI_BIGINT.minus(tailKink));
-      rate = min(utilization, WEI_BIGINT)
-        .minus(tailKink)
-        .times(jumpMultiplierPerSec)
-        .div(WEI_BIGINT)
-        .plus(tailKink.times(multiplierPerSec).div(WEI_BIGINT))
-        .plus(baseRatePerSec);
-    }
-  } else {
-    // lineal
-    rate = cover.isZero()
-      ? premiumRatePerSec
-      : cover
-          .times(maxPremiumRatePerSec.minus(premiumRatePerSec))
-          .div(totalCapacity)
-          .plus(premiumRatePerSec);
-  }
-  return rate;
-}
-
-function getMarketRateAndActualCover(market: Market, rpcContract: RiskPoolsController): BigInt[] {
-  let remainder = market.desiredCover;
-  if (remainder.isZero()) {
-    return [BigInt.fromI32(0), BigInt.fromI32(0)];
-  }
-
-  let pureChargePerSecInCapitalToken = BigInt.fromI32(0);
-  let actualCover = BigInt.fromI32(0);
-  let cursor = market.headAggregatedPoolId;
-  while (remainder.gt(BigInt.fromI32(0)) && cursor.gt(BigInt.fromI32(0))) {
-    const aggPool = getAggregatedPool(rpcContract, cursor);
-    if (!aggPool) {
-      return [BigInt.fromI32(0), BigInt.fromI32(0)];
-    }
-
-    const cover = min(remainder, aggPool.totalCapacity);
-    const isTail = aggPool.nextAggregatedPoolId.isZero();
-
-    const rate = isTail
-      ? getTailRate(
-          aggPool.premiumRatePerSec,
-          aggPool.totalCapacity,
-          cover,
-          market.tailKink,
-          market.maxPremiumRatePerSec,
-          market.tailJumpPremiumRatePerSec,
-        )
-      : aggPool.premiumRatePerSec;
-
-    pureChargePerSecInCapitalToken = pureChargePerSecInCapitalToken.plus(rate.times(cover));
-    remainder = remainder.minus(cover);
-    actualCover = actualCover.plus(cover);
-    cursor = aggPool.nextAggregatedPoolId;
-  }
-
-  if (actualCover.isZero()) {
-    return [BigInt.fromI32(0), actualCover];
-  }
-
-  const pureRatePerSec = pureChargePerSecInCapitalToken.div(actualCover);
-
-  return [pureRatePerSec, actualCover];
-}
-
 export function updateMarketChargeState(rpcContractAddress: Address, marketId: string, event: ethereum.Event): void {
   let rpcContract = RiskPoolsControllerContract.bind(rpcContractAddress);
   let market = Market.load(marketId)!;
@@ -1415,32 +1311,10 @@ export function updateMarketChargeState(rpcContractAddress: Address, marketId: s
   market.save();
 
   const rateAndActualCover = getMarketRateAndActualCover(market, rpcContract);
-  const rate = rateAndActualCover[0];
-  const actualCover = rateAndActualCover[1];
 
-  addEvent(EventType.MarketRatePerSec, event, market.id, market.id, rate.toString());
+  addEvent(EventType.MarketRatePerSec, event, market.id, market.id, rateAndActualCover.rate.toString());
 
-  addEvent(EventType.MarketActualCover, event, market.id, market.id, actualCover.toString());
-
-  const marketAggPool = MarketAggregatedPool.load(market.id);
-
-  if (!marketAggPool) {
-    return;
-  }
-
-  for (let i = 0; i < marketAggPool.list.length; i++) {
-    const aggPoolId = marketAggPool.list[i];
-    const aggPool = AggregatedPool.load(aggPoolId);
-
-    if (!aggPool) {
-      continue;
-    }
-    const cAggPool = getAggregatedPool(rpcContract, BigInt.fromString(aggPoolId));
-
-    aggPool.rate = cAggPool.premiumRatePerSec;
-
-    aggPool.save();
-  }
+  addEvent(EventType.MarketActualCover, event, market.id, market.id, rateAndActualCover.actualCover.toString());
 }
 
 export function handleLogListCreated(event: LogListCreated): void {

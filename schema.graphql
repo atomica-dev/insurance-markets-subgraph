@@ -140,11 +140,6 @@ type Market @entity {
   rewards: [CoverMiningReward!]! @derivedFrom(field: "market")
 }
 
-type MarketAggregatedPool @entity {
-  id: ID!
-  list: [String!]!
-}
-
 type AggregatedPool @entity {
   id: ID!
   market: Market!
