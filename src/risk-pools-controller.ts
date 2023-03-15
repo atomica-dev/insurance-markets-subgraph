@@ -73,7 +73,6 @@ import {
   PoolFee,
   MarketPoolFee,
   FeeRecipientPool,
-  MarketAggregatedPool,
   AllowList,
   AllowListAccount,
   Bid,
@@ -108,6 +107,7 @@ import { Pool as PoolTemplate } from "../generated/templates";
 import { ProductOperatorLogType } from "./product-operator-log-type.enum";
 import { SettlementType } from "./settlement-type.enum";
 import { RPC_CONTRACT_ADDRESS_CONTEXT_KEY } from "./payout-requester";
+import { getMarketRateAndActualCover } from "./market-rate-utils";
 
 export function handleLogNewMarket(event: LogNewMarketCreated): void {
   let marketId = event.params.marketId;
@@ -149,7 +149,6 @@ export function handleLogNewMarket(event: LogNewMarketCreated): void {
   market.title = marketInfo.title;
   market.isEnabled = rpcContract.marketStatus(marketId) == 0;
 
-  market.totalCapacity = marketMeta.totalCapacity;
   market.desiredCover = marketMeta.desiredCover;
   market.waitingPeriod = marketMeta.waitingPeriod;
   market.withdrawDelay = marketMeta.withdrawDelay;
@@ -1103,51 +1102,59 @@ export function handleLogCoverDistributed(event: LogCoverDistributed): void {
 
 export function handleLogRebalance(event: LogRebalance): void {
   let aggPool = AggregatedPool.load(event.params.aggregatedPoolId.toString());
+  let prevAggPool: AggregatedPool | null = null;
+  if (!event.params.prevAggregatedPoolId.isZero() && event.params.aggregatedPoolId.notEqual(event.params.prevAggregatedPoolId)) {
+    prevAggPool = AggregatedPool.load(event.params.prevAggregatedPoolId.toString());
+  }
 
-  if (!aggPool) {
+  if (!aggPool && !prevAggPool) {
     return;
   }
 
-  let id = aggPool.market + "-" + event.params.riskPool.toHexString();
+  const marketId = aggPool ? aggPool.market : prevAggPool!.market;
+  let id = marketId + "-" + event.params.riskPool.toHexString();
   let bid = Bid.load(id);
 
   if (!bid) {
     return;
   }
 
+  const prevCapacity = bid.capacity;
   bid.aggregatedPoolId = event.params.aggregatedPoolId;
-  bid.aggregatedPool = aggPool.id;
-
+  bid.aggregatedPool = aggPool ? aggPool.id : null;
   bid.capacity = event.params.riskPoolCapacity;
-
   bid.save();
 
-  const rpcContract = RiskPoolsControllerContract.bind(event.address);
-  const oldRate = aggPool.rate;
-  aggPool.totalCapacity = event.params.totalAggregatedPoolCapacity;
-  aggPool.rate = getAggregatedPool(rpcContract, event.params.aggregatedPoolId).premiumRatePerSec;
+  if (aggPool) {
+    aggPool.totalCapacity = event.params.totalAggregatedPoolCapacity;
+    aggPool.save();
 
-  aggPool.save();
+    addEvent(
+      EventType.PoolReBalance,
+      event,
+      aggPool.market,
+      aggPool.id,
+      bid.pool,
+      aggPool.totalCapacity.toString(), // TODO: should be cover
+      bid.capacity.toString(),
+      aggPool.totalCapacity.toString(),
+    );
+  }
+  if (prevAggPool) {
+    prevAggPool.totalCapacity = prevAggPool.totalCapacity.minus(prevCapacity);
+    prevAggPool.save();
 
-  const market = Market.load(aggPool.market)!;
-
-  const cover = market.tailAggPoolId === event.params.aggregatedPoolId ? market.tailCover : aggPool.totalCapacity;
-
-  const oldQuote = oldRate.times(cover);
-  const newQuote = aggPool.rate.times(cover);
-
-  updateAndLogState(EventType.MarketQuote, event, newQuote.minus(oldQuote), aggPool.market);
-
-  addEvent(
-    EventType.PoolReBalance,
-    event,
-    aggPool.market,
-    aggPool.id,
-    bid.pool,
-    aggPool.totalCapacity.toString(),
-    bid.capacity.toString(),
-    aggPool.totalCapacity.toString(),
-  );
+    addEvent(
+      EventType.PoolReBalance,
+      event,
+      prevAggPool.market,
+      prevAggPool.id,
+      bid.pool,
+      prevAggPool.totalCapacity.toString(), // TODO: should be cover
+      bid.capacity.toString(),
+      prevAggPool.totalCapacity.toString(),
+    );
+  }
 }
 
 export function handleLogRiskPoolRemovedFromAggregatedPool(event: LogRiskPoolRemovedFromAggregatedPool): void {
@@ -1266,18 +1273,6 @@ export function createAggregatedPool(aggregatedPoolId: BigInt, rpcContractAddres
 
   aggPool.save();
 
-  let marketAggPool = MarketAggregatedPool.load(marketId);
-
-  if (!marketAggPool) {
-    marketAggPool = new MarketAggregatedPool(marketId);
-
-    marketAggPool.list = [];
-  }
-
-  marketAggPool.list = addToList(marketAggPool.list, aggPool.id);
-
-  marketAggPool.save();
-
   return aggPool;
 }
 
@@ -1311,38 +1306,15 @@ export function updateMarketChargeState(rpcContractAddress: Address, marketId: s
 
   market.latestAccruedTimestamp = marketMeta.lastChargeTimestamp;
   market.desiredCover = marketMeta.desiredCover;
-  market.totalCapacity = marketMeta.totalCapacity;
   market.tailCover = marketMeta.tailCover;
 
   market.save();
 
-  addEvent(
-    EventType.MarketActualCover,
-    event,
-    market.id,
-    market.id,
-    (market.totalCapacity.lt(market.desiredCover) ? market.totalCapacity : market.desiredCover).toString(),
-  );
+  const rateAndActualCover = getMarketRateAndActualCover(market, rpcContract);
 
-  const marketAggPool = MarketAggregatedPool.load(market.id);
+  addEvent(EventType.MarketRatePerSec, event, market.id, market.id, rateAndActualCover.rate.toString());
 
-  if (!marketAggPool) {
-    return;
-  }
-
-  for (let i = 0; i < marketAggPool.list.length; i++) {
-    const aggPoolId = marketAggPool.list[i];
-    const aggPool = AggregatedPool.load(aggPoolId);
-
-    if (!aggPool) {
-      continue;
-    }
-    const cAggPool = getAggregatedPool(rpcContract, BigInt.fromString(aggPoolId));
-
-    aggPool.rate = cAggPool.premiumRatePerSec;
-
-    aggPool.save();
-  }
+  addEvent(EventType.MarketActualCover, event, market.id, market.id, rateAndActualCover.actualCover.toString());
 }
 
 export function handleLogListCreated(event: LogListCreated): void {

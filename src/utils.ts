@@ -30,3 +30,7 @@ export function addToList<T>(list: T[], item: T): T[] {
 
   return list;
 }
+
+export function min(value1: BigInt, value2: BigInt): BigInt {
+  return value1.lt(value2) ? value1 : value2;
+}

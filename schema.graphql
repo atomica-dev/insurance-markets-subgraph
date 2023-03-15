@@ -126,7 +126,6 @@ type Market @entity {
   premiumMulAccumulator: BigInt!
   settlementDiscount: BigInt!
 
-  totalCapacity: BigInt!
   desiredCover: BigInt!
   withdrawDelay: BigInt!
   headAggregatedPoolId: BigInt!
@@ -139,11 +138,6 @@ type Market @entity {
   tailAggPoolId: BigInt
 
   rewards: [CoverMiningReward!]! @derivedFrom(field: "market")
-}
-
-type MarketAggregatedPool @entity {
-  id: ID!
-  list: [String!]!
 }
 
 type AggregatedPool @entity {

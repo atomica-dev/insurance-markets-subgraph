@@ -30,8 +30,8 @@ export enum EventType {
   PoolMarketCount,
   PoolReBalance,
   MarketPolicyPremium,
-  MarketQuote,
   MarketActualCover,
+  MarketRatePerSec,
 
   //#region Governance
 
@@ -155,10 +155,10 @@ function getEventTypeString(eventType: EventType): string {
       return "PoolReBalance";
     case EventType.MarketPolicyPremium:
       return "MarketPolicyPremium";
-    case EventType.MarketQuote:
-      return "MarketQuote";
     case EventType.MarketActualCover:
       return "MarketActualCover";
+    case EventType.MarketRatePerSec:
+      return "MarketRatePerSec";
 
     //#region Governance
 
