@@ -102,10 +102,10 @@ export function updateRate(oracleId: string, from: string, to: string, value: Bi
 }
 
 export function handleBlock(block: ethereum.Block): void {
-  let context = dataSource.context();
-  let oracleAddress = context.getString("oracleAddress");
-
   if (block.number.mod(BigInt.fromI32(DELAY_BLOCK_COUNT)).equals(BigInt.fromI32(0))) {
+    let context = dataSource.context();
+    let oracleAddress = context.getString("oracleAddress");
+
     updateOracleRates(oracleAddress, block.timestamp);
   }
 }
