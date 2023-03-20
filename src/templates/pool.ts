@@ -569,6 +569,8 @@ export function handleLogCapitalReleased(event: LogCapitalReleased): void {
   loss.createdAt = event.block.timestamp;
 
   loss.save();
+
+  updatePoolCapacity(event.address, event);
 }
 
 export function handleLogForwardCommitLoss(event: LogForwardCommitLoss): void {
