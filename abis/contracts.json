@@ -30,8 +30,8 @@
       "RiskPoolsController": "0x89481aaE571b83b58d58d0fAE8aC1c9c07ab10e9"
     },
     "local-mumbai": {
-      "defaultStartBlock": 32951644,
-      "RiskPoolsController": "0x4041E629f877F04084c8856300c6F4A49C702395"
+      "defaultStartBlock": 33423040,
+      "RiskPoolsController": "0x107268A0e96d26Af5b327c44eeDa66d9a90014fb"
     }
   }
 }
