@@ -112,7 +112,7 @@ dataSources:
           handler: handleLogMarketCharge
         - event: LogAggregatedPoolCreated(uint256,uint256)
           handler: handleLogAggregatedPoolCreated
-        - event: LogPremiumEarned(uint256,uint256,uint256)
+        - event: LogPremiumEarned(uint256,uint256)
           handler: handleLogPremiumEarned
         - event: LogMarketCapacityAllowanceUpdated(uint256,address,uint256)
           handler: handleLogMarketCapacityAllowanceUpdated

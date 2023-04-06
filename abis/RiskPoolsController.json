@@ -1151,12 +1151,6 @@
         "internalType": "uint256",
         "name": "charge",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "actualCover",
-        "type": "uint256"
       }
     ],
     "name": "LogPremiumEarned",
