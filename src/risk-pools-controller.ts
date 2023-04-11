@@ -156,6 +156,7 @@ export function handleLogNewMarket(event: LogNewMarketCreated): void {
   market.withdrawDelay = marketMeta.withdrawDelay;
   market.headAggregatedPoolId = marketMeta.headAggregatedPoolId;
   market.tailCover = marketMeta.tailCover;
+  market.minPremiumRatePerSec = marketMeta.minPremiumRatePerSec;
   market.maxPremiumRatePerSec = marketMeta.maxPremiumRatePerSec;
   market.bidStepPremiumRatePerSec = marketMeta.bidStepPremiumRatePerSec;
   market.maxAggregatedPoolSlots = marketMeta.maxAggregatedPoolSlots;

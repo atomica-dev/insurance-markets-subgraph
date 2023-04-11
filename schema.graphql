@@ -130,6 +130,7 @@ type Market @entity {
   withdrawDelay: BigInt!
   headAggregatedPoolId: BigInt!
   tailCover: BigInt!
+  minPremiumRatePerSec: BigInt!
   maxPremiumRatePerSec: BigInt!
   bidStepPremiumRatePerSec: BigInt!
   maxAggregatedPoolSlots: BigInt!
