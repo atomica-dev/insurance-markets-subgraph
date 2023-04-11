@@ -914,6 +914,38 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "riskPool",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "assetToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "LogPaidOut",
+    "type": "event",
+    "signature": "0x663f7d4b4285dd6af636c39c7bd66296126805c64c52d371ab73f7eb5e64cbb0"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "marketId",
         "type": "uint256"
@@ -1155,7 +1187,7 @@
     ],
     "name": "LogPremiumEarned",
     "type": "event",
-    "signature": "0xbb27dd91f98003af6cfe3b2dcc75211ce086a7d26cf1014a6550e423692aa894"
+    "signature": "0x0cf06f5acc975938e745de1003f352ae2f19057455bd4304bd0481f5c3f3d14c"
   },
   {
     "anonymous": false,
@@ -1541,6 +1573,50 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "riskPool",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "insuredToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "insuredTokenSwappedAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "assetToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "assetTokenSwappedAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "LogSwapped",
+    "type": "event",
+    "signature": "0xc470c4d92a6a51926894617b7fa27137da8f9e794813577ca7b332ce8eba0d89"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "delegate",
         "type": "address"
       },
@@ -1797,6 +1873,37 @@
     "type": "function",
     "constant": true,
     "signature": "0xc0276200"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      }
+    ],
+    "name": "actualCover",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "actualCover",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tailAggregatedPoolId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tailCover",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true,
+    "signature": "0x87475580"
   },
   {
     "inputs": [
@@ -3131,13 +3238,33 @@
         "type": "uint256"
       }
     ],
-    "name": "earnPremium",
+    "name": "distributeCover",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "actualCover",
+        "name": "tailAggregatedPoolId",
         "type": "uint256"
       },
+      {
+        "internalType": "uint256",
+        "name": "tailCover",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x53e2f5a0"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      }
+    ],
+    "name": "earnPremium",
+    "outputs": [
       {
         "internalType": "uint256",
         "name": "totalCharge",
@@ -4021,11 +4148,6 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "totalCapacity",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "desiredCover",
         "type": "uint256"
       },
@@ -4062,6 +4184,11 @@
       {
         "internalType": "uint256",
         "name": "tailCover",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minPremiumRatePerSec",
         "type": "uint256"
       },
       {

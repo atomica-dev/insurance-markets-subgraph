@@ -531,6 +531,18 @@ type Swap @entity {
   market: Market!
 }
 
+type SwapDetails @entity {
+  id: ID!
+  recipient: Bytes!
+  riskPool: Bytes!
+  insuredToken: Bytes!
+  insuredTokenSwappedAmount: BigInt!
+  assetToken: Bytes!
+  assetTokenSwappedAmount: BigInt!
+  createdAt: BigInt!
+  transaction: Bytes!
+}
+
 type Payout @entity {
   id: ID!
   marketId: BigInt

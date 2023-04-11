@@ -205,7 +205,6 @@ export function getRiskPoolData(contract: RiskPoolsControllerContract, id: Addre
 }
 
 export class CMarketMeta {
-  totalCapacity: BigInt;
   desiredCover: BigInt;
   waitingPeriod: BigInt;
   marketOperatorIncentiveFee: BigInt;
@@ -214,6 +213,7 @@ export class CMarketMeta {
   withdrawDelay: BigInt;
   headAggregatedPoolId: BigInt;
   tailCover: BigInt;
+  minPremiumRatePerSec: BigInt;
   maxPremiumRatePerSec: BigInt;
   bidStepPremiumRatePerSec: BigInt;
   maxAggregatedPoolSlots: BigInt;
@@ -225,15 +225,15 @@ export function getMarketMeta(contract: RiskPoolsControllerContract, id: BigInt)
   let d = contract.marketsMeta(id);
 
   return {
-    totalCapacity: d.value0,
-    desiredCover: d.value1,
-    waitingPeriod: d.value2,
-    marketOperatorIncentiveFee: d.value3,
-    lastChargeTimestamp: d.value4,
-    settlementDiscount: d.value5,
-    withdrawDelay: d.value6,
-    headAggregatedPoolId: d.value7,
-    tailCover: d.value8,
+    desiredCover: d.value0,
+    waitingPeriod: d.value1,
+    marketOperatorIncentiveFee: d.value2,
+    lastChargeTimestamp: d.value3,
+    settlementDiscount: d.value4,
+    withdrawDelay: d.value5,
+    headAggregatedPoolId: d.value6,
+    tailCover: d.value7,
+    minPremiumRatePerSec: d.value8,
     maxPremiumRatePerSec: d.value9,
     bidStepPremiumRatePerSec: d.value10,
     maxAggregatedPoolSlots: d.value11,

@@ -15,6 +15,7 @@ import {
   LogFeeAccrued,
   RiskPoolsController,
   LogSwap,
+  LogSwapped,
   LogPayout,
   LogNewPayoutRequest,
   LogNewForwardedPayoutRequest,
@@ -64,6 +65,7 @@ import {
   AccruedFee,
   MarketAccruedFee,
   Swap,
+  SwapDetails,
   Payout,
   PayoutRequest,
   IncomingPayoutRequest,
@@ -751,6 +753,22 @@ export function handleLogWithdrawFee(event: LogWithdrawFee): void {
   af.claimedBalance = af.claimedBalance.plus(event.params.amount);
 
   af.save();
+}
+
+export function handleLogSwapped(event: LogSwapped): void {
+  let id = `${event.transaction.hash.toHexString()}-${event.logIndex}`;
+  let s = new SwapDetails(id.toString());
+
+  s.recipient = event.params.recipient;
+  s.riskPool = event.params.riskPool;
+  s.insuredToken = event.params.insuredToken;
+  s.insuredTokenSwappedAmount = event.params.insuredTokenSwappedAmount;
+  s.assetToken = event.params.assetToken;
+  s.assetTokenSwappedAmount = event.params.assetTokenSwappedAmount;
+  s.createdAt = event.block.timestamp;
+  s.transaction = event.transaction.hash;
+
+  s.save();
 }
 
 export function handleLogSwap(event: LogSwap): void {
