@@ -65,7 +65,7 @@ import {
   AccruedFee,
   MarketAccruedFee,
   Swap,
-  SwapDetails,
+  SwapDetail,
   Payout,
   PayoutRequest,
   IncomingPayoutRequest,
@@ -757,8 +757,8 @@ export function handleLogWithdrawFee(event: LogWithdrawFee): void {
 }
 
 export function handleLogSwapped(event: LogSwapped): void {
-  let id = `${event.transaction.hash.toHexString()}-${event.logIndex}`;
-  let s = new SwapDetails(id.toString());
+  let id = event.transaction.hash.toHexString() + "-" + event.logIndex.toString();
+  let s = new SwapDetail(id.toString());
 
   s.recipient = event.params.recipient;
   s.riskPool = event.params.riskPool;
