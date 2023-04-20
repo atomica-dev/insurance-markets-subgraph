@@ -4,6 +4,10 @@
       "defaultStartBlock": 34250238,
       "RiskPoolsController": "0x25948Deb48aC67092901f8376CbAFd93a1bA1c19"
     },
+    "srm-dev-sepolia": {
+      "defaultStartBlock": 0,
+      "RiskPoolsController": "0x0"
+    },
     "srm-staging": {
       "defaultStartBlock": 33712618,
       "RiskPoolsController": "0x32cB294F02f8F8455865Dc7654c15641A31309BE"

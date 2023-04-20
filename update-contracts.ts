@@ -12,6 +12,7 @@ const ENV_TO_NETWORK: any = {
   "local-mumbai": "80001",
   "local-goerli": "5",
   "srm-production": "137",
+  "srm-dev-sepolia": "11155111",
 };
 const NETWORK_NAMES: any = {
   "7777": "ganache",
@@ -21,6 +22,7 @@ const NETWORK_NAMES: any = {
   "1": "mainnet",
   "137": "matic",
   "80001": "mumbai",
+  "11155111": "sepolia",
 };
 const MANUAL_FILE_UPDATES: string[] = [];
 const ENV = process.argv[2] || "srm-dev";
