@@ -1927,6 +1927,11 @@
       },
       {
         "internalType": "uint256",
+        "name": "releasedCapacity",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
         "name": "premiumAccumulator",
         "type": "uint256"
       },
@@ -5256,6 +5261,39 @@
     "stateMutability": "nonpayable",
     "type": "function",
     "signature": "0x57791dd9"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "policyId",
+        "type": "uint256"
+      }
+    ],
+    "name": "release",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x37bdc99b"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "policyId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "repay",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xd8aed145"
   },
   {
     "inputs": [
