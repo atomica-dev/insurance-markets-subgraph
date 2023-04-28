@@ -106,7 +106,7 @@ export class CProductMeta {
   withdrawRequestExpiration: BigInt;
   waitingPeriod: BigInt;
   marketCreatorsListId: BigInt;
-  settlement: number;
+  settlement: i32;
   status: i32;
   title: string;
   wording: string;

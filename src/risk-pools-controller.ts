@@ -223,6 +223,7 @@ export function createPool(poolId: Address, event: ethereum.Event): void {
   pool.externalCapacity = BigInt.fromI32(0);
   pool.totalTransferredOut = BigInt.fromI32(0);
   pool.physicalSettlementMarketCount = 0;
+  pool.released = BigInt.fromI32(0);
 
   pool.save();
 
@@ -421,6 +422,7 @@ export function handleLogNewProduct(event: LogNewProduct): void {
   product.claimProcessor = productInfo.claimProcessor;
   product.treasuryAddress = rpcContract.treasury();
   product.wording = productMeta.wording;
+  product.settlementType = productMeta.settlement;
   product.cashSettlementIsEnabled = productMeta.settlement == SettlementType.Cash;
   product.physicalSettlementIsEnabled = productMeta.settlement == SettlementType.Physical;
   product.feeToken = productInfo.marketCreationFeeToken;

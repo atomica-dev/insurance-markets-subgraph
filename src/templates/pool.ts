@@ -27,6 +27,8 @@ import {
   LogContributeSettlement,
   LogForwardPayoutRequest,
   LogRequestCapital,
+  LogReleased,
+  LogRepayed,
 } from "../../generated/templates/Pool/Pool";
 import {
   Pool,
@@ -749,6 +751,22 @@ export function handleLogWithdrawRequestExpirationUpdated(
   let pool = Pool.load(event.address.toHexString())!;
 
   pool.withdrawRequestExpiration = event.params.withdrawRequestExpiration;
+
+  pool.save();
+}
+
+export function handleLogReleased(event: LogReleased): void {
+  let pool = Pool.load(event.address.toHexString())!;
+
+  pool.released = pool.released.plus(event.params.amount);
+
+  pool.save();
+}
+
+export function handleLogRepayed(event: LogRepayed): void {
+  let pool = Pool.load(event.address.toHexString())!;
+
+  pool.released = pool.released.minus(event.params.amount);
 
   pool.save();
 }

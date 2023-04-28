@@ -70,6 +70,7 @@ type Product @entity {
   maxMarketIncentiveFee: BigInt
   title: String
   wording: String
+  settlementType: Int!
   cashSettlementIsEnabled: Boolean
   physicalSettlementIsEnabled: Boolean
   feeToken: Bytes
@@ -299,6 +300,7 @@ type Pool @entity {
   managerFee: BigInt!
   feeRecipient: Bytes!
   agreement: String!
+  released: BigInt!
 }
 
 type FeeRecipientPool @entity {

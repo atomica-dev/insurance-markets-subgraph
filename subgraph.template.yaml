@@ -334,6 +334,10 @@ templates:
           handler: handleLogForwardCommitLoss
         - event: LogCapitalReleased(address,uint256)
           handler: handleLogCapitalReleased
+        - event: LogReleased(uint256)
+          handler: handleLogReleased
+        - event: LogRepayed(uint256)
+          handler: handleLogRepayed
   - kind: ethereum/contract
     name: RateOracle
     network: ganache
