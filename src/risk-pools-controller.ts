@@ -1302,7 +1302,11 @@ function updateAggPoolList(curAggId: BigInt, rpcContract: RiskPoolsControllerCon
     result.push(curAggId.toString());
 
     let cAggPool = getAggregatedPool(rpcContract, curAggId);
-    let aggPool = AggregatedPool.load(curAggId.toString())!;
+    let aggPool = AggregatedPool.load(curAggId.toString());
+
+    if (!aggPool) {
+      aggPool = createAggregatedPool(curAggId, rpcContract._address);
+    }
 
     aggPool.nextAggregatedPoolId = cAggPool.nextAggregatedPoolId;
     aggPool.prevAggregatedPoolId = cAggPool.prevAggregatedPoolId;
