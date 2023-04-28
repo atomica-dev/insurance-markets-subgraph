@@ -59,8 +59,12 @@ export function updateOracleRates(oracleId: string, timestamp: BigInt): void {
   let contract = RateOracleContract.bind(Address.fromString(oracleId));
   let pairs = oracle.pairList;
 
-  oracle.avgGasPrice = contract.avgGasPrice();
-  oracle.save();
+  let result = contract.try_avgGasPrice();
+
+  if (!result.reverted) {
+    oracle.avgGasPrice = result.value;
+    oracle.save();
+  }
 
   for (let i = 0; i < pairs.length; i++) {
     let pair = pairs[i];
