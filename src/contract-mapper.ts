@@ -138,6 +138,8 @@ export class CMarket {
   insuredToken: Address;
   coverAdjusterOracle: Address;
   ratesOracle: Address;
+  payoutRequester: Address;
+  payoutApprover: Address;
   productId: BigInt;
   title: string;
   details: string;
@@ -154,9 +156,11 @@ export function getMarket(contract: RiskPoolsControllerContract, id: BigInt): CM
     insuredToken: d.value4,
     coverAdjusterOracle: d.value5,
     ratesOracle: d.value6,
-    productId: d.value7,
-    title: d.value8,
-    details: d.value9,
+    payoutRequester: d.value7,
+    payoutApprover: d.value8,
+    productId: d.value9,
+    title: d.value10,
+    details: d.value11,
   };
 }
 

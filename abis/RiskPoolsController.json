@@ -471,6 +471,32 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "policyId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "loanRequestId_",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "LogLoanRequested",
+    "type": "event",
+    "signature": "0x416ab226887602bee45c9b70b03ee2ef91e3d9f2cf25a430e3dfc9e24c9534d0"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "marketId",
         "type": "uint256"
       },
@@ -2044,6 +2070,20 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "loanId",
+        "type": "uint256"
+      }
+    ],
+    "name": "approveLoan",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xaadc1ac1"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "payoutRequestId",
         "type": "uint256"
       }
@@ -2720,6 +2760,16 @@
             "type": "address"
           },
           {
+            "internalType": "address",
+            "name": "payoutRequester",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "payoutApprover",
+            "type": "address"
+          },
+          {
             "internalType": "string",
             "name": "title",
             "type": "string"
@@ -2745,7 +2795,7 @@
     ],
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0xf60da939"
+    "signature": "0x2ac2f5d2"
   },
   {
     "inputs": [
@@ -2831,6 +2881,16 @@
             "type": "address"
           },
           {
+            "internalType": "address",
+            "name": "payoutRequester",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "payoutApprover",
+            "type": "address"
+          },
+          {
             "internalType": "uint256",
             "name": "marketCreationFee",
             "type": "uint256"
@@ -2896,7 +2956,7 @@
     ],
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0xb1ac60d2"
+    "signature": "0x0989f039"
   },
   {
     "inputs": [
@@ -3927,6 +3987,124 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "loanIn",
+        "type": "uint256"
+      }
+    ],
+    "name": "loanIdToPolicyId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "policyId",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true,
+    "signature": "0x01901109"
+  },
+  {
+    "inputs": [],
+    "name": "loanInc",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true,
+    "signature": "0x5b82c842"
+  },
+  {
+    "inputs": [],
+    "name": "loanRequestInc",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true,
+    "signature": "0xac9fa89a"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "loanRequestId",
+        "type": "uint256"
+      }
+    ],
+    "name": "loanRequests",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "policyId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true,
+    "signature": "0xd1b332f4"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "loanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "loans",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "riskPool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "rate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "borrowedAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "repayedAmount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true,
+    "signature": "0x85375426"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "marketId",
         "type": "uint256"
       },
@@ -4118,6 +4296,16 @@
       {
         "internalType": "address",
         "name": "ratesOracle",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "payoutRequester",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "payoutApprover",
         "type": "address"
       },
       {
@@ -5268,32 +5456,18 @@
         "internalType": "uint256",
         "name": "policyId",
         "type": "uint256"
-      }
-    ],
-    "name": "release",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function",
-    "signature": "0x37bdc99b"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "policyId",
-        "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "amount",
+        "name": "borrowAmount",
         "type": "uint256"
       }
     ],
-    "name": "repay",
+    "name": "requestLoan",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0xd8aed145"
+    "signature": "0xaa452fa6"
   },
   {
     "inputs": [
