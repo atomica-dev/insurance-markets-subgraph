@@ -471,13 +471,145 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "loanRequestId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "loanId",
+        "type": "uint256"
+      }
+    ],
+    "name": "LogLoanApproved",
+    "type": "event",
+    "signature": "0xddb8fb92bc5ebf4326b5f6f361497746fbe6cf8c1a951ca71a4684a297cf2d34"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "loanData",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "data",
+        "type": "string"
+      }
+    ],
+    "name": "LogLoanDataUpdated",
+    "type": "event",
+    "signature": "0x35e48101564854ece6f60b987ba51942aeffebba83e38c3f0db16354ad6b666f"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "loanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "riskPool",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "LogLoanInterestCharged",
+    "type": "event",
+    "signature": "0x646414ade33d5935701de29975ef715fba0b0b28853b7cf550d3711ed7e9e5b9"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "loanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "riskPool",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "LogLoanInterestRepayed",
+    "type": "event",
+    "signature": "0x8294e5c255253a53228aec5a1aeea755c002522a7ef70c3eb223628766bc49b7"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "loanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "riskPool",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "LogLoanPrincipalRepayed",
+    "type": "event",
+    "signature": "0x08d2ff7f61909058589de102e81d7a6380038266a5f0fc0f97f052124c3ed246"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "loanRequestId",
+        "type": "uint256"
+      }
+    ],
+    "name": "LogLoanRequestDeclined",
+    "type": "event",
+    "signature": "0x0273bbb51350eae270cd732383d09767e9a8fdcd7729e454a527ee6bf6a3b3fc"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "policyId",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "loanRequestId_",
+        "name": "loanRequestId",
         "type": "uint256"
       },
       {
@@ -490,6 +622,32 @@
     "name": "LogLoanRequested",
     "type": "event",
     "signature": "0x416ab226887602bee45c9b70b03ee2ef91e3d9f2cf25a430e3dfc9e24c9534d0"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "loanId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "riskPool",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "LogLoanTransferred",
+    "type": "event",
+    "signature": "0xcb859444bddfdca5f3bef4d6a0b79db687a704d1f0f326fc639f0a5172672aae"
   },
   {
     "anonymous": false,
@@ -2070,15 +2228,15 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "loanId",
+        "name": "loanRequestId",
         "type": "uint256"
       }
     ],
-    "name": "approveLoan",
+    "name": "approveLoanRequest",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0xaadc1ac1"
+    "signature": "0xbf6cde8c"
   },
   {
     "inputs": [
@@ -2407,6 +2565,20 @@
     "stateMutability": "nonpayable",
     "type": "function",
     "signature": "0x2415de8b"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "loanId",
+        "type": "uint256"
+      }
+    ],
+    "name": "chargeInterest",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xfca872b4"
   },
   {
     "inputs": [
@@ -3117,6 +3289,20 @@
     "stateMutability": "nonpayable",
     "type": "function",
     "signature": "0x3e93b184"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "loanRequestId",
+        "type": "uint256"
+      }
+    ],
+    "name": "declineLoanRequest",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xae2ff98b"
   },
   {
     "inputs": [
@@ -3987,22 +4173,42 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "loanIn",
+        "name": "loanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
         "type": "uint256"
       }
     ],
-    "name": "loanIdToPolicyId",
+    "name": "loanChunks",
     "outputs": [
       {
+        "internalType": "address",
+        "name": "riskPool",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
-        "name": "policyId",
+        "name": "rate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "borrowedAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "repayedAmount",
         "type": "uint256"
       }
     ],
     "stateMutability": "view",
     "type": "function",
     "constant": true,
-    "signature": "0x01901109"
+    "signature": "0xc625bf21"
   },
   {
     "inputs": [],
@@ -4064,42 +4270,32 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "loanId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "index",
+        "name": "loanIn",
         "type": "uint256"
       }
     ],
     "name": "loans",
     "outputs": [
       {
-        "internalType": "address",
-        "name": "riskPool",
-        "type": "address"
-      },
-      {
         "internalType": "uint256",
-        "name": "rate",
+        "name": "policyId",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "borrowedAmount",
+        "name": "lastUpdateTs",
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
-        "name": "repayedAmount",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "data",
+        "type": "string"
       }
     ],
     "stateMutability": "view",
     "type": "function",
     "constant": true,
-    "signature": "0x85375426"
+    "signature": "0xe1ec3c68"
   },
   {
     "inputs": [
@@ -5449,6 +5645,63 @@
     "stateMutability": "nonpayable",
     "type": "function",
     "signature": "0x57791dd9"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "loanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "repay",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xd8aed145"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "loanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "repayInterest",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x36168645"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "loanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "repayPrincipal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xa3a826ec"
   },
   {
     "inputs": [
@@ -7200,6 +7453,25 @@
     "stateMutability": "nonpayable",
     "type": "function",
     "signature": "0xd7287009"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "loanId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "data",
+        "type": "string"
+      }
+    ],
+    "name": "updateLoanData",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x3064633f"
   },
   {
     "inputs": [

@@ -375,3 +375,25 @@ export function getList(contract: RiskPoolsControllerContract, id: BigInt): CLis
     descriptionCid: d.value2,
   };
 }
+
+export class CLoanChunk {
+  riskPool: Address;
+  rate: BigInt;
+  borrowedAmount: BigInt;
+  repayedAmount: BigInt;
+}
+
+export function getLoanChunk(contract: RiskPoolsControllerContract, loanId: BigInt, index: BigInt): CLoanChunk | null {
+  let result = contract.try_loanChunks(loanId, index);
+
+  if (result.reverted) {
+    return null;
+  }
+
+  return {
+    riskPool: result.value.value0,
+    rate: result.value.value1,
+    borrowedAmount: result.value.value2,
+    repayedAmount: result.value.value3,
+  };
+}

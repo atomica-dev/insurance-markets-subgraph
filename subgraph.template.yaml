@@ -36,6 +36,9 @@ dataSources:
         - AllowList
         - AllowListAccount
         - Bid
+        - LoanRequest
+        - Loan
+        - LoanChunk
       abis:
         - name: RiskPoolsController
           file: ./abis/RiskPoolsController.json
@@ -156,6 +159,22 @@ dataSources:
           handler: handleLogExecuted
         - event: LogExecutionDeclined(bytes4,bytes)
           handler: handleLogExecutionDeclined
+        - event: LogLoanRequested(uint256,uint256,uint256)
+          handler: handleLogLoanRequested
+        - event: LogLoanApproved(uint256,uint256)
+          handler: handleLogLoanApproved
+        - event: LogLoanRequestDeclined(uint256)
+          handler: handleLogLoanRequestDeclined
+        - event: LogLoanDataUpdated(uint256,string)
+          handler: handleLogLoanDataUpdated
+        - event: LogLoanInterestRepayed(uint256,address,uint256)
+          handler: handleLogLoanInterestRepayed
+        - event: LogLoanPrincipalRepayed(uint256,address,uint256)
+          handler: handleLogLoanPrincipalRepayed
+        - event: LogLoanTransferred(uint256,address,uint256)
+          handler: handleLogLoanTransferred
+        - event: LogLoanInterestCharged(uint256,address,uint256)
+          handler: handleLogLoanInterestCharged
       file: ./src/risk-pools-controller.ts
 templates:
   - kind: ethereum/contract

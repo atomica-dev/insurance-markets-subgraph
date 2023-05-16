@@ -54,6 +54,14 @@ import {
   LogExecutionDelayed,
   LogExecuted,
   LogExecutionDeclined,
+  LogLoanRequested,
+  LogLoanApproved,
+  LogLoanRequestDeclined,
+  LogLoanDataUpdated,
+  LogLoanPrincipalRepayed,
+  LogLoanTransferred,
+  LogLoanInterestCharged,
+  LogLoanInterestRepayed,
 } from "../generated/RiskPoolsController/RiskPoolsController";
 import { PolicyPermissionTokenIssuer, PolicyTokenIssuer, PayoutRequester as PayoutRequesterTemplate } from "../generated/templates";
 import {
@@ -80,6 +88,9 @@ import {
   Bid,
   DelayedExecution,
   DelayedExecutionHistory,
+  LoanRequest,
+  Loan,
+  LoanChunk,
 } from "../generated/schema";
 import { addEvent, EventType, getState, StatusEnum, updateAndLogState, updateState, updateSystemStatus } from "./event";
 import { Address, BigInt, Bytes, DataSourceContext, ethereum, log, store } from "@graphprotocol/graph-ts";
@@ -87,11 +98,13 @@ import { Pool as PoolContract } from "../generated/RiskPoolsController/Pool";
 import { PolicyTokenIssuer as PolicyTokenIssuerContract } from "../generated/RiskPoolsController/PolicyTokenIssuer";
 import { getSystemConfig } from "./system";
 import {
+  CLoanChunk,
   CPolicy,
   getAggregatedPool,
   getCoverReward,
   getForwardedPayoutRequest,
   getList,
+  getLoanChunk,
   getMarket,
   getMarketMeta,
   getPayoutRequest,
@@ -110,6 +123,7 @@ import { ProductOperatorLogType } from "./product-operator-log-type.enum";
 import { SettlementType } from "./settlement-type.enum";
 import { RPC_CONTRACT_ADDRESS_CONTEXT_KEY } from "./payout-requester";
 import { getMarketRateAndActualCover } from "./market-rate-utils";
+import { LoanRequestStatusEnum } from "./loan-request-status.enum";
 
 export function handleLogNewMarket(event: LogNewMarketCreated): void {
   let marketId = event.params.marketId;
@@ -167,6 +181,9 @@ export function handleLogNewMarket(event: LogNewMarketCreated): void {
   market.policyBuyerAllowanceListId = rpcContract.policyBuyerAllowanceListId(marketId);
   market.premiumMulAccumulator = rpcContract.marketsPremiumMulAccumulators(marketId);
   market.createdAt = event.block.timestamp;
+
+  market.payoutRequester = marketInfo.payoutRequester;
+  market.payoutApprover = marketInfo.payoutApprover;
 
   market.status = StatusEnum.Opened;
 
@@ -1531,3 +1548,82 @@ function finishDelayedExecution(sig: Bytes, data: Bytes, event: ethereum.Event, 
 
   store.remove("DelayedExecution", id);
 }
+
+export function handleLogLoanRequested(event: LogLoanRequested): void {
+  let loanRequest = new LoanRequest(event.params.loanRequestId.toString());
+
+  loanRequest.policyId = event.params.policyId;
+  loanRequest.amount = event.params.amount;
+
+  loanRequest.status = LoanRequestStatusEnum.Requested;
+
+  loanRequest.save();
+}
+
+export function handleLogLoanApproved(event: LogLoanApproved): void {
+  let loanRequest = LoanRequest.load(event.params.loanRequestId.toString())!;
+  let loanId = event.params.loanId;
+
+  loanRequest.status = LoanRequestStatusEnum.Approved;
+
+  loanRequest.save();
+
+  let loan = new Loan(loanId.toString());
+
+  loan.loanRequestId = event.params.loanRequestId;
+  loan.policyId = loanRequest.policyId;
+
+  loan.save();
+
+  updateLoanChunks(loanId, event.address);
+}
+
+function updateLoanChunks(loanId: BigInt, rpcAddress: Address): void {
+  let rpcContract = RiskPoolsControllerContract.bind(rpcAddress);
+
+  let index: i32 = 0;
+  let cChunk: CLoanChunk | null;
+
+  do {
+    cChunk = getLoanChunk(rpcContract, loanId, BigInt.fromI32(index));
+
+    if (cChunk) {
+      let chunk = new LoanChunk(loanId.toString() + "-" + index.toString());
+
+      chunk.loanId = loanId;
+      chunk.chunkIndex = index;
+      chunk.poolId = cChunk.riskPool;
+      chunk.rate = cChunk.rate;
+      chunk.borrowedAmount = cChunk.borrowedAmount;
+      chunk.repaidAmount = cChunk.repayedAmount;
+
+      chunk.save();
+    }
+  } while (cChunk);
+}
+
+export function handleLogLoanRequestDeclined(event: LogLoanRequestDeclined): void {
+  let loanRequest = LoanRequest.load(event.params.loanRequestId.toString())!;
+
+  loanRequest.status = LoanRequestStatusEnum.Declined;
+
+  loanRequest.save();
+}
+
+export function handleLogLoanDataUpdated(event: LogLoanDataUpdated): void {
+  let loan = Loan.load(event.params.loanData.toString())!;
+
+  loan.data = event.params.data.toString();
+
+  loan.save();
+}
+
+export function handleLogLoanPrincipalRepayed(event: LogLoanPrincipalRepayed): void {
+  updateLoanChunks(event.params.loanId, event.address);
+}
+
+export function handleLogLoanInterestRepayed(event: LogLoanInterestRepayed): void {}
+
+export function handleLogLoanTransferred(event: LogLoanTransferred): void {}
+
+export function handleLogLoanInterestCharged(event: LogLoanInterestCharged): void {}

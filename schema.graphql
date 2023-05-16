@@ -139,7 +139,36 @@ type Market @entity {
   tailJumpPremiumRatePerSec: BigInt!
   tailAggPoolId: BigInt
 
+  payoutRequester: Bytes!
+  payoutApprover: Bytes!
+
   rewards: [CoverMiningReward!]! @derivedFrom(field: "market")
+}
+
+type LoanRequest @entity {
+  id: ID!
+  policyId: BigInt!
+  amount: BigInt!
+  status: Int!
+}
+
+type Loan @entity {
+  """ loanRequestId-riskPoolId """
+  id: ID!
+  loanRequestId: BigInt!
+  policyId: BigInt!
+  data: String
+}
+
+type LoanChunk @entity {
+  """ loanId-chunkIndex """
+  id: ID!
+  loanId: BigInt!
+  chunkIndex: Int!
+  poolId: Bytes!
+  rate: BigInt!
+  borrowedAmount: BigInt!
+  repaidAmount: BigInt!
 }
 
 type AggregatedPool @entity {
