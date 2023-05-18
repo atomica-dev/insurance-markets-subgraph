@@ -1550,7 +1550,7 @@ function finishDelayedExecution(sig: Bytes, data: Bytes, event: ethereum.Event, 
 }
 
 export function handleLogLoanRequested(event: LogLoanRequested): void {
-  let loanRequest = new LoanRequest(event.params.loanRequestId.toString());
+  let loanRequest = new LoanRequest(event.params.LogLoanApproved.toString());
 
   loanRequest.policyId = event.params.policyId;
   loanRequest.amount = event.params.amount;
