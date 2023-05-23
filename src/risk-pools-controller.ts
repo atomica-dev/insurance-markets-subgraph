@@ -1599,7 +1599,7 @@ function updateLoanChunks(loanId: BigInt, rpcAddress: Address): void {
 
       chunk.save();
     }
-  } while (cChunk && cChunk.riskPool != Address.fromHexString(ZERO_ADDRESS));
+  } while (cChunk != null && cChunk.riskPool !== Address.fromHexString(ZERO_ADDRESS));
 }
 
 export function handleLogLoanRequestDeclined(event: LogLoanRequestDeclined): void {
