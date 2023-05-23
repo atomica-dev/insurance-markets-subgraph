@@ -4283,7 +4283,32 @@
       },
       {
         "internalType": "uint256",
+        "name": "borrowedAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "requiredRepayAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
         "name": "lastUpdateTs",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "governanceIncentiveFee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "productOperatorIncentiveFee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "marketOperatorIncentiveFee",
         "type": "uint256"
       },
       {

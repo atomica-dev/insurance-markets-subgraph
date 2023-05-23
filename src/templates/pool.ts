@@ -766,7 +766,7 @@ export function handleLogReleased(event: LogReleased): void {
 export function handleLogRepayed(event: LogRepayed): void {
   let pool = Pool.load(event.address.toHexString())!;
 
-  pool.released = pool.released.minus(event.params.amount);
+  pool.released = pool.released.minus(event.params.releasedAmount);
 
   pool.save();
 }

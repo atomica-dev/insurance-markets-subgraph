@@ -525,8 +525,20 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amount",
+        "name": "releasedAmount",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "repayAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "repayToken",
+        "type": "address"
       }
     ],
     "name": "LogRepayed",
@@ -1934,8 +1946,18 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "amount",
+        "name": "releasedAmount",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "repayAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "repayToken",
+        "type": "address"
       }
     ],
     "name": "repay",

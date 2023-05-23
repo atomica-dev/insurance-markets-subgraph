@@ -104,6 +104,7 @@ import {
   getCoverReward,
   getForwardedPayoutRequest,
   getList,
+  getLoan,
   getLoanChunk,
   getMarket,
   getMarketMeta,
@@ -1569,9 +1570,18 @@ export function handleLogLoanApproved(event: LogLoanApproved): void {
   loanRequest.save();
 
   let loan = new Loan(loanId.toString());
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+  let cLoan = getLoan(rpcContract, loanId)!;
 
   loan.loanRequestId = event.params.loanRequestId;
-  loan.policyId = loanRequest.policyId;
+  loan.policyId = cLoan.policyId;
+  loan.data = cLoan.data;
+  loan.borrowedAmount = cLoan.borrowedAmount;
+  loan.requiredRepayAmount = cLoan.requiredRepayAmount;
+  loan.lastUpdateTs = cLoan.lastUpdateTs;
+  loan.governanceIncentiveFee = cLoan.governanceIncentiveFee;
+  loan.productOperatorIncentiveFee = cLoan.productOperatorIncentiveFee;
+  loan.marketOperatorIncentiveFee = cLoan.marketOperatorIncentiveFee;
 
   loan.save();
 
@@ -1601,7 +1611,6 @@ function updateLoanChunks(loanId: BigInt, rpcAddress: Address): void {
     }
 
     index++;
-
   } while (cChunk != null && cChunk.riskPool !== Address.fromHexString(ZERO_ADDRESS));
 }
 

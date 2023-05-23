@@ -157,6 +157,12 @@ type Loan @entity {
   id: ID!
   loanRequestId: BigInt!
   policyId: BigInt!
+  borrowedAmount: BigInt!
+  requiredRepayAmount: BigInt!
+  lastUpdateTs: BigInt!
+  governanceIncentiveFee: BigInt!
+  productOperatorIncentiveFee: BigInt!
+  marketOperatorIncentiveFee: BigInt!
   data: String
 }
 

@@ -355,7 +355,7 @@ templates:
           handler: handleLogCapitalReleased
         - event: LogReleased(uint256)
           handler: handleLogReleased
-        - event: LogRepayed(uint256)
+        - event: LogRepayed(uint256,uint256,address)
           handler: handleLogRepayed
   - kind: ethereum/contract
     name: RateOracle
