@@ -609,7 +609,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "LogLoanApproved",
+        "name": "loanRequestId",
         "type": "uint256"
       },
       {
