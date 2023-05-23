@@ -1599,6 +1599,9 @@ function updateLoanChunks(loanId: BigInt, rpcAddress: Address): void {
 
       chunk.save();
     }
+
+    index++;
+
   } while (cChunk != null && cChunk.riskPool !== Address.fromHexString(ZERO_ADDRESS));
 }
 
