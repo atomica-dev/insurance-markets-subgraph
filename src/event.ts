@@ -93,6 +93,8 @@ export enum EventType {
   PayoutApprover,
   ClaimProcessor,
   NewProduct,
+  ProductFeeRecipient,
+  ProductData,
 
   //#endregion
 }

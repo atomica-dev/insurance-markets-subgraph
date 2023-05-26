@@ -67,9 +67,11 @@ type Product @entity {
   payoutRequester: Bytes
   payoutApprover: Bytes
   productIncentiveFee: BigInt
+  feeRecipient: Bytes!
   maxMarketIncentiveFee: BigInt
   title: String
   wording: String
+  data: String
   settlementType: Int!
   cashSettlementIsEnabled: Boolean
   physicalSettlementIsEnabled: Boolean
@@ -107,6 +109,7 @@ type Market @entity {
   title: String!
   details: String!
   wording: String
+  data: String
   author: Bytes!
   marketFeeRecipient: Bytes!
   premiumToken: Bytes!

@@ -29,12 +29,14 @@ export enum GovernanceLogType {
   ProductOperator,
   MarketOperator,
   ProductWording,
+  ProductData,
   MarketExchangeRateOracle,
   MarketPolicyBuyerAllowlistId,
   MarketPolicyBuyerAllowancelistId,
 
   // Fees
   ProductOperatorIncentiveFee,
+  ProductOperatorFeeRecipient,
   ProductMaxMarketIncentiveFee,
   MarketOperatorIncentiveFee,
   MaxProductOperatorIncentiveFee,
@@ -46,6 +48,7 @@ export enum GovernanceLogType {
 
   // Market
   MarketDetails,
+  MarketData,
   MarketCoverAdjusterOracle,
 
   // Frontend operators

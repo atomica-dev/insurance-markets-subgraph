@@ -80,6 +80,7 @@ export class CProduct {
   defaultCoverAdjusterOracle: Address;
   defaultRatesOracle: Address;
   marketCreationFeeToken: Address;
+  productOperatorFeeRecipient: Address;
 }
 
 export function getProduct(contract: RiskPoolsControllerContract, id: BigInt): CProduct {
@@ -95,6 +96,7 @@ export function getProduct(contract: RiskPoolsControllerContract, id: BigInt): C
     defaultCoverAdjusterOracle: d.value6,
     defaultRatesOracle: d.value7,
     marketCreationFeeToken: d.value8,
+    productOperatorFeeRecipient: d.value9,
   };
 }
 
@@ -110,6 +112,7 @@ export class CProductMeta {
   status: i32;
   title: string;
   wording: string;
+  data: string;
 }
 
 export function getProductMeta(contract: RiskPoolsControllerContract, id: BigInt): CProductMeta {
@@ -127,6 +130,7 @@ export function getProductMeta(contract: RiskPoolsControllerContract, id: BigInt
     status: d.value8,
     title: d.value9,
     wording: d.value10,
+    data: d.value11,
   };
 }
 
@@ -143,6 +147,7 @@ export class CMarket {
   productId: BigInt;
   title: string;
   details: string;
+  data: string;
 }
 
 export function getMarket(contract: RiskPoolsControllerContract, id: BigInt): CMarket {
@@ -161,6 +166,7 @@ export function getMarket(contract: RiskPoolsControllerContract, id: BigInt): CM
     productId: d.value9,
     title: d.value10,
     details: d.value11,
+    data: d.value12,
   };
 }
 

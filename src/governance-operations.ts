@@ -8,7 +8,7 @@ import { addOraclePair } from "./rate-oracle";
 import { Address } from "@graphprotocol/graph-ts";
 import { addUniqueToList, ETH_ADDRESS, filterNotEqual } from "./utils";
 import { addEvent, EventType } from "./event";
-import { getMarket, getProductMeta } from "./contract-mapper";
+import { getMarket, getProduct, getProductMeta } from "./contract-mapper";
 
 export const GovernanceOperationMap = new Map<GovernanceLogType, (event: LogGovernance) => void>();
 
@@ -62,6 +62,9 @@ GovernanceOperationMap.set(GovernanceLogType.BridgeConnector, handleBridgeConnec
 GovernanceOperationMap.set(GovernanceLogType.ExternalRiskPoolsConfidenceInterval, handleExternalRiskPoolsConfidenceInterval);
 GovernanceOperationMap.set(GovernanceLogType.SwapCycle, handleSwapCycle);
 GovernanceOperationMap.set(GovernanceLogType.SettlementDiscount, handleSettlementDiscount);
+GovernanceOperationMap.set(GovernanceLogType.ProductData, handleProductData);
+GovernanceOperationMap.set(GovernanceLogType.ProductOperatorFeeRecipient, handleProductOperatorFeeRecipient);
+GovernanceOperationMap.set(GovernanceLogType.MarketData, handleMarketData);
 
 //#endregion
 
@@ -242,6 +245,20 @@ function handleMarketDetails(event: LogGovernance): void {
   market.save();
 }
 
+function handleMarketData(event: LogGovernance): void {
+  let id = event.address.toHexString() + "-" + event.params.param3.toString();
+  let market = Market.load(id);
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+
+  if (!market) {
+    return;
+  }
+
+  market.data = getMarket(rpcContract, event.params.param3).data;
+
+  market.save();
+}
+
 function handleUpdateMarketCoverAdjusterOracle(event: LogGovernance): void {
   let id = event.address.toHexString() + "-" + event.params.param3.toString();
   let market = Market.load(id);
@@ -363,6 +380,38 @@ function handleUpdateProductWording(event: LogGovernance): void {
   product.save();
 
   addEvent(EventType.ProductWording, event, null, product.id, product.wording);
+}
+
+function handleProductOperatorFeeRecipient(event: LogGovernance): void {
+  let productId = event.params.param3;
+  let product = Product.load(productId.toString());
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+
+  if (!product) {
+    return;
+  }
+
+  product.feeRecipient = getProduct(rpcContract, productId).productOperatorFeeRecipient;
+
+  product.save();
+
+  addEvent(EventType.ProductFeeRecipient, event, null, product.id, product.feeRecipient.toHexString());
+}
+
+function handleProductData(event: LogGovernance): void {
+  let productId = event.params.param3;
+  let product = Product.load(productId.toString());
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+
+  if (!product) {
+    return;
+  }
+
+  product.data = getProductMeta(rpcContract, productId).data;
+
+  product.save();
+
+  addEvent(EventType.ProductData, event, null, product.id, product.data);
 }
 
 function handleUpdateProductOperator(event: LogGovernance): void {

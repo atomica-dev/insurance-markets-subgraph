@@ -2950,6 +2950,11 @@
             "internalType": "string",
             "name": "details",
             "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "data",
+            "type": "string"
           }
         ],
         "internalType": "struct ICreateMarketImpl.CreateMarketParams",
@@ -2967,7 +2972,7 @@
     ],
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0x2ac2f5d2"
+    "signature": "0x9764e7bc"
   },
   {
     "inputs": [
@@ -3063,6 +3068,11 @@
             "type": "address"
           },
           {
+            "internalType": "address",
+            "name": "productOperatorFeeRecipient",
+            "type": "address"
+          },
+          {
             "internalType": "uint256",
             "name": "marketCreationFee",
             "type": "uint256"
@@ -3111,6 +3121,11 @@
             "internalType": "string",
             "name": "wording",
             "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "data",
+            "type": "string"
           }
         ],
         "internalType": "struct IProductCreatorImpl.CreateProductParams",
@@ -3128,7 +3143,7 @@
     ],
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0x0989f039"
+    "signature": "0x42d6dc32"
   },
   {
     "inputs": [
@@ -4543,6 +4558,11 @@
         "internalType": "string",
         "name": "details",
         "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "data",
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -5392,6 +5412,11 @@
         "internalType": "address",
         "name": "marketCreationFeeToken",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "productOperatorFeeRecipient",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -5462,6 +5487,11 @@
       {
         "internalType": "string",
         "name": "wording",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "data",
         "type": "string"
       }
     ],
@@ -6474,6 +6504,25 @@
       },
       {
         "internalType": "string",
+        "name": "data",
+        "type": "string"
+      }
+    ],
+    "name": "setMarketData",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x1148ed00"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
         "name": "details",
         "type": "string"
       }
@@ -6757,6 +6806,25 @@
         "type": "uint256"
       },
       {
+        "internalType": "string",
+        "name": "data",
+        "type": "string"
+      }
+    ],
+    "name": "setProductData",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x3d2e3d73"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "productId",
+        "type": "uint256"
+      },
+      {
         "internalType": "address",
         "name": "capitalToken",
         "type": "address"
@@ -6919,6 +6987,25 @@
     "stateMutability": "nonpayable",
     "type": "function",
     "signature": "0x5455193f"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "productId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "productOperatorFeeRecipient",
+        "type": "address"
+      }
+    ],
+    "name": "setProductOperatorFeeRecipient",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x5e5eb847"
   },
   {
     "inputs": [

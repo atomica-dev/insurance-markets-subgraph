@@ -146,10 +146,9 @@ export function handleLogNewMarket(event: LogNewMarketCreated): void {
   market.riskPoolsControllerAddress = rpcContractAddress;
 
   market.wording = productMeta.wording;
-  market.entityList = titleParams.filter((t, i, a) => t != "" || i != a.length - 1);
-  //TODO: remove prev. line, uncomment next one once new contract && ui are deployed
-  //market.entityList = titleParams;
+  market.entityList = titleParams;
   market.details = marketInfo.details;
+  market.data = marketInfo.data;
 
   market.waitingPeriod = marketMeta.waitingPeriod;
   market.marketOperatorIncentiveFee = marketMeta.marketOperatorIncentiveFee;
@@ -441,6 +440,7 @@ export function handleLogNewProduct(event: LogNewProduct): void {
   product.treasuryAddress = rpcContract.treasury();
   product.wording = productMeta.wording;
   product.settlementType = productMeta.settlement;
+  product.data = productMeta.data;
   product.cashSettlementIsEnabled = productMeta.settlement == SettlementType.Cash;
   product.physicalSettlementIsEnabled = productMeta.settlement == SettlementType.Physical;
   product.feeToken = productInfo.marketCreationFeeToken;
@@ -451,6 +451,7 @@ export function handleLogNewProduct(event: LogNewProduct): void {
   product.payoutApprover = productInfo.payoutApprover;
   product.payoutRequester = productInfo.payoutRequester;
   product.productIncentiveFee = productMeta.productOperatorIncentiveFee;
+  product.feeRecipient = productInfo.productOperatorFeeRecipient;
   product.maxMarketIncentiveFee = productMeta.maxMarketOperatorIncentiveFee;
 
   product.defaultRatesOracle = productInfo.defaultRatesOracle;
