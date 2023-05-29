@@ -112,6 +112,7 @@ export class CProductMeta {
   status: i32;
   title: string;
   wording: string;
+  details: string;
   data: string;
 }
 
@@ -130,7 +131,8 @@ export function getProductMeta(contract: RiskPoolsControllerContract, id: BigInt
     status: d.value8,
     title: d.value9,
     wording: d.value10,
-    data: d.value11,
+    details: d.value11,
+    data: d.value12,
   };
 }
 

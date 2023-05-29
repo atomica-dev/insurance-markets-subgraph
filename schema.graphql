@@ -71,6 +71,7 @@ type Product @entity {
   maxMarketIncentiveFee: BigInt
   title: String
   wording: String
+  details: String
   data: String
   settlementType: Int!
   cashSettlementIsEnabled: Boolean

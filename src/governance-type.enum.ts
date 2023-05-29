@@ -29,6 +29,7 @@ export enum GovernanceLogType {
   ProductOperator,
   MarketOperator,
   ProductWording,
+  ProductDetails,
   ProductData,
   MarketExchangeRateOracle,
   MarketPolicyBuyerAllowlistId,

@@ -95,6 +95,7 @@ export enum EventType {
   NewProduct,
   ProductFeeRecipient,
   ProductData,
+  ProductDetails,
 
   //#endregion
 }

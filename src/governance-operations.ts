@@ -63,6 +63,7 @@ GovernanceOperationMap.set(GovernanceLogType.ExternalRiskPoolsConfidenceInterval
 GovernanceOperationMap.set(GovernanceLogType.SwapCycle, handleSwapCycle);
 GovernanceOperationMap.set(GovernanceLogType.SettlementDiscount, handleSettlementDiscount);
 GovernanceOperationMap.set(GovernanceLogType.ProductData, handleProductData);
+GovernanceOperationMap.set(GovernanceLogType.ProductDetails, handleProductDetails);
 GovernanceOperationMap.set(GovernanceLogType.ProductOperatorFeeRecipient, handleProductOperatorFeeRecipient);
 GovernanceOperationMap.set(GovernanceLogType.MarketData, handleMarketData);
 
@@ -412,6 +413,22 @@ function handleProductData(event: LogGovernance): void {
   product.save();
 
   addEvent(EventType.ProductData, event, null, product.id, product.data);
+}
+
+function handleProductDetails(event: LogGovernance): void {
+  let productId = event.params.param3;
+  let product = Product.load(productId.toString());
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+
+  if (!product) {
+    return;
+  }
+
+  product.details = getProductMeta(rpcContract, productId).details;
+
+  product.save();
+
+  addEvent(EventType.ProductDetails, event, null, product.id, product.details);
 }
 
 function handleUpdateProductOperator(event: LogGovernance): void {

@@ -439,6 +439,7 @@ export function handleLogNewProduct(event: LogNewProduct): void {
   product.claimProcessor = productInfo.claimProcessor;
   product.treasuryAddress = rpcContract.treasury();
   product.wording = productMeta.wording;
+  product.details = productMeta.details;
   product.settlementType = productMeta.settlement;
   product.data = productMeta.data;
   product.cashSettlementIsEnabled = productMeta.settlement == SettlementType.Cash;
