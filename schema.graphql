@@ -157,7 +157,6 @@ type LoanRequest @entity {
 }
 
 type Loan @entity {
-  """ loanRequestId-riskPoolId """
   id: ID!
   loanRequestId: BigInt!
   policyId: BigInt!
