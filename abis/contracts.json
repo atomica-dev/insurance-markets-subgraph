@@ -9,8 +9,8 @@
       "RiskPoolsController": "0x0"
     },
     "srm-staging": {
-      "defaultStartBlock": 34633201,
-      "RiskPoolsController": "0x5cfdd8f4DcBD1AC2D5DE1F102fDa0B485B3E1f13"
+      "defaultStartBlock": 36337490,
+      "RiskPoolsController": "0x3fCBa874F7Dd221B466a62412d1D61D533504405"
     },
     "srm-production": {
       "defaultStartBlock": 34002868,
