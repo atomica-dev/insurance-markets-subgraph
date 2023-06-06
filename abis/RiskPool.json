@@ -606,6 +606,19 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "reserveRatio",
+        "type": "uint256"
+      }
+    ],
+    "name": "LogReserveRatio",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "rewardId",
         "type": "uint256"
       },
@@ -742,6 +755,19 @@
       }
     ],
     "name": "LogWithdrawDelayUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "withdrawProcedure",
+        "type": "uint256"
+      }
+    ],
+    "name": "LogWithdrawProcedure",
     "type": "event"
   },
   {
@@ -2072,6 +2098,19 @@
   },
   {
     "inputs": [],
+    "name": "reserveRatio",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "rewardIdInc",
     "outputs": [
       {
@@ -2288,6 +2327,19 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "reserveRatio_",
+        "type": "uint256"
+      }
+    ],
+    "name": "setReserveRatio",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes32",
         "name": "settlementDistributionRootHash",
         "type": "bytes32"
@@ -2312,6 +2364,19 @@
       }
     ],
     "name": "setWithdrawDelay",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum IRiskPoolStorageModel.WithdrawProcedure",
+        "name": "withdrawProcedure_",
+        "type": "uint8"
+      }
+    ],
+    "name": "setWithdrawProcedure",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -2408,6 +2473,19 @@
   {
     "inputs": [],
     "name": "totalAssetBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalAssetBalanceAvailable",
     "outputs": [
       {
         "internalType": "uint256",
@@ -2577,6 +2655,19 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "withdrawProcedure",
+    "outputs": [
+      {
+        "internalType": "enum IRiskPoolStorageModel.WithdrawProcedure",
+        "name": "",
+        "type": "uint8"
       }
     ],
     "stateMutability": "view",

@@ -357,6 +357,10 @@ templates:
           handler: handleLogReleased
         - event: LogRepayed(uint256,uint256,address)
           handler: handleLogRepayed
+        - event: LogWithdrawProcedure(uint256)
+          handler: handleLogWithdrawProcedure
+        - event: LogReserveRatio(uint256)
+          handler: handleLogReserveRatio
   - kind: ethereum/contract
     name: RateOracle
     network: ganache

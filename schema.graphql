@@ -339,6 +339,8 @@ type Pool @entity {
   feeRecipient: Bytes!
   agreement: String!
   released: BigInt!
+  withdrawProcedure: Int!
+  reserveRatio: BigInt!
 }
 
 type FeeRecipientPool @entity {

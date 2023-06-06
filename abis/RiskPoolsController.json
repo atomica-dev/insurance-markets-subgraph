@@ -7192,6 +7192,25 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "riskPool_",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "reserveRatio_",
+        "type": "uint256"
+      }
+    ],
+    "name": "setReserveRatio",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xeb5c5353"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "riskPool",
         "type": "address"
       },
@@ -7334,6 +7353,25 @@
     "stateMutability": "nonpayable",
     "type": "function",
     "signature": "0x2878259b"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "riskPool_",
+        "type": "address"
+      },
+      {
+        "internalType": "enum IRiskPoolStorageModel.WithdrawProcedure",
+        "name": "withdrawProcedure_",
+        "type": "uint8"
+      }
+    ],
+    "name": "setWithdrawProcedure",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xf2e899e7"
   },
   {
     "inputs": [

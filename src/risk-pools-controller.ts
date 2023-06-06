@@ -241,6 +241,8 @@ export function createPool(poolId: Address, event: ethereum.Event): void {
   pool.totalTransferredOut = BigInt.fromI32(0);
   pool.physicalSettlementMarketCount = 0;
   pool.released = BigInt.fromI32(0);
+  pool.reserveRatio = pContract.reserveRatio();
+  pool.withdrawProcedure = pContract.withdrawProcedure();
 
   pool.save();
 
