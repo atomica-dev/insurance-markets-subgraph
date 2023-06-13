@@ -105,6 +105,6 @@ export function updateAllTypeFees(event: LogMarketCharge, token: Bytes, market: 
   updateMarketUserFee(marketManagerFee, event.params.marketId, event.params.marketOparatorFee);
 
   const product = Product.load(market.product)!;
-  const productManagerFee = updateUserFee(token, product.operator, getFeeTypeString(FeeType.ProductManager), event.params.productOperatorFee);
+  const productManagerFee = updateUserFee(token, product.feeRecipient, getFeeTypeString(FeeType.ProductManager), event.params.productOperatorFee);
   updateMarketUserFee(productManagerFee, event.params.marketId, event.params.productOperatorFee);
 }
