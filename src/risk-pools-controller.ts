@@ -227,6 +227,8 @@ export function createPool(poolId: Address, event: ethereum.Event): void {
   pool.poolTokenSymbol = !pContract.try_symbol().reverted ? pContract.try_symbol().value : "";
   pool.managerFee = riskPoolData.managerFee;
   pool.agreement = riskPoolData.agreement;
+  pool.details = riskPoolData.details;
+  pool.data = riskPoolData.data;
   pool.capitalTokenDecimals = !btContract.try_decimals().reverted ? btContract.try_decimals().value : 18;
   pool.capitalTokenSymbol = !btContract.try_symbol().reverted ? btContract.try_symbol().value : "";
   pool.capitalRequirement = pContract.cap();

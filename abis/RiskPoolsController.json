@@ -6190,6 +6190,16 @@
         "internalType": "string",
         "name": "agreement",
         "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "details",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "data",
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -7206,6 +7216,44 @@
     "stateMutability": "nonpayable",
     "type": "function",
     "signature": "0xeb5c5353"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "riskPool",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "data",
+        "type": "string"
+      }
+    ],
+    "name": "setRiskPoolData",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x31c6b641"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "riskPool",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "details",
+        "type": "string"
+      }
+    ],
+    "name": "setRiskPoolDetails",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x5e700f9e"
   },
   {
     "inputs": [

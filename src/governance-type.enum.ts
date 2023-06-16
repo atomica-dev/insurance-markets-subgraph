@@ -26,6 +26,8 @@ export enum GovernanceLogType {
   RiskPoolLpAllowlistId,
   RiskPoolWithdrawProcedure,
   RiskPoolReserveRatio,
+  RiskPoolDetails,
+  RiskPoolData,
 
   // Product
   ProductOperator,

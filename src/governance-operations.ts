@@ -8,7 +8,7 @@ import { addOraclePair } from "./rate-oracle";
 import { Address } from "@graphprotocol/graph-ts";
 import { addUniqueToList, ETH_ADDRESS, filterNotEqual } from "./utils";
 import { addEvent, EventType } from "./event";
-import { getMarket, getProduct, getProductMeta } from "./contract-mapper";
+import { getMarket, getProduct, getProductMeta, getRiskPoolData } from "./contract-mapper";
 
 export const GovernanceOperationMap = new Map<GovernanceLogType, (event: LogGovernance) => void>();
 
@@ -36,6 +36,11 @@ GovernanceOperationMap.set(GovernanceLogType.RiskPoolWithdrawRequestExpiration, 
 GovernanceOperationMap.set(GovernanceLogType.MarketPolicyBuyerAllowlistId, handleUpdateMarketPolicyBuyerAllowListId);
 GovernanceOperationMap.set(GovernanceLogType.MarketPolicyBuyerAllowancelistId, handleUpdateMarketPolicyBuyerAllowanceListId);
 GovernanceOperationMap.set(GovernanceLogType.RiskPoolLpAllowlistId, handleUpdateRiskPoolLpAllowlistId);
+GovernanceOperationMap.set(GovernanceLogType.RiskPoolWithdrawProcedure, handleUpdateRiskPoolWithdrawProcedure);
+GovernanceOperationMap.set(GovernanceLogType.RiskPoolReserveRatio, handleUpdateRiskPoolReserveRatio);
+GovernanceOperationMap.set(GovernanceLogType.RiskPoolDetails, handleUpdateRiskPoolDetails);
+GovernanceOperationMap.set(GovernanceLogType.RiskPoolData, handleUpdateRiskPoolData);
+
 GovernanceOperationMap.set(GovernanceLogType.ProductWording, handleUpdateProductWording);
 GovernanceOperationMap.set(GovernanceLogType.ProductOperator, handleUpdateProductOperator);
 GovernanceOperationMap.set(GovernanceLogType.MarketOperator, handleUpdateMarketOperator);
@@ -364,6 +369,42 @@ function handleUpdateRiskPoolLpAllowlistId(event: LogGovernance): void {
   }
 
   pool.lpAllowListId = event.params.param3;
+
+  pool.save();
+}
+
+function handleUpdateRiskPoolWithdrawProcedure(event: LogGovernance): void {
+  // The value is updated using corresponding pool event.
+}
+
+function handleUpdateRiskPoolReserveRatio(event: LogGovernance): void {
+  // The value is updated using corresponding pool event.
+}
+
+function handleUpdateRiskPoolDetails(event: LogGovernance): void {
+  let poolId = event.params.param1;
+  let pool = Pool.load(poolId.toHexString());
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+
+  if (!pool) {
+    return;
+  }
+
+  pool.details = getRiskPoolData(rpcContract, poolId).details;
+
+  pool.save();
+}
+
+function handleUpdateRiskPoolData(event: LogGovernance): void {
+  let poolId = event.params.param1;
+  let pool = Pool.load(poolId.toHexString());
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+
+  if (!pool) {
+    return;
+  }
+
+  pool.data = getRiskPoolData(rpcContract, poolId).data;
 
   pool.save();
 }

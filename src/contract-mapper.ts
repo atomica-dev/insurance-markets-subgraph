@@ -204,6 +204,8 @@ export class CRiskPoolData {
   nominatedToken: Address;
   managerFee: BigInt;
   agreement: string;
+  details: string;
+  data: string;
 }
 
 export function getRiskPoolData(contract: RiskPoolsControllerContract, id: Address): CRiskPoolData {
@@ -215,6 +217,8 @@ export function getRiskPoolData(contract: RiskPoolsControllerContract, id: Addre
     nominatedToken: d.value2,
     managerFee: d.value3,
     agreement: d.value4,
+    details: d.value5,
+    data: d.value6,
   };
 }
 
