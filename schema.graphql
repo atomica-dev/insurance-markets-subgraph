@@ -39,17 +39,17 @@ type PolicyPermissionToken @entity {
 }
 
 type DelayedExecution @entity {
-  # sig-data
+  # key
   id: ID!
-  sig: Bytes!
   data: Bytes!
+  delayedAt: BigInt!
   requestedBy: Bytes!
   requestedAt: BigInt!
 }
 
 type DelayedExecutionHistory @entity {
   id: ID!
-  sig: Bytes!
+  key: String!
   data: Bytes!
   requestedBy: Bytes!
   requestedAt: BigInt!
@@ -161,7 +161,6 @@ type Loan @entity {
   loanRequestId: BigInt!
   policyId: BigInt!
   borrowedAmount: BigInt!
-  requiredRepayAmount: BigInt!
   lastUpdateTs: BigInt!
   governanceIncentiveFee: BigInt!
   productOperatorIncentiveFee: BigInt!

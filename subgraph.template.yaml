@@ -153,11 +153,11 @@ dataSources:
           handler: handleLogListEdited
         - event: LogListEditorChanged(uint256)
           handler: handleLogListEditorChanged
-        - event: LogExecutionDelayed(address,bytes4,bytes)
+        - event: LogExecutionDelayed(address,bytes32,bytes,uint256)
           handler: handleLogExecutionDelayed
-        - event: LogExecuted(address,bytes4,bytes)
+        - event: LogExecuted(address,bytes32,bytes)
           handler: handleLogExecuted
-        - event: LogExecutionDeclined(bytes4,bytes)
+        - event: LogExecutionDeclined(bytes32)
           handler: handleLogExecutionDeclined
         - event: LogLoanRequested(uint256,uint256,uint256)
           handler: handleLogLoanRequested
@@ -171,7 +171,7 @@ dataSources:
           handler: handleLogLoanInterestRepayed
         - event: LogLoanPrincipalRepayed(uint256,address,uint256)
           handler: handleLogLoanPrincipalRepayed
-        - event: LogLoanTransferred(uint256,address,uint256)
+        - event: LogLoanTransferred(uint256,address,uint256,uint256)
           handler: handleLogLoanTransferred
         - event: LogLoanInterestCharged(uint256,address,uint256)
           handler: handleLogLoanInterestCharged

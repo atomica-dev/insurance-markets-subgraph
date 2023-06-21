@@ -413,7 +413,6 @@ export function getLoanChunk(contract: RiskPoolsControllerContract, loanId: BigI
 export class CLoan {
   policyId: BigInt;
   borrowedAmount: BigInt;
-  requiredRepayAmount: BigInt;
   lastUpdateTs: BigInt;
   governanceIncentiveFee: BigInt;
   productOperatorIncentiveFee: BigInt;
@@ -431,11 +430,10 @@ export function getLoan(contract: RiskPoolsControllerContract, loanId: BigInt): 
   return {
     policyId: result.value.value0,
     borrowedAmount: result.value.value1,
-    requiredRepayAmount: result.value.value2,
-    lastUpdateTs: result.value.value3,
-    governanceIncentiveFee: result.value.value4,
-    productOperatorIncentiveFee: result.value.value5,
-    marketOperatorIncentiveFee: result.value.value6,
-    data: result.value.value7,
+    lastUpdateTs: result.value.value2,
+    governanceIncentiveFee: result.value.value3,
+    productOperatorIncentiveFee: result.value.value4,
+    marketOperatorIncentiveFee: result.value.value5,
+    data: result.value.value6,
   };
 }

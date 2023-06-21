@@ -1511,10 +1511,10 @@ function getOrCreateBid(marketNo: BigInt, riskPoolId: Address, rpcContractAddres
 }
 
 export function handleLogExecutionDelayed(event: LogExecutionDelayed): void {
-  let id = `${event.params.msgSig.toHexString()}-${event.params.msgData.toHexString()}`;
+  let id = event.params.key.toHexString();
   let de = new DelayedExecution(id);
 
-  de.sig = event.params.msgSig;
+  de.delayedAt = event.params.delayedAt;
   de.data = event.params.msgData;
   de.requestedBy = event.transaction.from;
   de.requestedAt = event.block.timestamp;
@@ -1523,15 +1523,15 @@ export function handleLogExecutionDelayed(event: LogExecutionDelayed): void {
 }
 
 export function handleLogExecuted(event: LogExecuted): void {
-  finishDelayedExecution(event.params.msgSig, event.params.msgData, event, false);
+  finishDelayedExecution(event.params.key, event, false);
 }
 
 export function handleLogExecutionDeclined(event: LogExecutionDeclined): void {
-  finishDelayedExecution(event.params.msgSig, event.params.msgData, event, true);
+  finishDelayedExecution(event.params.key, event, true);
 }
 
-function finishDelayedExecution(sig: Bytes, data: Bytes, event: ethereum.Event, isDeclined: boolean): void {
-  let id = `${sig.toHexString()}-${data.toHexString()}`;
+function finishDelayedExecution(key: Bytes, event: ethereum.Event, isDeclined: boolean): void {
+  let id = key.toHexString();
   let de = DelayedExecution.load(id);
 
   if (!de) {
@@ -1541,7 +1541,7 @@ function finishDelayedExecution(sig: Bytes, data: Bytes, event: ethereum.Event, 
   let dehId = updateState(EventType.ExecutionDelay, BigInt.fromI32(1), null).toString();
   let deh = new DelayedExecutionHistory(dehId);
 
-  deh.sig = de.sig;
+  deh.key = de.id;
   deh.data = de.data;
   deh.requestedBy = de.requestedBy;
   deh.requestedAt = de.requestedAt;
@@ -1581,7 +1581,6 @@ export function handleLogLoanApproved(event: LogLoanApproved): void {
   loan.policyId = cLoan.policyId;
   loan.data = cLoan.data;
   loan.borrowedAmount = cLoan.borrowedAmount;
-  loan.requiredRepayAmount = cLoan.requiredRepayAmount;
   loan.lastUpdateTs = cLoan.lastUpdateTs;
   loan.governanceIncentiveFee = cLoan.governanceIncentiveFee;
   loan.productOperatorIncentiveFee = cLoan.productOperatorIncentiveFee;
@@ -1655,13 +1654,13 @@ export function handleLogLoanTransferred(event: LogLoanTransferred): void {
 
   let policy = Policy.load(ptiAddress.toHexString() + "-" + loan.policyId.toString())!;
 
-  policy.coverage = policy.coverage.minus(event.params.amount);
+  policy.coverage = policy.coverage.minus(event.params.capitalTokenAmount);
 
   policy.save();
 
   let market = Market.load(policy.market.toString())!;
 
-  market.desiredCover = market.desiredCover.minus(event.params.amount);
+  market.desiredCover = market.desiredCover.minus(event.params.capitalTokenAmount);
 
   market.save();
 }
