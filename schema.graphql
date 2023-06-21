@@ -166,6 +166,8 @@ type Loan @entity {
   governanceIncentiveFee: BigInt!
   productOperatorIncentiveFee: BigInt!
   marketOperatorIncentiveFee: BigInt!
+  interestCharged: BigInt!
+  interestRepaid: BigInt!
   data: String
 }
 

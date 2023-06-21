@@ -513,8 +513,6 @@ function updatePolicyCoverage(policy: Policy, cPolicy: CPolicy, event: ethereum.
     updateAndLogState(EventType.TotalPolicies, event, BigInt.fromI32(-1), policy.market);
   }
 
-  let market = Market.load(policy.market.toString())!;
-
   updateAndLogState(EventType.MarketExposure, event, policy.coverage.minus(oldCoverage), policy.market);
 }
 
@@ -1588,6 +1586,8 @@ export function handleLogLoanApproved(event: LogLoanApproved): void {
   loan.governanceIncentiveFee = cLoan.governanceIncentiveFee;
   loan.productOperatorIncentiveFee = cLoan.productOperatorIncentiveFee;
   loan.marketOperatorIncentiveFee = cLoan.marketOperatorIncentiveFee;
+  loan.interestCharged = BigInt.fromI32(0);
+  loan.interestRepaid = BigInt.fromI32(0);
 
   loan.save();
 
@@ -1640,8 +1640,36 @@ export function handleLogLoanPrincipalRepayed(event: LogLoanPrincipalRepayed): v
   updateLoanChunks(event.params.loanId, event.address);
 }
 
-export function handleLogLoanInterestRepayed(event: LogLoanInterestRepayed): void {}
+export function handleLogLoanInterestRepayed(event: LogLoanInterestRepayed): void {
+  let loan = Loan.load(event.params.loanId.toString())!;
 
-export function handleLogLoanTransferred(event: LogLoanTransferred): void {}
+  loan.interestRepaid = loan.interestRepaid.plus(event.params.amount);
 
-export function handleLogLoanInterestCharged(event: LogLoanInterestCharged): void {}
+  loan.save();
+}
+
+export function handleLogLoanTransferred(event: LogLoanTransferred): void {
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+  let ptiAddress = rpcContract.policyTokenIssuer();
+  let loan = Loan.load(event.params.loanId.toString())!;
+
+  let policy = Policy.load(ptiAddress.toHexString() + "-" + loan.policyId.toString())!;
+
+  policy.coverage = policy.coverage.minus(event.params.amount);
+
+  policy.save();
+
+  let market = Market.load(policy.market.toString())!;
+
+  market.desiredCover = market.desiredCover.minus(event.params.amount);
+
+  market.save();
+}
+
+export function handleLogLoanInterestCharged(event: LogLoanInterestCharged): void {
+  let loan = Loan.load(event.params.loanId.toString())!;
+
+  loan.interestCharged = loan.interestCharged.plus(event.params.amount);
+
+  loan.save();
+}
