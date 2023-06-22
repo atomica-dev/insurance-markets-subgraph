@@ -158,7 +158,7 @@ type LoanRequest @entity {
 
 type Loan @entity {
   id: ID!
-  loanRequestId: BigInt!
+  loanRequestId: BigInt
   policyId: BigInt!
   borrowedAmount: BigInt!
   lastUpdateTs: BigInt!

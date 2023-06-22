@@ -1573,11 +1573,24 @@ export function handleLogLoanApproved(event: LogLoanApproved): void {
 
   loanRequest.save();
 
-  let loan = new Loan(loanId.toString());
-  let rpcContract = RiskPoolsControllerContract.bind(event.address);
-  let cLoan = getLoan(rpcContract, loanId)!;
+  let loan = Loan.load(loanId.toString());
+
+  if (!loan) {
+    loan = createLoan(loanId, event.address);
+  }
 
   loan.loanRequestId = event.params.loanRequestId;
+
+  loan.save();
+
+  updateLoanChunks(loanId, event.address);
+}
+
+function createLoan(loanId: BigInt, rpcAddress: Address): Loan {
+  let loan = new Loan(loanId.toString());
+  let rpcContract = RiskPoolsControllerContract.bind(rpcAddress);
+  let cLoan = getLoan(rpcContract, loanId)!;
+
   loan.policyId = cLoan.policyId;
   loan.data = cLoan.data;
   loan.borrowedAmount = cLoan.borrowedAmount;
@@ -1590,7 +1603,7 @@ export function handleLogLoanApproved(event: LogLoanApproved): void {
 
   loan.save();
 
-  updateLoanChunks(loanId, event.address);
+  return loan;
 }
 
 function updateLoanChunks(loanId: BigInt, rpcAddress: Address): void {
@@ -1650,7 +1663,12 @@ export function handleLogLoanInterestRepayed(event: LogLoanInterestRepayed): voi
 export function handleLogLoanTransferred(event: LogLoanTransferred): void {
   let rpcContract = RiskPoolsControllerContract.bind(event.address);
   let ptiAddress = rpcContract.policyTokenIssuer();
-  let loan = Loan.load(event.params.loanId.toString())!;
+  let loan = Loan.load(event.params.loanId.toString());
+
+  if (!loan) {
+    loan = createLoan(event.params.loanId, event.address);
+
+  }
 
   let policy = Policy.load(ptiAddress.toHexString() + "-" + loan.policyId.toString())!;
 
