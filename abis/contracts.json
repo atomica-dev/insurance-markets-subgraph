@@ -1,8 +1,8 @@
 {
   "environment": {
     "srm-dev": {
-      "defaultStartBlock": 37149601,
-      "RiskPoolsController": "0x8B31fe0f8d72D85af6B39e92f9275Bb5cBE1a7F0"
+      "defaultStartBlock": 37190616,
+      "RiskPoolsController": "0x3b8F9Bb5aB39626D38765a80b9640e13599AA57A"
     },
     "srm-dev-sepolia": {
       "defaultStartBlock": 0,
@@ -34,8 +34,8 @@
       "RiskPoolsController": "0x89481aaE571b83b58d58d0fAE8aC1c9c07ab10e9"
     },
     "local-mumbai": {
-      "defaultStartBlock": 37149601,
-      "RiskPoolsController": "0x8B31fe0f8d72D85af6B39e92f9275Bb5cBE1a7F0"
+      "defaultStartBlock": 37190616,
+      "RiskPoolsController": "0x3b8F9Bb5aB39626D38765a80b9640e13599AA57A"
     }
   }
 }
