@@ -159,14 +159,18 @@ dataSources:
           handler: handleLogExecuted
         - event: LogExecutionDeclined(bytes32)
           handler: handleLogExecutionDeclined
-        - event: LogLoanRequested(uint256,uint256,uint256)
+        - event: LogLoanRequested(uint256,uint256,uint256,uint256,uint256,bool)
           handler: handleLogLoanRequested
-        - event: LogLoanApproved(uint256,uint256)
+        - event: LogLoanApproved(uint256)
           handler: handleLogLoanApproved
         - event: LogLoanRequestDeclined(uint256)
           handler: handleLogLoanRequestDeclined
         - event: LogLoanDataUpdated(uint256,string)
           handler: handleLogLoanDataUpdated
+        - event: LogLoanRequestClosed(uint256)
+          handler: handleLogLoanRequestClosed
+        - event: LogLoanRequestModified(uint256,uint256,uint256,uint256,bool)
+          handler: handleLogLoanRequestModified
         - event: LogLoanInterestRepayed(uint256,address,uint256)
           handler: handleLogLoanInterestRepayed
         - event: LogLoanPrincipalRepayed(uint256,address,uint256)

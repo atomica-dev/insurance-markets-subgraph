@@ -412,6 +412,7 @@ export function getLoanChunk(contract: RiskPoolsControllerContract, loanId: BigI
 
 export class CLoan {
   policyId: BigInt;
+  loanRequestId: BigInt;
   borrowedAmount: BigInt;
   lastUpdateTs: BigInt;
   governanceIncentiveFee: BigInt;
@@ -429,11 +430,42 @@ export function getLoan(contract: RiskPoolsControllerContract, loanId: BigInt): 
 
   return {
     policyId: result.value.value0,
-    borrowedAmount: result.value.value1,
-    lastUpdateTs: result.value.value2,
-    governanceIncentiveFee: result.value.value3,
-    productOperatorIncentiveFee: result.value.value4,
-    marketOperatorIncentiveFee: result.value.value5,
-    data: result.value.value6,
+    loanRequestId: result.value.value1,
+    borrowedAmount: result.value.value2,
+    lastUpdateTs: result.value.value3,
+    governanceIncentiveFee: result.value.value4,
+    productOperatorIncentiveFee: result.value.value5,
+    marketOperatorIncentiveFee: result.value.value6,
+    data: result.value.value7,
+  };
+}
+
+export class CLoanRequest {
+  policyId: BigInt;
+  amount: BigInt;
+  minAmount: BigInt;
+  maxPremiumRatePerSec: BigInt;
+  approvedAmount: BigInt;
+  filledAmount: BigInt;
+  receiveOnApprove: boolean;
+  status: i32;
+}
+
+export function getLoanRequest(contract: RiskPoolsControllerContract, loanRequestId: BigInt): CLoanRequest | null {
+  let result = contract.try_loanRequests(loanRequestId);
+
+  if (result.reverted) {
+    return null;
+  }
+
+  return {
+    policyId: result.value.value0,
+    amount: result.value.value1,
+    minAmount: result.value.value2,
+    maxPremiumRatePerSec: result.value.value3,
+    approvedAmount: result.value.value4,
+    filledAmount: result.value.value5,
+    receiveOnApprove: result.value.value6,
+    status: result.value.value7,
   };
 }

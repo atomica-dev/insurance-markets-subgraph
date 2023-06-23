@@ -62,6 +62,8 @@ import {
   LogLoanTransferred,
   LogLoanInterestCharged,
   LogLoanInterestRepayed,
+  LogLoanRequestClosed,
+  LogLoanRequestModified,
 } from "../generated/RiskPoolsController/RiskPoolsController";
 import { PolicyPermissionTokenIssuer, PolicyTokenIssuer, PayoutRequester as PayoutRequesterTemplate } from "../generated/templates";
 import {
@@ -106,6 +108,7 @@ import {
   getList,
   getLoan,
   getLoanChunk,
+  getLoanRequest,
   getMarket,
   getMarketMeta,
   getPayoutRequest,
@@ -1555,35 +1558,51 @@ function finishDelayedExecution(key: Bytes, event: ethereum.Event, isDeclined: b
 }
 
 export function handleLogLoanRequested(event: LogLoanRequested): void {
-  let loanRequest = new LoanRequest(event.params.loanRequestId.toString());
+  initLoanRequest(event.params.loanRequestId, event.address);
+}
 
-  loanRequest.policyId = event.params.policyId;
-  loanRequest.amount = event.params.amount;
+function initLoanRequest(loanRequestId: BigInt, rpcAddress: Address): void {
+  let loanRequest = LoanRequest.load(loanRequestId.toString());
 
-  loanRequest.status = LoanRequestStatusEnum.Requested;
+  if (!loanRequest) {
+    loanRequest = new LoanRequest(loanRequestId.toString());
+  }
+
+  let rpcContract = RiskPoolsControllerContract.bind(rpcAddress);
+  let cLoanRequest = getLoanRequest(rpcContract, loanRequestId)!;
+
+  loanRequest.policyId = cLoanRequest.policyId;
+  loanRequest.amount = cLoanRequest.amount;
+  loanRequest.minAmount = cLoanRequest.minAmount;
+  loanRequest.maxPremiumRatePerSec = cLoanRequest.maxPremiumRatePerSec;
+  loanRequest.approvedAmount = cLoanRequest.approvedAmount;
+  loanRequest.filledAmount = cLoanRequest.filledAmount;
+  loanRequest.receiveOnApprove = cLoanRequest.receiveOnApprove;
+  loanRequest.status = cLoanRequest.status;
 
   loanRequest.save();
 }
 
 export function handleLogLoanApproved(event: LogLoanApproved): void {
   let loanRequest = LoanRequest.load(event.params.loanRequestId.toString())!;
-  let loanId = event.params.loanId;
 
   loanRequest.status = LoanRequestStatusEnum.Approved;
 
   loanRequest.save();
 
-  let loan = Loan.load(loanId.toString());
+  updateLoanChunks(loanRequest.loanId!, event.address);
+}
 
-  if (!loan) {
-    loan = createLoan(loanId, event.address);
-  }
+export function handleLogLoanRequestClosed(event: LogLoanRequestClosed): void {
+  let loanRequest = LoanRequest.load(event.params.loanRequestId.toString())!;
 
-  loan.loanRequestId = event.params.loanRequestId;
+  loanRequest.status = LoanRequestStatusEnum.Closed;
 
-  loan.save();
+  loanRequest.save();
+}
 
-  updateLoanChunks(loanId, event.address);
+export function handleLogLoanRequestModified(event: LogLoanRequestModified): void {
+  initLoanRequest(event.params.loanRequestId, event.address);
 }
 
 function createLoan(loanId: BigInt, rpcAddress: Address): Loan {
@@ -1592,6 +1611,7 @@ function createLoan(loanId: BigInt, rpcAddress: Address): Loan {
   let cLoan = getLoan(rpcContract, loanId)!;
 
   loan.policyId = cLoan.policyId;
+  loan.loanRequestId = cLoan.loanRequestId;
   loan.data = cLoan.data;
   loan.borrowedAmount = cLoan.borrowedAmount;
   loan.lastUpdateTs = cLoan.lastUpdateTs;
@@ -1602,6 +1622,12 @@ function createLoan(loanId: BigInt, rpcAddress: Address): Loan {
   loan.interestRepaid = BigInt.fromI32(0);
 
   loan.save();
+
+  let loanRequest = LoanRequest.load(loan.loanRequestId.toString())!;
+
+  loanRequest.loanId = loanId;
+
+  loanRequest.save();
 
   return loan;
 }

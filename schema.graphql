@@ -152,13 +152,19 @@ type Market @entity {
 type LoanRequest @entity {
   id: ID!
   policyId: BigInt!
+  loanId: BigInt
   amount: BigInt!
+  minAmount: BigInt!
+  maxPremiumRatePerSec: BigInt!
+  approvedAmount: BigInt!
+  filledAmount: BigInt!
+  receiveOnApprove: Boolean!
   status: Int!
 }
 
 type Loan @entity {
   id: ID!
-  loanRequestId: BigInt
+  loanRequestId: BigInt!
   policyId: BigInt!
   borrowedAmount: BigInt!
   lastUpdateTs: BigInt!
