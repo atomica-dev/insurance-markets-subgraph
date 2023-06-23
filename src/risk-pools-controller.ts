@@ -1667,7 +1667,6 @@ export function handleLogLoanTransferred(event: LogLoanTransferred): void {
 
   if (!loan) {
     loan = createLoan(event.params.loanId, event.address);
-
   }
 
   let policy = Policy.load(ptiAddress.toHexString() + "-" + loan.policyId.toString())!;
