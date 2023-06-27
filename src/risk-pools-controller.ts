@@ -1589,8 +1589,6 @@ export function handleLogLoanApproved(event: LogLoanApproved): void {
   loanRequest.status = LoanRequestStatusEnum.Approved;
 
   loanRequest.save();
-
-  updateLoanChunks(loanRequest.loanId!, event.address);
 }
 
 export function handleLogLoanRequestClosed(event: LogLoanRequestClosed): void {
@@ -1706,6 +1704,8 @@ export function handleLogLoanTransferred(event: LogLoanTransferred): void {
   market.desiredCover = market.desiredCover.minus(event.params.capitalTokenAmount);
 
   market.save();
+
+  updateLoanChunks(event.params.loanId, event.address);
 }
 
 export function handleLogLoanInterestCharged(event: LogLoanInterestCharged): void {
