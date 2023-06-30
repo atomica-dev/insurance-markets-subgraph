@@ -160,6 +160,8 @@ type LoanRequest @entity {
   filledAmount: BigInt!
   receiveOnApprove: Boolean!
   status: Int!
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }
 
 type Loan @entity {

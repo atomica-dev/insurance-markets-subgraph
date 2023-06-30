@@ -1558,14 +1558,16 @@ function finishDelayedExecution(key: Bytes, event: ethereum.Event, isDeclined: b
 }
 
 export function handleLogLoanRequested(event: LogLoanRequested): void {
-  initLoanRequest(event.params.loanRequestId, event.address);
+  initLoanRequest(event.params.loanRequestId, event.address, event);
 }
 
-function initLoanRequest(loanRequestId: BigInt, rpcAddress: Address): void {
+function initLoanRequest(loanRequestId: BigInt, rpcAddress: Address, event: ethereum.Event): void {
   let loanRequest = LoanRequest.load(loanRequestId.toString());
 
   if (!loanRequest) {
     loanRequest = new LoanRequest(loanRequestId.toString());
+
+    loanRequest.createdAt = event.block.timestamp;
   }
 
   let rpcContract = RiskPoolsControllerContract.bind(rpcAddress);
@@ -1579,6 +1581,7 @@ function initLoanRequest(loanRequestId: BigInt, rpcAddress: Address): void {
   loanRequest.filledAmount = cLoanRequest.filledAmount;
   loanRequest.receiveOnApprove = cLoanRequest.receiveOnApprove;
   loanRequest.status = cLoanRequest.status;
+  loanRequest.updatedAt = event.block.timestamp;
 
   loanRequest.save();
 }
@@ -1587,6 +1590,7 @@ export function handleLogLoanApproved(event: LogLoanApproved): void {
   let loanRequest = LoanRequest.load(event.params.loanRequestId.toString())!;
 
   loanRequest.status = LoanRequestStatusEnum.Approved;
+  loanRequest.updatedAt = event.block.timestamp;
 
   loanRequest.save();
 }
@@ -1595,12 +1599,13 @@ export function handleLogLoanRequestClosed(event: LogLoanRequestClosed): void {
   let loanRequest = LoanRequest.load(event.params.loanRequestId.toString())!;
 
   loanRequest.status = LoanRequestStatusEnum.Closed;
+  loanRequest.updatedAt = event.block.timestamp;
 
   loanRequest.save();
 }
 
 export function handleLogLoanRequestModified(event: LogLoanRequestModified): void {
-  initLoanRequest(event.params.loanRequestId, event.address);
+  initLoanRequest(event.params.loanRequestId, event.address, event);
 }
 
 function createLoan(loanId: BigInt, rpcAddress: Address): Loan {
