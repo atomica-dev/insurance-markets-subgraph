@@ -42,6 +42,8 @@ type DelayedExecution @entity {
   # key
   id: ID!
   data: Bytes!
+  signature: Bytes!
+  contractAddress: Bytes!
   delayedAt: BigInt!
   requestedBy: Bytes!
   requestedAt: BigInt!
@@ -179,7 +181,9 @@ type Loan @entity {
 }
 
 type LoanChunk @entity {
-  """ loanId-chunkIndex """
+  """
+  loanId-chunkIndex
+  """
   id: ID!
   loanId: BigInt!
   chunkIndex: Int!

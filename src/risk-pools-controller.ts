@@ -1517,6 +1517,8 @@ export function handleLogExecutionDelayed(event: LogExecutionDelayed): void {
   let id = event.params.key.toHexString();
   let de = new DelayedExecution(id);
 
+  de.signature = Bytes.fromUint8Array(event.params.msgData.slice(0, 4));
+  de.contractAddress = event.address;
   de.delayedAt = event.params.delayedAt;
   de.data = event.params.msgData;
   de.requestedBy = event.transaction.from;
