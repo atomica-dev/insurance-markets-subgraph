@@ -1608,13 +1608,17 @@ export function handleLogLoanRequestModified(event: LogLoanRequestModified): voi
   initLoanRequest(event.params.loanRequestId, event.address, event);
 }
 
-function createLoan(loanId: BigInt, rpcAddress: Address): Loan {
+function createLoan(loanId: BigInt, rpcAddress: Address, event: ethereum.Event): Loan {
   let loan = new Loan(loanId.toString());
   let rpcContract = RiskPoolsControllerContract.bind(rpcAddress);
   let cLoan = getLoan(rpcContract, loanId)!;
+  let policy = getPolicy(rpcContract, cLoan.policyId);
 
   loan.policyId = cLoan.policyId;
+  loan.marketId = policy.marketId;
+
   loan.loanRequestId = cLoan.loanRequestId;
+  loan.loanRequest = cLoan.loanRequestId.toString();
   loan.data = cLoan.data;
   loan.borrowedAmount = cLoan.borrowedAmount;
   loan.lastUpdateTs = cLoan.lastUpdateTs;
@@ -1624,41 +1628,11 @@ function createLoan(loanId: BigInt, rpcAddress: Address): Loan {
   loan.interestCharged = BigInt.fromI32(0);
   loan.interestRepaid = BigInt.fromI32(0);
 
+  loan.createdAt = event.block.number;
+
   loan.save();
 
-  let loanRequest = LoanRequest.load(loan.loanRequestId.toString())!;
-
-  loanRequest.loanId = loanId;
-
-  loanRequest.save();
-
   return loan;
-}
-
-function updateLoanChunks(loanId: BigInt, rpcAddress: Address): void {
-  let rpcContract = RiskPoolsControllerContract.bind(rpcAddress);
-
-  let index: i32 = 0;
-  let cChunk: CLoanChunk | null;
-
-  do {
-    cChunk = getLoanChunk(rpcContract, loanId, BigInt.fromI32(index));
-
-    if (cChunk) {
-      let chunk = new LoanChunk(loanId.toString() + "-" + index.toString());
-
-      chunk.loanId = loanId;
-      chunk.chunkIndex = index;
-      chunk.poolId = cChunk.riskPool;
-      chunk.rate = cChunk.rate;
-      chunk.borrowedAmount = cChunk.borrowedAmount;
-      chunk.repaidAmount = cChunk.repayedAmount;
-
-      chunk.save();
-    }
-
-    index++;
-  } while (cChunk != null && cChunk.riskPool !== Address.fromHexString(ZERO_ADDRESS));
 }
 
 export function handleLogLoanRequestDeclined(event: LogLoanRequestDeclined): void {
@@ -1678,7 +1652,12 @@ export function handleLogLoanDataUpdated(event: LogLoanDataUpdated): void {
 }
 
 export function handleLogLoanPrincipalRepayed(event: LogLoanPrincipalRepayed): void {
-  updateLoanChunks(event.params.loanId, event.address);
+  let id = event.params.loanId.toString() + "-" + event.params.riskPool.toString();
+  let chunk = LoanChunk.load(id)!;
+
+  chunk.repaidAmount = chunk.repaidAmount.plus(event.params.amount);
+
+  chunk.save();
 }
 
 export function handleLogLoanInterestRepayed(event: LogLoanInterestRepayed): void {
@@ -1695,7 +1674,7 @@ export function handleLogLoanTransferred(event: LogLoanTransferred): void {
   let loan = Loan.load(event.params.loanId.toString());
 
   if (!loan) {
-    loan = createLoan(event.params.loanId, event.address);
+    loan = createLoan(event.params.loanId, event.address, event);
   }
 
   let policy = Policy.load(ptiAddress.toHexString() + "-" + loan.policyId.toString())!;
@@ -1710,7 +1689,17 @@ export function handleLogLoanTransferred(event: LogLoanTransferred): void {
 
   market.save();
 
-  updateLoanChunks(event.params.loanId, event.address);
+  let id = event.params.loanId.toString() + "-" + event.params.riskPool.toString();
+  let chunk = new LoanChunk(id);
+
+  chunk.loanId = event.params.loanId;
+  chunk.poolId = event.params.riskPool;
+  chunk.rate = event.params.rate;
+  chunk.borrowedAmount = event.params.capitalTokenAmount;
+  chunk.borrowedAmountInPoolAssetToken = event.params.assetTokenAmount;
+  chunk.repaidAmount = BigInt.fromI32(0);
+
+  chunk.save();
 }
 
 export function handleLogLoanInterestCharged(event: LogLoanInterestCharged): void {

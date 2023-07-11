@@ -727,11 +727,17 @@
         "internalType": "uint256",
         "name": "capitalTokenAmount",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "rate",
+        "type": "uint256"
       }
     ],
     "name": "LogLoanTransferred",
     "type": "event",
-    "signature": "0x655cd1864fe289f2a3ea3317ba592a3612f1abbefab24e724dc962ea082abac9"
+    "signature": "0x1504072c5a38128818ed23c454d2ac286be36bf853cb0dd9b810334b964193e0"
   },
   {
     "anonymous": false,

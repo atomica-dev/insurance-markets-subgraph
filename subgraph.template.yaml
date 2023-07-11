@@ -175,7 +175,7 @@ dataSources:
           handler: handleLogLoanInterestRepayed
         - event: LogLoanPrincipalRepayed(uint256,address,uint256)
           handler: handleLogLoanPrincipalRepayed
-        - event: LogLoanTransferred(uint256,address,uint256,uint256)
+        - event: LogLoanTransferred(uint256,address,uint256,uint256,uint256)
           handler: handleLogLoanTransferred
         - event: LogLoanInterestCharged(uint256,address,uint256)
           handler: handleLogLoanInterestCharged

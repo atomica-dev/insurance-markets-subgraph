@@ -152,7 +152,7 @@ type Market @entity {
 type LoanRequest @entity {
   id: ID!
   policyId: BigInt!
-  loanId: BigInt
+  loans: [Loan!]! @derivedFrom(field: "loanRequest")
   amount: BigInt!
   minAmount: BigInt!
   maxPremiumRatePerSec: BigInt!
@@ -167,7 +167,9 @@ type LoanRequest @entity {
 type Loan @entity {
   id: ID!
   loanRequestId: BigInt!
+  loanRequest: LoanRequest!
   policyId: BigInt!
+  marketId: BigInt!
   borrowedAmount: BigInt!
   lastUpdateTs: BigInt!
   governanceIncentiveFee: BigInt!
@@ -176,16 +178,17 @@ type Loan @entity {
   interestCharged: BigInt!
   interestRepaid: BigInt!
   data: String
+  createdAt: BigInt!
 }
 
 type LoanChunk @entity {
-  """ loanId-chunkIndex """
+  """ loanId-riskPool """
   id: ID!
   loanId: BigInt!
-  chunkIndex: Int!
   poolId: Bytes!
   rate: BigInt!
   borrowedAmount: BigInt!
+  borrowedAmountInPoolAssetToken: BigInt!
   repaidAmount: BigInt!
 }
 
