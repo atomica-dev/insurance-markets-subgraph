@@ -96,6 +96,7 @@ export enum EventType {
   ProductFeeRecipient,
   ProductData,
   ProductDetails,
+  PaymentCount,
 
   //#endregion
 }
@@ -264,6 +265,8 @@ function getEventTypeString(eventType: EventType): string {
       return "PayoutApprover";
     case EventType.ClaimProcessor:
       return "ClaimProcessor";
+    case EventType.PaymentCount:
+      return "PaymentCount";
   }
 
   return eventType.toString();

@@ -93,9 +93,10 @@ import {
   LoanRequest,
   Loan,
   LoanChunk,
+  LoanPayment,
 } from "../generated/schema";
 import { addEvent, EventType, getState, StatusEnum, updateAndLogState, updateState, updateSystemStatus } from "./event";
-import { Address, BigInt, Bytes, DataSourceContext, ethereum, log, store } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, DataSourceContext, bigInt, ethereum, log, store } from "@graphprotocol/graph-ts";
 import { Pool as PoolContract } from "../generated/RiskPoolsController/Pool";
 import { PolicyTokenIssuer as PolicyTokenIssuerContract } from "../generated/RiskPoolsController/PolicyTokenIssuer";
 import { getSystemConfig } from "./system";
@@ -1658,6 +1659,29 @@ export function handleLogLoanPrincipalRepayed(event: LogLoanPrincipalRepayed): v
   chunk.repaidAmount = chunk.repaidAmount.plus(event.params.amount);
 
   chunk.save();
+
+  addPaymentRecord(event.params.loanId, event.params.riskPool, event.params.amount, null, event);
+}
+
+function addPaymentRecord(
+  loanId: BigInt,
+  poolId: Address,
+  principle: BigInt | null,
+  interest: BigInt | null,
+  event: ethereum.Event,
+): void {
+  let paymentId = updateState(EventType.PaymentCount, BigInt.fromI32(1), "");
+
+  let payment = new LoanPayment(paymentId.toString());
+
+  payment.loanId = loanId;
+  payment.poolId = poolId;
+  payment.paidPrinciple = principle ? principle : BigInt.fromI32(0);
+  payment.paidInterest = interest ? interest : BigInt.fromI32(0);
+  payment.payer = event.transaction.from;
+  payment.createdAt = event.block.number;
+
+  payment.save();
 }
 
 export function handleLogLoanInterestRepayed(event: LogLoanInterestRepayed): void {
@@ -1666,6 +1690,8 @@ export function handleLogLoanInterestRepayed(event: LogLoanInterestRepayed): voi
   loan.interestRepaid = loan.interestRepaid.plus(event.params.amount);
 
   loan.save();
+
+  addPaymentRecord(event.params.loanId, event.params.riskPool, null, event.params.amount, event);
 }
 
 export function handleLogLoanTransferred(event: LogLoanTransferred): void {

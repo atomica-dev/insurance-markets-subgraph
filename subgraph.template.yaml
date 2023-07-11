@@ -39,6 +39,7 @@ dataSources:
         - LoanRequest
         - Loan
         - LoanChunk
+        - LoanPayment
       abis:
         - name: RiskPoolsController
           file: ./abis/RiskPoolsController.json

@@ -5,7 +5,7 @@ const YAML_PATH = "./subgraph.template.yaml";
 const OUT_PATH = "./subgraph.yaml";
 const DEFAULT_NETWORK = "5";
 const ENV_TO_NETWORK: any = {
-  "srm-dev": "5",
+  "srm-dev": "80001",
   "mainnet": "1",
   "ganache": "7777",
   "srm-staging": "5",
@@ -23,6 +23,10 @@ const NETWORK_NAMES: any = {
   "137": "matic",
   "80001": "mumbai",
   "11155111": "sepolia",
+  "1101": "polygon-zkevm",
+  "1442": "polygon-zkevm-testnet",
+  "43113": "fuji",
+  "43114": "avalanche",
 };
 const MANUAL_FILE_UPDATES: string[] = [];
 const ENV = process.argv[2] || "srm-dev";
