@@ -2172,6 +2172,11 @@
         "internalType": "uint256",
         "name": "tailCover",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "premiumRatePerSec",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -2286,6 +2291,16 @@
         "internalType": "address",
         "name": "recipient",
         "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      },
+      {
+        "internalType": "string",
+        "name": "details",
+        "type": "string"
       }
     ],
     "name": "applyForPolicy",
@@ -2298,7 +2313,7 @@
     ],
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0x5f575a36"
+    "signature": "0x10387c15"
   },
   {
     "inputs": [
@@ -4353,6 +4368,16 @@
         "internalType": "uint256",
         "name": "repayedAmount",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "accruedInterest",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lastUpdateTs",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -4436,6 +4461,11 @@
         "type": "bool"
       },
       {
+        "internalType": "string",
+        "name": "details",
+        "type": "string"
+      },
+      {
         "internalType": "enum IRiskPoolsControllerStorageModel.LoanRequestStatus",
         "name": "status",
         "type": "uint8"
@@ -4493,7 +4523,7 @@
       },
       {
         "internalType": "string",
-        "name": "data",
+        "name": "details",
         "type": "string"
       }
     ],
@@ -5281,6 +5311,11 @@
         "internalType": "uint256",
         "name": "underlyingCover",
         "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "details",
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -6013,6 +6048,11 @@
         "internalType": "bool",
         "name": "receiveOnApprove",
         "type": "bool"
+      },
+      {
+        "internalType": "string",
+        "name": "details",
+        "type": "string"
       }
     ],
     "name": "requestLoan",
@@ -6025,7 +6065,7 @@
     ],
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0xc40f9816"
+    "signature": "0xb7d6b32f"
   },
   {
     "inputs": [

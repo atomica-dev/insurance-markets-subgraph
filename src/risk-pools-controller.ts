@@ -1663,13 +1663,7 @@ export function handleLogLoanPrincipalRepayed(event: LogLoanPrincipalRepayed): v
   addPaymentRecord(event.params.loanId, event.params.riskPool, event.params.amount, null, event);
 }
 
-function addPaymentRecord(
-  loanId: BigInt,
-  poolId: Address,
-  principle: BigInt | null,
-  interest: BigInt | null,
-  event: ethereum.Event,
-): void {
+function addPaymentRecord(loanId: BigInt, poolId: Address, principle: BigInt | null, interest: BigInt | null, event: ethereum.Event): void {
   let paymentId = updateState(EventType.PaymentCount, BigInt.fromI32(1), "");
 
   let payment = new LoanPayment(paymentId.toString());
