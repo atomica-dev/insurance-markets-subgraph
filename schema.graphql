@@ -159,6 +159,7 @@ type LoanRequest @entity {
   approvedAmount: BigInt!
   filledAmount: BigInt!
   receiveOnApprove: Boolean!
+  details: String
   status: Int!
   createdAt: BigInt!
   updatedAt: BigInt!

@@ -14,6 +14,7 @@ export class CPolicy {
   referralFee: BigInt;
   desiredCover: BigInt;
   underlyingCover: BigInt;
+  details: string;
 }
 
 export function getPolicy(contract: RiskPoolsControllerContract, id: BigInt): CPolicy {
@@ -31,6 +32,7 @@ export function getPolicy(contract: RiskPoolsControllerContract, id: BigInt): CP
     referralFee: d.value8,
     desiredCover: d.value9,
     underlyingCover: d.value10,
+    details: d.value11,
   };
 }
 
@@ -390,9 +392,11 @@ export function getList(contract: RiskPoolsControllerContract, id: BigInt): CLis
 
 export class CLoanChunk {
   riskPool: Address;
-  rate: BigInt;
+  premiumRatePerSec: BigInt;
   borrowedAmount: BigInt;
   repayedAmount: BigInt;
+  accruedInterest: BigInt;
+  lastUpdateTs: BigInt;
 }
 
 export function getLoanChunk(contract: RiskPoolsControllerContract, loanId: BigInt, index: BigInt): CLoanChunk | null {
@@ -404,9 +408,11 @@ export function getLoanChunk(contract: RiskPoolsControllerContract, loanId: BigI
 
   return {
     riskPool: result.value.value0,
-    rate: result.value.value1,
+    premiumRatePerSec: result.value.value1,
     borrowedAmount: result.value.value2,
     repayedAmount: result.value.value3,
+    accruedInterest: result.value.value4,
+    lastUpdateTs: result.value.value5,
   };
 }
 
@@ -448,6 +454,7 @@ export class CLoanRequest {
   approvedAmount: BigInt;
   filledAmount: BigInt;
   receiveOnApprove: boolean;
+  details: string;
   status: i32;
 }
 
@@ -457,7 +464,6 @@ export function getLoanRequest(contract: RiskPoolsControllerContract, loanReques
   if (result.reverted) {
     return null;
   }
-
   return {
     policyId: result.value.value0,
     amount: result.value.value1,
@@ -466,6 +472,7 @@ export function getLoanRequest(contract: RiskPoolsControllerContract, loanReques
     approvedAmount: result.value.value4,
     filledAmount: result.value.value5,
     receiveOnApprove: result.value.value6,
-    status: result.value.value7,
+    details: result.value.value7,
+    status: result.value.value8,
   };
 }

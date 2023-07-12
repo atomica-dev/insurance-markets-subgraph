@@ -1581,6 +1581,7 @@ function initLoanRequest(loanRequestId: BigInt, rpcAddress: Address, event: ethe
   loanRequest.approvedAmount = cLoanRequest.approvedAmount;
   loanRequest.filledAmount = cLoanRequest.filledAmount;
   loanRequest.receiveOnApprove = cLoanRequest.receiveOnApprove;
+  loanRequest.details = cLoanRequest.details;
   loanRequest.status = cLoanRequest.status;
   loanRequest.updatedAt = event.block.timestamp;
 
