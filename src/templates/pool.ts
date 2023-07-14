@@ -28,7 +28,7 @@ import {
   LogForwardPayoutRequest,
   LogRequestCapital,
   LogReleased,
-  LogRepayed,
+  LogRepaid,
   LogWithdrawProcedure,
   LogReserveRatio,
 } from "../../generated/templates/Pool/Pool";
@@ -765,7 +765,7 @@ export function handleLogReleased(event: LogReleased): void {
   pool.save();
 }
 
-export function handleLogRepayed(event: LogRepayed): void {
+export function handleLogRepaid(event: LogRepaid): void {
   let pool = Pool.load(event.address.toHexString())!;
 
   pool.released = pool.released.minus(event.params.releasedAmount);

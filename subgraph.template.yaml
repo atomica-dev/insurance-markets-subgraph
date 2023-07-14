@@ -172,10 +172,10 @@ dataSources:
           handler: handleLogLoanRequestClosed
         - event: LogLoanRequestModified(uint256,uint256,uint256,uint256,bool)
           handler: handleLogLoanRequestModified
-        - event: LogLoanInterestRepayed(uint256,address,uint256)
-          handler: handleLogLoanInterestRepayed
-        - event: LogLoanPrincipalRepayed(uint256,address,uint256)
-          handler: handleLogLoanPrincipalRepayed
+        - event: LogLoanInterestPaid(uint256,address,uint256)
+          handler: handleLogLoanInterestPaid
+        - event: LogLoanPrincipalRepaid(uint256,address,uint256,uint256)
+          handler: handleLogLoanPrincipalRepaid
         - event: LogLoanTransferred(uint256,address,uint256,uint256,uint256)
           handler: handleLogLoanTransferred
         - event: LogLoanInterestCharged(uint256,address,uint256)
@@ -360,8 +360,8 @@ templates:
           handler: handleLogCapitalReleased
         - event: LogReleased(uint256)
           handler: handleLogReleased
-        - event: LogRepayed(uint256,uint256,address)
-          handler: handleLogRepayed
+        - event: LogRepaid(uint256,uint256,address)
+          handler: handleLogRepaid
         - event: LogWithdrawProcedure(uint256)
           handler: handleLogWithdrawProcedure
         - event: LogReserveRatio(uint256)
