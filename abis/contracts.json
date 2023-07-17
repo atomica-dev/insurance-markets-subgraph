@@ -8,6 +8,10 @@
       "defaultStartBlock": 0,
       "RiskPoolsController": "0x0"
     },
+    "srm-dev-zkEVMtestnet": {
+      "defaultStartBlock": 0,
+      "RiskPoolsController": "0xc2a053Db95650DEbb640F74aB1e0EC881083BE7E"
+    },
     "srm-staging": {
       "defaultStartBlock": 37575319,
       "RiskPoolsController": "0xdE9116C27bd92ECafEE63e7121B84e8D2E075A23"
@@ -34,8 +38,8 @@
       "RiskPoolsController": "0x89481aaE571b83b58d58d0fAE8aC1c9c07ab10e9"
     },
     "local-mumbai": {
-      "defaultStartBlock": 37322169,
-      "RiskPoolsController": "0xF7D5918deB21a6Cd516Ac1dC6c6a062bccdbcaf7"
+      "defaultStartBlock": 38012227,
+      "RiskPoolsController": "0xd741Fe949d959C6E8b6dD12df99cD7483bFfbbE4"
     },
     "local-fuji": {
       "defaultStartBlock": 24106979,
