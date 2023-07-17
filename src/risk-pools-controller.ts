@@ -1649,7 +1649,7 @@ export function handleLogLoanDataUpdated(event: LogLoanDataUpdated): void {
 }
 
 export function handleLogLoanPrincipalRepaid(event: LogLoanPrincipalRepaid): void {
-  let id = event.params.loanId.toString() + "-" + event.params.riskPool.toString();
+  let id = event.params.loanId.toString() + "-" + event.params.riskPool.toHexString();
   let chunk = LoanChunk.load(id)!;
 
   chunk.repaidAmount = chunk.repaidAmount.plus(event.params.repaidCapitalTokenAmount);
@@ -1707,7 +1707,7 @@ export function handleLogLoanTransferred(event: LogLoanTransferred): void {
 
   market.save();
 
-  let id = event.params.loanId.toString() + "-" + event.params.riskPool.toString();
+  let id = event.params.loanId.toString() + "-" + event.params.riskPool.toHexString();
   let chunk = new LoanChunk(id);
 
   chunk.loanId = event.params.loanId;
