@@ -9,7 +9,7 @@
       "RiskPoolsController": "0x0"
     },
     "srm-dev-zkEVMtestnet": {
-      "defaultStartBlock": 0,
+      "defaultStartBlock": 1611418,
       "RiskPoolsController": "0xc2a053Db95650DEbb640F74aB1e0EC881083BE7E"
     },
     "srm-staging": {
