@@ -4,12 +4,14 @@
   "scripts": {
     "create": "graph create $GRAPH_LOCATION --node https://api.thegraph.com/deploy/",
     "create-local": "graph create atomica-dev/srm --node http://127.0.0.1:8020",
+    "create-custom": "graph create $GRAPH_LOCATION --node $NODE_URL",
     "codegen": "graph codegen",
     "build": "graph build",
     "prettier": "npx prettier --write ./**/*",
     "auth": "graph auth https://api.thegraph.com/deploy/ $GRAPH_AUTH_TOKEN",
     "update-subgraph-yaml": "ts-node --skipProject update-contracts.ts",
     "deploy": "graph deploy $GRAPH_LOCATION --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token $GRAPH_AUTH_TOKEN",
+    "deploy-custom": "graph deploy $GRAPH_LOCATION --version-label $GRAPH_LOCATION --headers \"{\\\"Authorization\\\": \\\"Basic ${BASIC_AUTH}\\\"}\" --ipfs $IPFS_URL --node $NODE_URL",
     "deploy-to-network": "graph deploy --node https://api.studio.thegraph.com/deploy/ $GRAPH_LOCATION --access-token $GRAPH_AUTH_TOKEN",
     "deploy-local": "graph deploy atomica-dev/srm --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
   },
