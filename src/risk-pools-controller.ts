@@ -1651,7 +1651,11 @@ export function handleLogLoanDataUpdated(event: LogLoanDataUpdated): void {
 export function handleLogLoanPrincipalRepaid(event: LogLoanPrincipalRepaid): void {
   let id = event.params.loanId.toString() + "-" + event.params.riskPool.toHexString();
   let chunk = LoanChunk.load(id)!;
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+  let cChunk = getLoanChunk(rpcContract, event.params.loanId, event.params.chunkIndex)!;
 
+  chunk.accruedInterest = cChunk.accruedInterest;
+  chunk.lastUpdateTs = cChunk.lastUpdateTs;
   chunk.repaidAmount = chunk.repaidAmount.plus(event.params.repaidCapitalTokenAmount);
 
   chunk.save();
@@ -1675,6 +1679,17 @@ function addPaymentRecord(loanId: BigInt, poolId: Address, principle: BigInt | n
 }
 
 export function handleLogLoanInterestPaid(event: LogLoanInterestPaid): void {
+  let id = event.params.loanId.toString() + "-" + event.params.riskPool.toHexString();
+  let chunk = LoanChunk.load(id)!;
+
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+  let cChunk = getLoanChunk(rpcContract, event.params.loanId, event.params.chunkIndex)!;
+
+  chunk.accruedInterest = cChunk.accruedInterest;
+  chunk.lastUpdateTs = cChunk.lastUpdateTs;
+
+  chunk.save();
+
   let loan = Loan.load(event.params.loanId.toString())!;
 
   loan.interestRepaid = loan.interestRepaid.plus(event.params.premiumTokenAmount);
@@ -1716,6 +1731,8 @@ export function handleLogLoanTransferred(event: LogLoanTransferred): void {
   chunk.borrowedAmount = event.params.capitalTokenAmount;
   chunk.borrowedAmountInPoolAssetToken = event.params.assetTokenAmount;
   chunk.repaidAmount = BigInt.fromI32(0);
+  chunk.lastUpdateTs = event.block.timestamp;
+  chunk.accruedInterest = BigInt.fromI32(0);
 
   chunk.save();
 }

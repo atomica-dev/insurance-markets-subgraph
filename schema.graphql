@@ -191,6 +191,8 @@ type LoanChunk @entity {
   borrowedAmount: BigInt!
   borrowedAmountInPoolAssetToken: BigInt!
   repaidAmount: BigInt!
+  accruedInterest: BigInt!
+  lastUpdateTs: BigInt!
 }
 
 type LoanPayment @entity {

@@ -172,9 +172,9 @@ dataSources:
           handler: handleLogLoanRequestClosed
         - event: LogLoanRequestModified(uint256,uint256,uint256,uint256,bool)
           handler: handleLogLoanRequestModified
-        - event: LogLoanInterestPaid(uint256,address,uint256)
+        - event: LogLoanInterestPaid(uint256,address,uint256,uint256)
           handler: handleLogLoanInterestPaid
-        - event: LogLoanPrincipalRepaid(uint256,address,uint256,uint256)
+        - event: LogLoanPrincipalRepaid(uint256,address,uint256,uint256,uint256)
           handler: handleLogLoanPrincipalRepaid
         - event: LogLoanTransferred(uint256,address,uint256,uint256,uint256)
           handler: handleLogLoanTransferred

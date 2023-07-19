@@ -545,11 +545,17 @@
         "internalType": "uint256",
         "name": "premiumTokenAmount",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "chunkIndex",
+        "type": "uint256"
       }
     ],
     "name": "LogLoanInterestPaid",
     "type": "event",
-    "signature": "0x5d20a7245624d778431a55c04af4407b1766d32eb1fccfaa05e9663dd97d4ea1"
+    "signature": "0x8cb98260c3e7ee3d8d75963726dfcf1e52f7b4ab3db251055a97b2489295f626"
   },
   {
     "anonymous": false,
@@ -577,11 +583,17 @@
         "internalType": "uint256",
         "name": "repaidCapitalTokenAmount",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "chunkIndex",
+        "type": "uint256"
       }
     ],
     "name": "LogLoanPrincipalRepaid",
     "type": "event",
-    "signature": "0xf49262fbb9875ff470fc2a2a4176d5e2f574e134a2fb0b090b7c8a9fbb7bd113"
+    "signature": "0xbb01586332c1e5693874bc5838faf4b43b3ede96af13fc22e493748a96f551eb"
   },
   {
     "anonymous": false,
