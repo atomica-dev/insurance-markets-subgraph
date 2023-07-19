@@ -1625,7 +1625,7 @@ function createLoan(loanId: BigInt, rpcAddress: Address, event: ethereum.Event):
   loan.interestCharged = BigInt.fromI32(0);
   loan.interestRepaid = BigInt.fromI32(0);
 
-  loan.createdAt = event.block.number;
+  loan.createdAt = event.block.timestamp;
 
   loan.save();
 
@@ -1669,7 +1669,7 @@ function addPaymentRecord(loanId: BigInt, poolId: Address, principle: BigInt | n
   payment.paidPrinciple = principle ? principle : BigInt.fromI32(0);
   payment.paidInterest = interest ? interest : BigInt.fromI32(0);
   payment.payer = event.transaction.from;
-  payment.createdAt = event.block.number;
+  payment.createdAt = event.block.timestamp;
 
   payment.save();
 }
