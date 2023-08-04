@@ -2224,11 +2224,6 @@
       },
       {
         "internalType": "uint256",
-        "name": "releasedCapacity",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "premiumAccumulator",
         "type": "uint256"
       },

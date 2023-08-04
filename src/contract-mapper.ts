@@ -177,7 +177,6 @@ export function getMarket(contract: RiskPoolsControllerContract, id: BigInt): CM
 export class CAggregatedPool {
   marketId: BigInt;
   totalCapacity: BigInt;
-  releasedCapacity: BigInt;
   premiumAccumulator: BigInt;
   premiumBalance: BigInt;
   nextAggregatedPoolId: BigInt;
@@ -191,12 +190,11 @@ export function getAggregatedPool(contract: RiskPoolsControllerContract, id: Big
   return {
     marketId: d.value0,
     totalCapacity: d.value1,
-    releasedCapacity: d.value2,
-    premiumAccumulator: d.value3,
-    premiumBalance: d.value4,
-    nextAggregatedPoolId: d.value5,
-    prevAggregatedPoolId: d.value6,
-    premiumRatePerSec: d.value7,
+    premiumAccumulator: d.value2,
+    premiumBalance: d.value3,
+    nextAggregatedPoolId: d.value4,
+    prevAggregatedPoolId: d.value5,
+    premiumRatePerSec: d.value6,
   };
 }
 
