@@ -4,8 +4,6 @@ export enum GovernanceLogType {
   ExecutionDelay,
   NewAllowanceManager,
   Treasury,
-  DefaultPayoutRequester,
-  DefaultPayoutApprover,
   ProductCreatorsAllowlistId,
   ExchangeRateOracle,
   CoverAdjusterOracle,

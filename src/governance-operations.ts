@@ -18,8 +18,8 @@ GovernanceOperationMap.set(GovernanceLogType.NewOperator, handleUpdateNewOperato
 GovernanceOperationMap.set(GovernanceLogType.ExecutionDelay, handleUpdateExecutionDelay);
 GovernanceOperationMap.set(GovernanceLogType.NewAllowanceManager, handleUpdateNewAllowanceManager);
 GovernanceOperationMap.set(GovernanceLogType.Treasury, handleUpdateTreasury);
-GovernanceOperationMap.set(GovernanceLogType.DefaultPayoutRequester, handleUpdateDefaultPayoutRequester);
-GovernanceOperationMap.set(GovernanceLogType.DefaultPayoutApprover, handleUpdateDefaultPayoutApprover);
+// GovernanceOperationMap.set(GovernanceLogType.DefaultPayoutRequester, handleUpdateDefaultPayoutRequester);
+// GovernanceOperationMap.set(GovernanceLogType.DefaultPayoutApprover, handleUpdateDefaultPayoutApprover);
 GovernanceOperationMap.set(GovernanceLogType.ProductCreatorsAllowlistId, handleUpdateProductCreatorsAllowlistId);
 GovernanceOperationMap.set(GovernanceLogType.GovernanceIncentiveFee, handleUpdateGovernanceIncentiveFee);
 GovernanceOperationMap.set(GovernanceLogType.MaxProductOperatorIncentiveFee, handleUpdateMaxProductOperatorIncentiveFee);
@@ -110,23 +110,23 @@ function handleUpdateTreasury(event: LogGovernance): void {
   addEvent(EventType.Treasury, event, null, config.id, event.params.param1.toHexString());
 }
 
-function handleUpdateDefaultPayoutRequester(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
+// function handleUpdateDefaultPayoutRequester(event: LogGovernance): void {
+//   let config = getSystemConfig(event.address.toHexString());
 
-  config.defaultPayoutRequester = event.params.param1;
-  config.save();
+//   config.defaultPayoutRequester = event.params.param1;
+//   config.save();
 
-  addEvent(EventType.DefaultPayoutRequester, event, null, config.id, event.params.param1.toHexString());
-}
+//   addEvent(EventType.DefaultPayoutRequester, event, null, config.id, event.params.param1.toHexString());
+// }
 
-function handleUpdateDefaultPayoutApprover(event: LogGovernance): void {
-  let config = getSystemConfig(event.address.toHexString());
+// function handleUpdateDefaultPayoutApprover(event: LogGovernance): void {
+//   let config = getSystemConfig(event.address.toHexString());
 
-  config.defaultPayoutApprover = event.params.param1;
-  config.save();
+//   config.defaultPayoutApprover = event.params.param1;
+//   config.save();
 
-  addEvent(EventType.DefaultPayoutApprover, event, null, config.id, event.params.param1.toHexString());
-}
+//   addEvent(EventType.DefaultPayoutApprover, event, null, config.id, event.params.param1.toHexString());
+// }
 
 function handleUpdateProductCreatorsAllowlistId(event: LogGovernance): void {
   let config = getSystemConfig(event.address.toHexString());
