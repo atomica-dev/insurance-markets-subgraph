@@ -8,8 +8,6 @@ type System @entity {
   operator: Bytes!
   allowanceManager: Bytes!
   treasury: Bytes!
-  defaultPayoutRequester: Bytes!
-  defaultPayoutApprover: Bytes!
   productCreatorsAllowlistId: BigInt!
   maxProductOperatorIncentiveFee: BigInt!
   maxMarketOperatorIncentiveFee: BigInt!

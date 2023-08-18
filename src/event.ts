@@ -45,8 +45,6 @@ export enum EventType {
   MinPolicyDepositMultiplier,
   LiquidationIncentive,
   ProductCreatorsAllowlistId,
-  DefaultPayoutRequester,
-  DefaultPayoutApprover,
   MaxProductOperatorIncentiveFee,
   MaxMarketOperatorIncentiveFee,
   MaxRiskPoolManagerFee,
@@ -186,10 +184,6 @@ function getEventTypeString(eventType: EventType): string {
       return "LiquidationIncentive";
     case EventType.ProductCreatorsAllowlistId:
       return "ProductCreatorsAllowlistId";
-    case EventType.DefaultPayoutRequester:
-      return "DefaultPayoutRequester";
-    case EventType.DefaultPayoutApprover:
-      return "DefaultPayoutApprover";
     case EventType.MaxProductOperatorIncentiveFee:
       return "MaxProductOperatorIncentiveFee";
     case EventType.MaxMarketOperatorIncentiveFee:

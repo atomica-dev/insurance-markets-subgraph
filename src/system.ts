@@ -19,9 +19,7 @@ export function getSystemConfig(id: string): System {
     config.operator = contract.operator();
     config.allowanceManager = contract.allowanceManager();
     config.treasury = contract.treasury();
-    config.defaultPayoutRequester = contract.defaultPayoutRequester();
     config.productCreatorsAllowlistId = contract.productCreatorsAllowlistId();
-    config.defaultPayoutApprover = contract.defaultPayoutApprover();
     config.maxProductOperatorIncentiveFee = contract.maxProductOperatorIncentiveFee();
     config.maxMarketOperatorIncentiveFee = contract.maxMarketOperatorIncentiveFee();
     config.policyTokenIssuer = contract.policyTokenIssuer();
