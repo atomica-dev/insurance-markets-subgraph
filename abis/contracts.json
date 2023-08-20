@@ -20,6 +20,10 @@
       "defaultStartBlock": 4123524,
       "RiskPoolsController": "0xE5Aa6800B375C16EA39956a70FAde07eac278a42"
     },
+    "srm-staging-fantomTestnet": {
+      "defaultStartBlock": 19759226,
+      "RiskPoolsController": "0x6A186D30D138950592f1A54bB92DfC02DaEFddfc"
+    },
     "srm-production": {
       "defaultStartBlock": 34002868,
       "RiskPoolsController": "0x57c80926D859fb76BC0e52DdFb136504aD15af97"
