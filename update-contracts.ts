@@ -13,6 +13,9 @@ const ENV_TO_NETWORK: any = {
   "local-goerli": "5",
   "srm-production": "137",
   "srm-dev-sepolia": "11155111",
+  "srm-staging-sepolia": "11155111",
+  "srm-staging-arbitrum": "421613",
+  "srm-production-arbitrum": "42161",
 };
 const NETWORK_NAMES: any = {
   "7777": "ganache",
@@ -27,6 +30,8 @@ const NETWORK_NAMES: any = {
   "1442": "polygon-zkevm-testnet",
   "43113": "fuji",
   "43114": "avalanche",
+  "42161": "arbitrum-one",
+  "421613": "arbitrum-goerli",
 };
 const MANUAL_FILE_UPDATES: string[] = [];
 const ENV = process.argv[2] || "srm-dev";
