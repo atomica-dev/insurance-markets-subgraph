@@ -28,6 +28,7 @@ const NETWORK_NAMES: any = {
   "11155111": "sepolia",
   "1101": "polygon-zkevm",
   "1442": "polygon-zkevm-testnet",
+  "4002": "fantom-testnet",
   "43113": "fuji",
   "43114": "avalanche",
   "42161": "arbitrum-one",
