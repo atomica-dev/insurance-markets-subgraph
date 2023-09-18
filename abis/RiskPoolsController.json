@@ -2052,32 +2052,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "delegate",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "erc20",
-        "type": "address"
-      }
-    ],
-    "name": "accruedMarketFees",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function",
-    "constant": true,
-    "signature": "0x19183e68"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "aggregatedPoolId",
         "type": "uint256"

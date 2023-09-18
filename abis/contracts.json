@@ -12,6 +12,10 @@
       "defaultStartBlock": 1611418,
       "RiskPoolsController": "0xc2a053Db95650DEbb640F74aB1e0EC881083BE7E"
     },
+    "srm-dev-fantomTestnet": {
+      "defaultStartBlock": 20780807,
+      "RiskPoolsController": "0x6DfEee174f94f366F720b2dEF391d095A75c2452"
+    },
     "srm-staging": {
       "defaultStartBlock": 39081167,
       "RiskPoolsController": "0x221c39351745B9A30FeB2a7e683d93981570C0e8"
@@ -46,8 +50,8 @@
       "RiskPoolsController": "0x89481aaE571b83b58d58d0fAE8aC1c9c07ab10e9"
     },
     "local-mumbai": {
-      "defaultStartBlock": 39995277,
-      "RiskPoolsController": "0x43860AE3d81cC0A214A9C08bcA452CC5ed8DFB96"
+      "defaultStartBlock": 40236898,
+      "RiskPoolsController": "0xd871BF2e50B97D2637009877647Db64B59fBD5BD"
     },
     "local-fuji": {
       "defaultStartBlock": 24106979,
