@@ -422,7 +422,6 @@ function handleUpdateProductWording(event: LogGovernance): void {
   addEvent(EventType.ProductWording, event, null, product.id, product.wording);
 }
 
-
 function handleProductOwner(event: LogGovernance): void {
   let productId = event.params.param3;
   let id = `${event.address.toHexString()}-${productId.toString()}`;
@@ -439,7 +438,6 @@ function handleProductOwner(event: LogGovernance): void {
 
   addEvent(EventType.ProductWording, event, null, product.id, product.wording);
 }
-
 
 function handleProductOperatorFeeRecipient(event: LogGovernance): void {
   let productId = event.params.param3;
