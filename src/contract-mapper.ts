@@ -73,7 +73,7 @@ export function getPoolBucket(contract: RiskPoolContract, token: Address): PoolB
 }
 
 export class CProduct {
-  productOperator: Address;
+  operator: Address;
   claimProcessor: Address;
   payoutRequester: Address;
   payoutApprover: Address;
@@ -82,14 +82,14 @@ export class CProduct {
   defaultCoverAdjusterOracle: Address;
   defaultRatesOracle: Address;
   marketCreationFeeToken: Address;
-  productOperatorFeeRecipient: Address;
+  owner: Address;
 }
 
 export function getProduct(contract: RiskPoolsControllerContract, id: BigInt): CProduct {
   let d = contract.products(id);
 
   return {
-    productOperator: d.value0,
+    operator: d.value0,
     claimProcessor: d.value1,
     payoutRequester: d.value2,
     payoutApprover: d.value3,
@@ -98,7 +98,7 @@ export function getProduct(contract: RiskPoolsControllerContract, id: BigInt): C
     defaultCoverAdjusterOracle: d.value6,
     defaultRatesOracle: d.value7,
     marketCreationFeeToken: d.value8,
-    productOperatorFeeRecipient: d.value9,
+    owner: d.value9,
   };
 }
 
@@ -139,8 +139,8 @@ export function getProductMeta(contract: RiskPoolsControllerContract, id: BigInt
 }
 
 export class CMarket {
-  marketOperator: Address;
-  marketFeeRecipient: Address;
+  operator: Address;
+  owner: Address;
   premiumToken: Address;
   capitalToken: Address;
   insuredToken: Address;
@@ -158,8 +158,8 @@ export function getMarket(contract: RiskPoolsControllerContract, id: BigInt): CM
   let d = contract.markets(id);
 
   return {
-    marketOperator: d.value0,
-    marketFeeRecipient: d.value1,
+    operator: d.value0,
+    owner: d.value1,
     premiumToken: d.value2,
     capitalToken: d.value3,
     insuredToken: d.value4,
@@ -199,10 +199,10 @@ export function getAggregatedPool(contract: RiskPoolsControllerContract, id: Big
 }
 
 export class CRiskPoolData {
-  manager: Address;
-  managerFeeRecipient: Address;
+  operator: Address;
+  owner: Address;
   nominatedToken: Address;
-  managerFee: BigInt;
+  operatorFee: BigInt;
   agreement: string;
   details: string;
   data: string;
@@ -212,10 +212,10 @@ export function getRiskPoolData(contract: RiskPoolsControllerContract, id: Addre
   let d = contract.riskPools(id);
 
   return {
-    manager: d.value0,
-    managerFeeRecipient: d.value1,
+    operator: d.value0,
+    owner: d.value1,
     nominatedToken: d.value2,
-    managerFee: d.value3,
+    operatorFee: d.value3,
     agreement: d.value4,
     details: d.value5,
     data: d.value6,

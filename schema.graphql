@@ -17,7 +17,7 @@ type System @entity {
   liquidationIncentive: BigInt!
   solvencyMultiplier: BigInt!
   minPolicyDepositMultiplier: BigInt!
-  maxRiskPoolManagerFee: BigInt!
+  maxRiskPoolOperatorFee: BigInt!
   extPoolDetailsConfidenceInterval: BigInt!
   bridgeConnector: Bytes!
   swapCycleDuration: BigInt!
@@ -64,8 +64,8 @@ type Product @entity {
   treasuryAddress: Bytes!
   payoutRequester: Bytes!
   payoutApprover: Bytes!
-  productIncentiveFee: BigInt!
-  feeRecipient: Bytes!
+  operatorFee: BigInt!
+  owner: Bytes!
   maxMarketIncentiveFee: BigInt!
   title: String
   wording: String
@@ -109,8 +109,8 @@ type Market @entity {
   details: String!
   wording: String
   data: String
-  author: Bytes!
-  marketFeeRecipient: Bytes!
+  operator: Bytes!
+  owner: Bytes!
   premiumToken: Bytes!
   capitalToken: Bytes!
   insuredToken: Bytes!
@@ -122,7 +122,7 @@ type Market @entity {
   coverAdjusterOracle: Bytes!
   rateOracle: Bytes!
   waitingPeriod: BigInt!
-  marketOperatorIncentiveFee: BigInt!
+  operatorFee: BigInt!
   policyBuyerAllowListId: BigInt!
   policyBuyerAllowanceListId: BigInt!
   status: Int!
@@ -357,9 +357,9 @@ type Pool @entity {
   settlementRootHashLastUpdated: BigInt
   settlementDataUrl: String
   physicalSettlementMarketCount: Int!
-  manager: Bytes!
-  managerFee: BigInt!
-  feeRecipient: Bytes!
+  operator: Bytes!
+  operatorFee: BigInt!
+  owner: Bytes!
   agreement: String!
   details: String!
   data: String!

@@ -62,8 +62,6 @@ dataSources:
           handler: handleLogNewPool
         - event: LogMarketStatusChanged(uint256,bool)
           handler: handleLogMarketStatusChanged
-        # - event: LogMarketIncentiveFeeUpdated(uint256,uint256)
-        #   handler: handleLogMarketIncentiveFeeUpdated
         - event: LogGovernance(uint8,address,address,uint256,uint256,bool)
           handler: handleLogGovernance
         - event: LogNewProductStatus(uint256,uint8)
@@ -134,16 +132,14 @@ dataSources:
           handler: handleLogRiskPoolRemovedFromAggregatedPool
         - event: LogRiskPoolAddedToAggregatedPool(uint256,address)
           handler: handleLogRiskPoolAddedToAggregatedPool
-        - event: LogRiskPoolManagerChanged(address,address)
-          handler: handleLogRiskPoolManagerChanged
-        - event: LogRiskPoolManagerFeeChanged(address,uint256)
-          handler: handleLogRiskPoolManagerFeeChanged
-        - event: LogRiskPoolManagerFeeRecipientChanged(address,address)
-          handler: handleLogRiskPoolManagerFeeRecipientChanged
+        - event: LogRiskPoolOperatorChanged(address,address)
+          handler: handleLogRiskPoolOperatorChanged
+        - event: LogRiskPoolOperatorFeeChanged(address,uint256)
+          handler: handleLogRiskPoolOperatorFeeChanged
+        - event: LogRiskPoolOwnerChanged(address,address)
+          handler: handleLogRiskPoolOwnerChanged
         - event: LogWithdrawAccruedMarketFee(address,address,uint256)
           handler: handleLogWithdrawAccruedMarketFee
-        # - event: LogPremiumRateCreated(uint256)
-        #   handler: handleLogPremiumRateCreated
         - event: LogPayoutRequestApproved(uint256)
           handler: handleLogPayoutRequestApproved
         - event: LogPayoutRequestDeclined(uint256)

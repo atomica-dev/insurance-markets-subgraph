@@ -69,7 +69,7 @@ function getConfigValue(name: string, networkId: string, value: string = "addres
 function updateSubgraphYaml() {
   const targetNetwork = Object.values(NETWORK_NAMES).some(value => value === NETWORK) ? NETWORK : NETWORK_NAMES[NETWORK || ENV_TO_NETWORK[ENV] || DEFAULT_NETWORK];
 
-  console.log(`Environment: ${ENV}, Chain: ${targetNetwork}`);
+  console.info(`Environment: ${ENV}, Chain: ${targetNetwork}`);
 
   if (!ENV || !targetNetwork) {
     console.error('Error: Can not find specified config.');

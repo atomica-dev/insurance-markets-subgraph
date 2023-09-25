@@ -46,11 +46,13 @@ GovernanceOperationMap.set(GovernanceLogType.ProductOperatorIncentiveFee, handle
 GovernanceOperationMap.set(GovernanceLogType.ProductMaxMarketIncentiveFee, handleUpdateProductMaxMarketIncentiveFee);
 GovernanceOperationMap.set(GovernanceLogType.MarketOperatorIncentiveFee, handleUpdateMarketOperatorIncentiveFee);
 GovernanceOperationMap.set(GovernanceLogType.LiquidationGasUsage, handleUpdateLiquidationGasUsage);
+GovernanceOperationMap.set(GovernanceLogType.ProductOwner, handleProductOwner);
+GovernanceOperationMap.set(GovernanceLogType.MarketOwner, handleMarketOwner);
 
 GovernanceOperationMap.set(GovernanceLogType.LiquidationIncentive, handleUpdateLiquidationIncentive);
 GovernanceOperationMap.set(GovernanceLogType.SolvencyMultiplier, handleUpdateSolvencyMultiplier);
 GovernanceOperationMap.set(GovernanceLogType.MinPolicyDepositMultiplier, handleUpdateMinPolicyDepositMultiplier);
-GovernanceOperationMap.set(GovernanceLogType.MaxRiskPoolManagerFee, handleUpdateMaxRiskPoolManagerFee);
+GovernanceOperationMap.set(GovernanceLogType.MaxRiskPoolOperatorFee, handleUpdateMaxRiskPoolManagerFee);
 GovernanceOperationMap.set(GovernanceLogType.NewFrontendOperator, handleNewFrontendOperator);
 GovernanceOperationMap.set(GovernanceLogType.FrontendOperatorDisabled, handleFrontendOperatorDisabled);
 GovernanceOperationMap.set(GovernanceLogType.FrontendOperatorEnabled, handleFrontendOperatorEnabled);
@@ -246,6 +248,20 @@ function handleMarketData(event: LogGovernance): void {
   market.save();
 }
 
+function handleMarketOwner(event: LogGovernance): void {
+  let id = event.address.toHexString() + "-" + event.params.param3.toString();
+  let market = Market.load(id);
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+
+  if (!market) {
+    return;
+  }
+
+  market.owner = getMarket(rpcContract, event.params.param3).owner;
+
+  market.save();
+}
+
 function handleUpdateMarketCoverAdjusterOracle(event: LogGovernance): void {
   let id = event.address.toHexString() + "-" + event.params.param3.toString();
   let market = Market.load(id);
@@ -406,6 +422,25 @@ function handleUpdateProductWording(event: LogGovernance): void {
   addEvent(EventType.ProductWording, event, null, product.id, product.wording);
 }
 
+
+function handleProductOwner(event: LogGovernance): void {
+  let productId = event.params.param3;
+  let id = `${event.address.toHexString()}-${productId.toString()}`;
+  let product = Product.load(id);
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+
+  if (!product) {
+    return;
+  }
+
+  product.owner = getProduct(rpcContract, productId).owner;
+
+  product.save();
+
+  addEvent(EventType.ProductWording, event, null, product.id, product.wording);
+}
+
+
 function handleProductOperatorFeeRecipient(event: LogGovernance): void {
   let productId = event.params.param3;
   let id = `${event.address.toHexString()}-${productId.toString()}`;
@@ -416,11 +451,11 @@ function handleProductOperatorFeeRecipient(event: LogGovernance): void {
     return;
   }
 
-  product.feeRecipient = getProduct(rpcContract, productId).productOperatorFeeRecipient;
+  product.owner = getProduct(rpcContract, productId).owner;
 
   product.save();
 
-  addEvent(EventType.ProductFeeRecipient, event, null, product.id, product.feeRecipient.toHexString());
+  addEvent(EventType.ProductFeeRecipient, event, null, product.id, product.owner.toHexString());
 }
 
 function handleProductData(event: LogGovernance): void {
@@ -481,7 +516,7 @@ function handleUpdateMarketOperator(event: LogGovernance): void {
     return;
   }
 
-  market.author = event.params.param1;
+  market.operator = event.params.param1;
 
   market.save();
 }
@@ -496,7 +531,7 @@ function handleUpdateProductOperatorIncentiveFee(event: LogGovernance): void {
     return;
   }
 
-  product.productIncentiveFee = fee;
+  product.operatorFee = fee;
 
   product.save();
 
@@ -527,7 +562,7 @@ function handleUpdateMarketOperatorIncentiveFee(event: LogGovernance): void {
     return;
   }
 
-  market.marketOperatorIncentiveFee = event.params.param3;
+  market.operatorFee = event.params.param3;
 
   market.save();
 }
@@ -668,7 +703,7 @@ function handleMarketFeeRecipient(event: LogGovernance): void {
     return;
   }
 
-  market.marketFeeRecipient = event.params.param1;
+  market.owner = event.params.param1;
 
   market.save();
 }
@@ -684,7 +719,7 @@ function handleExternalRiskPoolsConfidenceInterval(event: LogGovernance): void {
 function handleUpdateMaxRiskPoolManagerFee(event: LogGovernance): void {
   let config = getSystemConfig(event.address.toHexString());
 
-  config.maxRiskPoolManagerFee = event.params.param3;
+  config.maxRiskPoolOperatorFee = event.params.param3;
 
   config.save();
 

@@ -29,9 +29,9 @@ import {
   LogRiskPoolAddedToAggregatedPool,
   LogRiskPoolRemovedFromAggregatedPool,
   LogRebalance,
-  LogRiskPoolManagerChanged,
-  LogRiskPoolManagerFeeChanged,
-  LogRiskPoolManagerFeeRecipientChanged,
+  LogRiskPoolOperatorChanged,
+  LogRiskPoolOperatorFeeChanged,
+  LogRiskPoolOwnerChanged,
   LogCoverMiningRewardArchived,
   LogCoverMiningRewardDeactivated,
   LogArchivedRewardClaimed,
@@ -155,12 +155,12 @@ export function handleLogNewMarket(event: LogNewMarketCreated): void {
   market.data = marketInfo.data;
 
   market.waitingPeriod = marketMeta.waitingPeriod;
-  market.marketOperatorIncentiveFee = marketMeta.marketOperatorIncentiveFee;
+  market.operatorFee = marketMeta.marketOperatorIncentiveFee;
   market.latestAccruedTimestamp = marketMeta.lastChargeTimestamp;
   market.settlementDiscount = marketMeta.settlementDiscount;
 
-  market.author = marketInfo.marketOperator;
-  market.marketFeeRecipient = marketInfo.marketFeeRecipient;
+  market.operator = marketInfo.operator;
+  market.owner = marketInfo.owner;
   market.premiumToken = marketInfo.premiumToken;
   market.capitalToken = marketInfo.capitalToken;
   market.insuredToken = marketInfo.insuredToken;
@@ -224,12 +224,12 @@ export function createPool(poolId: Address, event: ethereum.Event): void {
   pool.participants = BigInt.fromI32(0);
   pool.createdAt = event.block.timestamp;
   pool.createdBy = event.transaction.from;
-  pool.manager = riskPoolData.manager;
-  pool.feeRecipient = riskPoolData.managerFeeRecipient;
+  pool.operator = riskPoolData.operator;
+  pool.owner = riskPoolData.owner;
   pool.updatedAt = event.block.timestamp;
   pool.poolTokenDecimals = !pContract.try_decimals().reverted ? pContract.try_decimals().value : 18;
   pool.poolTokenSymbol = !pContract.try_symbol().reverted ? pContract.try_symbol().value : "";
-  pool.managerFee = riskPoolData.managerFee;
+  pool.operatorFee = riskPoolData.operatorFee;
   pool.agreement = riskPoolData.agreement;
   pool.details = riskPoolData.details;
   pool.data = riskPoolData.data;
@@ -252,7 +252,7 @@ export function createPool(poolId: Address, event: ethereum.Event): void {
 
   pool.save();
 
-  updateFeeRecipientRelation(pool.feeRecipient, poolId);
+  updateFeeRecipientRelation(pool.owner, poolId);
 
   PoolTemplate.create(poolId);
 
@@ -459,8 +459,8 @@ export function handleLogNewProduct(event: LogNewProduct): void {
   product.defaultCoverAdjusterOracle = productInfo.defaultCoverAdjusterOracle;
   product.payoutApprover = productInfo.payoutApprover;
   product.payoutRequester = productInfo.payoutRequester;
-  product.productIncentiveFee = productMeta.productOperatorIncentiveFee;
-  product.feeRecipient = productInfo.productOperatorFeeRecipient;
+  product.operatorFee = productMeta.productOperatorIncentiveFee;
+  product.owner = productInfo.owner;
   product.maxMarketIncentiveFee = productMeta.maxMarketOperatorIncentiveFee;
 
   product.defaultRatesOracle = productInfo.defaultRatesOracle;
@@ -468,7 +468,7 @@ export function handleLogNewProduct(event: LogNewProduct): void {
   product.withdrawRequestExpiration = productMeta.withdrawRequestExpiration;
   product.waitingPeriod = productMeta.waitingPeriod;
   product.marketCreatorsAllowlistId = productMeta.marketCreatorsListId;
-  product.operator = productInfo.productOperator;
+  product.operator = productInfo.operator;
 
   product.createdAt = event.block.timestamp;
   product.createdBy = event.transaction.from;
@@ -1053,7 +1053,7 @@ export function handleLogMarketCharge(event: LogMarketCharge): void {
       pf.claimedAmount = BigInt.fromI32(0);
     }
 
-    let amount = poolPremium.times(pool.managerFee).div(WEI_BIGINT);
+    let amount = poolPremium.times(pool.operatorFee).div(WEI_BIGINT);
 
     pf.amount = pf.amount.plus(amount);
 
@@ -1270,28 +1270,28 @@ export function handleLogRiskPoolAddedToAggregatedPool(event: LogRiskPoolAddedTo
   addEvent(EventType.PoolMarketCount, event, aggPool.market, pool.id, aggPool.poolList.length.toString());
 }
 
-export function handleLogRiskPoolManagerChanged(event: LogRiskPoolManagerChanged): void {
+export function handleLogRiskPoolOperatorChanged(event: LogRiskPoolOperatorChanged): void {
   let pool = Pool.load(event.params.riskPool.toHexString())!;
 
-  pool.manager = event.params.manager;
+  pool.operator = event.params.operator;
 
   pool.save();
 }
 
-export function handleLogRiskPoolManagerFeeChanged(event: LogRiskPoolManagerFeeChanged): void {
+export function handleLogRiskPoolOperatorFeeChanged(event: LogRiskPoolOperatorFeeChanged): void {
   let pool = Pool.load(event.params.riskPool.toHexString())!;
 
-  pool.managerFee = event.params.managerFee;
+  pool.operatorFee = event.params.fee;
 
   pool.save();
 }
 
-export function handleLogRiskPoolManagerFeeRecipientChanged(event: LogRiskPoolManagerFeeRecipientChanged): void {
+export function handleLogRiskPoolOwnerChanged(event: LogRiskPoolOwnerChanged): void {
   let pool = Pool.load(event.params.riskPool.toHexString())!;
 
-  updateFeeRecipientRelation(event.params.managerFeeRecipient, event.params.riskPool, pool.feeRecipient);
+  updateFeeRecipientRelation(event.params.owner, event.params.riskPool, pool.owner);
 
-  pool.feeRecipient = event.params.managerFeeRecipient;
+  pool.owner = event.params.owner;
 
   pool.save();
 }

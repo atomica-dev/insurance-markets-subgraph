@@ -12,7 +12,7 @@ export enum GovernanceLogType {
   LiquidationGasUsage,
   SolvencyMultiplier,
   MinPolicyDepositMultiplier,
-  MaxRiskPoolManagerFee,
+  MaxRiskPoolOperatorFee,
 
   // RiskPools
   RiskPoolPremiumRateModel,
@@ -36,6 +36,8 @@ export enum GovernanceLogType {
   MarketExchangeRateOracle,
   MarketPolicyBuyerAllowlistId,
   MarketPolicyBuyerAllowancelistId,
+  MarketOwner,
+  ProductOwner,
 
   // Fees
   ProductOperatorIncentiveFee,
