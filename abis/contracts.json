@@ -1,8 +1,8 @@
 {
   "environment": {
     "srm-dev": {
-      "defaultStartBlock": 40003548,
-      "RiskPoolsController": "0x3Ea5f8f7b6306228aBFE7abD6D689ED55b0D0e97"
+      "defaultStartBlock": 40543790,
+      "RiskPoolsController": "0xe8E4AcD91e6d362C593E067A1f95A3EdF03B0b96"
     },
     "srm-dev-sepolia": {
       "defaultStartBlock": 0,
@@ -13,8 +13,8 @@
       "RiskPoolsController": "0xc2a053Db95650DEbb640F74aB1e0EC881083BE7E"
     },
     "srm-dev-fantomTestnet": {
-      "defaultStartBlock": 20780807,
-      "RiskPoolsController": "0x6DfEee174f94f366F720b2dEF391d095A75c2452"
+      "defaultStartBlock": 21056538,
+      "RiskPoolsController": "0xc00B0958db3f6e88367FB8988369D3B077e2b398"
     },
     "srm-staging": {
       "defaultStartBlock": 40348091,
