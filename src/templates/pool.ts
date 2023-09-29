@@ -27,6 +27,10 @@ import {
   LogContributeSettlement,
   LogForwardPayoutRequest,
   LogRequestCapital,
+  LogReleased,
+  LogRepaid,
+  LogWithdrawProcedure,
+  LogReserveRatio,
 } from "../../generated/templates/Pool/Pool";
 import {
   Pool,
@@ -267,6 +271,8 @@ export function handleLogContributeSettlement(
     event.params.amount.toString(),
     event.params.token.toHexString()
   );
+
+  updatePoolCapacity(event.address, event);
 }
 
 export function handleLogForwardPayoutRequest(
@@ -567,6 +573,8 @@ export function handleLogCapitalReleased(event: LogCapitalReleased): void {
   loss.createdAt = event.block.timestamp;
 
   loss.save();
+
+  updatePoolCapacity(event.address, event);
 }
 
 export function handleLogForwardCommitLoss(event: LogForwardCommitLoss): void {
@@ -591,8 +599,12 @@ export function handleLogForwardCommitLoss(event: LogForwardCommitLoss): void {
 }
 
 export function handleLogCapacityChanged(event: LogCapacityChanged): void {
-  let pool = Pool.load(event.address.toHexString())!;
-  let pContract = PoolContract.bind(event.address);
+  updatePoolCapacity(event.address, event);
+}
+
+function updatePoolCapacity(poolAddress: Address, event: ethereum.Event): void {
+  let pool = Pool.load(poolAddress.toHexString())!;
+  let pContract = PoolContract.bind(poolAddress);
   let oldBalance = pool.capitalTokenBalance;
   let stats = pContract.stats();
 
@@ -741,6 +753,38 @@ export function handleLogWithdrawRequestExpirationUpdated(
   let pool = Pool.load(event.address.toHexString())!;
 
   pool.withdrawRequestExpiration = event.params.withdrawRequestExpiration;
+
+  pool.save();
+}
+
+export function handleLogReleased(event: LogReleased): void {
+  let pool = Pool.load(event.address.toHexString())!;
+
+  pool.released = pool.released.plus(event.params.amount);
+
+  pool.save();
+}
+
+export function handleLogRepaid(event: LogRepaid): void {
+  let pool = Pool.load(event.address.toHexString())!;
+
+  pool.released = pool.released.minus(event.params.releasedAmount);
+
+  pool.save();
+}
+
+export function handleLogWithdrawProcedure(event: LogWithdrawProcedure): void {
+  let pool = Pool.load(event.address.toHexString())!;
+
+  pool.withdrawProcedure = event.params.withdrawProcedure.toI32();
+
+  pool.save();
+}
+
+export function handleLogReserveRatio(event: LogReserveRatio): void {
+  let pool = Pool.load(event.address.toHexString())!;
+
+  pool.reserveRatio = event.params.reserveRatio;
 
   pool.save();
 }

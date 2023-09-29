@@ -1,12 +1,10 @@
 export enum GovernanceLogType {
   // General
   NewOperator,
+  ExecutionDelay,
   NewAllowanceManager,
   Treasury,
-  DefaultPayoutRequester,
-  DefaultPayoutApprover,
   ProductCreatorsAllowlistId,
-  PremiumRateModel,
   ExchangeRateOracle,
   CoverAdjusterOracle,
   SyncOracle,
@@ -14,7 +12,7 @@ export enum GovernanceLogType {
   LiquidationGasUsage,
   SolvencyMultiplier,
   MinPolicyDepositMultiplier,
-  MaxRiskPoolManagerFee,
+  MaxRiskPoolOperatorFee,
 
   // RiskPools
   RiskPoolPremiumRateModel,
@@ -24,16 +22,26 @@ export enum GovernanceLogType {
   RiskPoolWithdrawDelay,
   RiskPoolWithdrawRequestExpiration,
   RiskPoolLpAllowlistId,
+  RiskPoolWithdrawProcedure,
+  RiskPoolReserveRatio,
+  RiskPoolDetails,
+  RiskPoolData,
 
   // Product
   ProductOperator,
   MarketOperator,
   ProductWording,
+  ProductDetails,
+  ProductData,
   MarketExchangeRateOracle,
   MarketPolicyBuyerAllowlistId,
+  MarketPolicyBuyerAllowancelistId,
+  MarketOwner,
+  ProductOwner,
 
   // Fees
   ProductOperatorIncentiveFee,
+  ProductOperatorFeeRecipient,
   ProductMaxMarketIncentiveFee,
   MarketOperatorIncentiveFee,
   MaxProductOperatorIncentiveFee,
@@ -44,6 +52,8 @@ export enum GovernanceLogType {
   MarketFeeRecipient,
 
   // Market
+  MarketDetails,
+  MarketData,
   MarketCoverAdjusterOracle,
 
   // Frontend operators
@@ -58,5 +68,5 @@ export enum GovernanceLogType {
   ExternalRiskPoolsConfidenceInterval,
 
   SwapCycle,
-  SettlementDiscount
+  SettlementDiscount,
 }

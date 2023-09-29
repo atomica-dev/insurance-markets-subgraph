@@ -12,9 +12,7 @@ export function isOracleExist(id: string): boolean {
   return oracle != null;
 }
 
-export function getOracle(
-  id: string
-): RateOracle {
+export function getOracle(id: string): RateOracle {
   let oracle = RateOracle.load(id);
 
   if (oracle === null) {
@@ -42,8 +40,7 @@ export function getPairId(from: Bytes, to: Bytes): string {
 }
 
 export function addOraclePair(oracleId: string, from: Bytes, to: Bytes): void {
-  if (oracleId == "0x0000000000000000000000000000000000000000" ||
-    from == to) {
+  if (oracleId == "0x0000000000000000000000000000000000000000" || from == to) {
     return;
   }
 
@@ -62,8 +59,12 @@ export function updateOracleRates(oracleId: string, timestamp: BigInt): void {
   let contract = RateOracleContract.bind(Address.fromString(oracleId));
   let pairs = oracle.pairList;
 
-  oracle.avgGasPrice = contract.avgGasPrice();
-  oracle.save();
+  let result = contract.try_avgGasPrice();
+
+  if (!result.reverted) {
+    oracle.avgGasPrice = result.value;
+    oracle.save();
+  }
 
   for (let i = 0; i < pairs.length; i++) {
     let pair = pairs[i];
@@ -72,9 +73,10 @@ export function updateOracleRates(oracleId: string, timestamp: BigInt): void {
   }
 }
 
-function _updatePairRate(contract: RateOracleContract, pair: string, oracleId: string, timestamp: BigInt):void {
+function _updatePairRate(contract: RateOracleContract, pair: string, oracleId: string, timestamp: BigInt): void {
   let fromTo = pair.split("-");
-  let from = fromTo[0], to = fromTo[1];
+  let from = fromTo[0],
+    to = fromTo[1];
   let fa = Address.fromString(from);
   let ta = Address.fromString(to);
 
@@ -104,10 +106,10 @@ export function updateRate(oracleId: string, from: string, to: string, value: Bi
 }
 
 export function handleBlock(block: ethereum.Block): void {
-  let context = dataSource.context();
-  let oracleAddress = context.getString("oracleAddress");
-
   if (block.number.mod(BigInt.fromI32(DELAY_BLOCK_COUNT)).equals(BigInt.fromI32(0))) {
+    let context = dataSource.context();
+    let oracleAddress = context.getString("oracleAddress");
+
     updateOracleRates(oracleAddress, block.timestamp);
   }
 }

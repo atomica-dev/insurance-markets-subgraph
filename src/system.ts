@@ -8,12 +8,9 @@ export function getSystemConfig(id: string): System {
   if (config === null) {
     config = new System(id);
 
-    let contract = RiskPoolsControllerContract.bind(
-      Address.fromString(id)
-    );
+    let contract = RiskPoolsControllerContract.bind(Address.fromString(id));
 
     config.rateOracleList = [];
-    config.premiumRateModelList = [];
     config.coverAdjusterOracleList = [];
     config.externalProductList = [];
     config.syncOracleList = [];
@@ -22,27 +19,23 @@ export function getSystemConfig(id: string): System {
     config.operator = contract.operator();
     config.allowanceManager = contract.allowanceManager();
     config.treasury = contract.treasury();
-    config.defaultPayoutRequester = contract.defaultPayoutRequester();
     config.productCreatorsAllowlistId = contract.productCreatorsAllowlistId();
-    config.defaultPayoutApprover = contract.defaultPayoutApprover();
-    config.maxProductOperatorIncentiveFee =
-      contract.maxProductOperatorIncentiveFee();
-    config.maxMarketOperatorIncentiveFee =
-      contract.maxMarketOperatorIncentiveFee();
+    config.maxProductOperatorIncentiveFee = contract.maxProductOperatorIncentiveFee();
+    config.maxMarketOperatorIncentiveFee = contract.maxMarketOperatorIncentiveFee();
     config.policyTokenIssuer = contract.policyTokenIssuer();
     config.policyTokenPermissionIssuer = contract.policyTokenPermissionIssuer();
-    config.allowListAddress = contract.allowlist();
     config.liquidationGasUsage = contract.liquidationGasUsage();
     config.liquidationIncentive = contract.liquidationIncentive();
     config.solvencyMultiplier = contract.solvencyMultiplier();
     config.minPolicyDepositMultiplier = contract.minPolicyDepositMultiplier();
-    config.maxRiskPoolManagerFee = contract.maxRiskPoolManagerFee();
+    config.maxRiskPoolOperatorFee = contract.maxRiskPoolOperatorFee();
     config.bridgeConnector = contract.bridgeConnector();
     config.swapCycleDuration = contract.swapCycleDuration();
     config.swapDuration = contract.swapDuration();
     config.idleDuration = contract.idleDuration();
-    config.extPoolDetailsConfidenceInterval =
-      contract.externalRiskPoolsConfidenceInterval();
+    config.extPoolDetailsConfidenceInterval = contract.externalRiskPoolsConfidenceInterval();
+    config.maxIterations = contract.maxIterations();
+    config.executionDelay = contract.executionDelay();
 
     config.save();
   }

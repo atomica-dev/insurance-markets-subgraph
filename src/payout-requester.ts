@@ -1,5 +1,6 @@
 import { LogClaimSubmitted } from "../generated/templates/PayoutRequester/PayoutRequester";
 import { Claim, Product } from "../generated/schema";
+import { Address, dataSource } from "@graphprotocol/graph-ts";
 
 enum ClaimStatus {
   Unknown,
@@ -8,8 +9,13 @@ enum ClaimStatus {
   Declined,
 }
 
+export const RPC_CONTRACT_ADDRESS_CONTEXT_KEY = "rpcContractAddress";
+
 export function handleLogClaimSubmitted(event: LogClaimSubmitted): void {
-  let productId = event.params.productId.toHexString();
+  let context = dataSource.context();
+  let rpcContractAddress = Address.fromString(context.getString(RPC_CONTRACT_ADDRESS_CONTEXT_KEY));
+
+  let productId = `${rpcContractAddress}-${event.params.productId.toString()}`;
   let policyId = event.params.policyId;
   let votingId = event.params.votingId;
   let product = Product.load(productId);
@@ -19,13 +25,13 @@ export function handleLogClaimSubmitted(event: LogClaimSubmitted): void {
   }
 
   let ptiAddress = product.policyTokenIssuerAddress;
-  let id = ptiAddress.toHexString() + "-" + policyId.toString() + "-" + votingId.toString();
+  let id = `${ptiAddress.toHexString()}-${policyId.toString()}-${votingId.toString()}`;
 
   let claim = new Claim(id);
 
   claim.policyId = policyId;
   claim.votingId = votingId;
-  claim.policy = ptiAddress.toHexString() + "-" + policyId.toString();
+  claim.policy = `${ptiAddress.toHexString()}-${policyId.toString()}`;
   claim.product = productId;
   claim.details = event.params.details;
   claim.status = ClaimStatus.Submitted;

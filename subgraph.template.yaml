@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.5
 schema:
   file: ./schema.graphql
 dataSources:
@@ -29,27 +29,31 @@ dataSources:
         - IncomingPayoutRequest
         - CoverMiningReward
         - CoverMiningRewardClaim
-        - RiskTowerLevel
         - AggregatedPool
         - FeeRecipientPool
         - PoolFee
         - MarketPoolFee
+        - AllowList
+        - AllowListAccount
+        - Bid
+        - LoanRequest
+        - Loan
+        - LoanChunk
+        - LoanPayment
       abis:
         - name: RiskPoolsController
           file: ./abis/RiskPoolsController.json
-        - name: Product
-          file: ./abis/Product.json
         - name: Pool
           file: ./abis/RiskPool.json
         - name: PolicyTokenIssuer
           file: ./abis/PolicyTokenIssuer.json
         - name: PayoutRequester
           file: ./abis/ClaimProcessor.json
-        - name: PremiumRateModelFixed
-          file: ./abis/PremiumRateModelFixed.json
-        - name: PremiumRateModelDynamic
-          file: ./abis/PremiumRateModelDynamic.json
       eventHandlers:
+        - event: LogNewMarketCreated(uint256,uint256)
+          handler: handleLogNewMarket
+        - event: LogNewPolicy(uint256,uint256)
+          handler: handleLogNewPolicy
         - event: LogLiquidation(uint256)
           handler: handleLogLiquidation
         - event: LogPolicyCoverChanged(uint256,uint256,uint256)
@@ -58,11 +62,9 @@ dataSources:
           handler: handleLogNewPool
         - event: LogMarketStatusChanged(uint256,bool)
           handler: handleLogMarketStatusChanged
-        - event: LogMarketIncentiveFeeUpdated(uint256,uint256)
-          handler: handleLogMarketIncentiveFeeUpdated
         - event: LogGovernance(uint8,address,address,uint256,uint256,bool)
           handler: handleLogGovernance
-        - event: LogNewProductStatus(address,uint8)
+        - event: LogNewProductStatus(uint256,uint8)
           handler: handleLogNewProductStatus
         - event: LogNewMarketStatus(uint256,uint8)
           handler: handleLogNewMarketStatus
@@ -70,8 +72,12 @@ dataSources:
           handler: handleLogNewSystemStatus
         - event: LogPermissionTokenIssued(uint256,uint256,address)
           handler: handleLogPermissionTokenIssued
-        - event: LogNewProduct(address)
+        - event: LogPermissionTokenRevoked(uint256,uint256)
+          handler: handleLogPermissionTokenRevoked
+        - event: LogNewProduct(uint256)
           handler: handleLogNewProduct
+        - event: LogProductChanged(uint8,uint256,address,uint256)
+          handler: handleLogProductChanged
         - event: LogPolicyDeposit(uint256,address,uint256,uint256,uint256)
           handler: handleLogPolicyDeposit
         - event: LogPolicyWithdraw(uint256,address,uint256,uint256,uint256)
@@ -82,6 +88,8 @@ dataSources:
           handler: handleLogFeeAccrued
         - event: LogSwap(uint256,address,address,uint256,address,uint256)
           handler: handleLogSwap
+        - event: LogSwapped(address,address,address,uint256,address,uint256)
+          handler: handleLogSwapped
         - event: LogPayout(uint256,address,address,uint256)
           handler: handleLogPayout
         - event: LogNewPayoutRequest(uint256)
@@ -106,36 +114,68 @@ dataSources:
           handler: handleLogArchivedRewardClaimed
         - event: LogMarketCharge(uint256,uint256,uint256,uint256,uint256,uint256,uint256)
           handler: handleLogMarketCharge
-        - event: LogAggregatedPoolCreated(uint256,uint256,uint256,address)
+        - event: LogAggregatedPoolCreated(uint256,uint256)
           handler: handleLogAggregatedPoolCreated
-        - event: LogPremiumEarned(uint256,uint256,uint256)
+        - event: LogPremiumEarned(uint256,uint256)
           handler: handleLogPremiumEarned
-        - event: LogAggregatedPoolCapacityAllowanceUpdated(uint256,address,uint256)
-          handler: handleLogAggregatedPoolCapacityAllowanceUpdated
-        - event: LogAggregatedPoolRiskPoolCapacityLimitUpdated(uint256,address,uint256)
-          handler: handleLogAggregatedPoolRiskPoolCapacityLimitUpdated
-        - event: LogAggregatedPoolMarketCapacityLimitUpdated(uint256,address,uint256)
-          handler: handleLogAggregatedPoolMarketCapacityLimitUpdated
-        - event: LogRebalance(uint256,address,uint256,uint256)
+        - event: LogMarketCapacityAllowanceUpdated(uint256,address,uint256)
+          handler: handleLogMarketCapacityAllowanceUpdated
+        - event: LogMarketCapacityLimitUpdated(uint256,address,uint256)
+          handler: handleLogMarketCapacityLimitUpdated
+        - event: LogRebalance(uint256,uint256,address,uint256,uint256)
           handler: handleLogRebalance
+        - event: LogCoverDistributed(uint256,uint256)
+          handler: handleLogCoverDistributed
+        - event: LogJoinMarket(uint256,address,uint256,uint256)
+          handler: handleLogJoinMarket
         - event: LogRiskPoolRemovedFromAggregatedPool(uint256,address)
           handler: handleLogRiskPoolRemovedFromAggregatedPool
         - event: LogRiskPoolAddedToAggregatedPool(uint256,address)
           handler: handleLogRiskPoolAddedToAggregatedPool
-        - event: LogRiskPoolManagerChanged(address,address)
-          handler: handleLogRiskPoolManagerChanged
-        - event: LogRiskPoolManagerFeeChanged(address,uint256)
-          handler: handleLogRiskPoolManagerFeeChanged
-        - event: LogRiskPoolManagerFeeRecipientChanged(address,address)
-          handler: handleLogRiskPoolManagerFeeRecipientChanged
-        - event: LogRiskTowerLevelCreated(uint256,uint256,uint256)
-          handler: handleLogRiskTowerLevelCreated
-        - event: LogRiskTowerLevelRemoved(uint256,uint256,uint256)
-          handler: handleLogRiskTowerLevelRemoved
-        - event: LogAggregatedPoolRemoved(uint256,uint256,uint256)
-          handler: handleLogAggregatedPoolRemoved
+        - event: LogRiskPoolOperatorChanged(address,address)
+          handler: handleLogRiskPoolOperatorChanged
+        - event: LogRiskPoolOperatorFeeChanged(address,uint256)
+          handler: handleLogRiskPoolOperatorFeeChanged
+        - event: LogRiskPoolOwnerChanged(address,address)
+          handler: handleLogRiskPoolOwnerChanged
         - event: LogWithdrawAccruedMarketFee(address,address,uint256)
           handler: handleLogWithdrawAccruedMarketFee
+        - event: LogPayoutRequestApproved(uint256)
+          handler: handleLogPayoutRequestApproved
+        - event: LogPayoutRequestDeclined(uint256)
+          handler: handleLogPayoutRequestDeclined
+        - event: LogListCreated(uint256)
+          handler: handleLogListCreated
+        - event: LogListEdited(uint256)
+          handler: handleLogListEdited
+        - event: LogListEditorChanged(uint256)
+          handler: handleLogListEditorChanged
+        - event: LogExecutionDelayed(address,bytes32,bytes,uint256)
+          handler: handleLogExecutionDelayed
+        - event: LogExecuted(address,bytes32,bytes)
+          handler: handleLogExecuted
+        - event: LogExecutionDeclined(bytes32)
+          handler: handleLogExecutionDeclined
+        - event: LogLoanRequested(uint256,uint256,uint256,uint256,uint256,bool)
+          handler: handleLogLoanRequested
+        - event: LogLoanApproved(uint256)
+          handler: handleLogLoanApproved
+        - event: LogLoanRequestDeclined(uint256)
+          handler: handleLogLoanRequestDeclined
+        - event: LogLoanDataUpdated(uint256,string)
+          handler: handleLogLoanDataUpdated
+        - event: LogLoanRequestClosed(uint256)
+          handler: handleLogLoanRequestClosed
+        - event: LogLoanRequestModified(uint256,uint256,uint256,uint256,bool)
+          handler: handleLogLoanRequestModified
+        - event: LogLoanInterestPaid(uint256,address,uint256,uint256)
+          handler: handleLogLoanInterestPaid
+        - event: LogLoanPrincipalRepaid(uint256,address,uint256,uint256,uint256)
+          handler: handleLogLoanPrincipalRepaid
+        - event: LogLoanTransferred(uint256,address,uint256,uint256,uint256)
+          handler: handleLogLoanTransferred
+        - event: LogLoanInterestCharged(uint256,address,uint256)
+          handler: handleLogLoanInterestCharged
       file: ./src/risk-pools-controller.ts
 templates:
   - kind: ethereum/contract
@@ -149,13 +189,10 @@ templates:
       language: wasm/assemblyscript
       entities:
         - AdjustmentConfiguration
+        - Product
       abis:
         - name: CoverAdjuster
           file: ./abis/CoverAdjuster.json
-        - name: Product
-          file: ./abis/Product.json
-        - name: RiskPoolsController
-          file: ./abis/RiskPoolsController.json
       eventHandlers:
         - event: LogConfigurationCreated(uint256)
           handler: handleLogConfigurationCreated
@@ -184,49 +221,9 @@ templates:
         - name: PayoutRequester
           file: ./abis/ClaimProcessor.json
       eventHandlers:
-        - event: LogClaimSubmitted(address,uint256,string,uint256)
+        - event: LogClaimSubmitted(uint256,uint256,string,uint256)
           handler: handleLogClaimSubmitted
       file: ./src/payout-requester.ts
-  - kind: ethereum/contract
-    name: Product
-    network: ganache
-    source:
-      abi: Product
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - Product
-        - Market
-        - Policy
-        - Event
-        - State
-        - Pool
-        - Charge
-        - PoolMarketRelation
-        - RiskTowerLevel
-      abis:
-        - name: Product
-          file: ./abis/Product.json
-        - name: RiskPoolsController
-          file: ./abis/RiskPoolsController.json
-        - name: Pool
-          file: ./abis/RiskPool.json
-        - name: PolicyTokenIssuer
-          file: ./abis/PolicyTokenIssuer.json
-        - name: PremiumRateModelDynamic
-          file: ./abis/PremiumRateModelDynamic.json
-      eventHandlers:
-        - event: LogNewMarket(uint256)
-          handler: handleLogNewMarket
-        - event: LogNewPolicy(uint256,uint256)
-          handler: handleLogNewPolicy
-        - event: LogUintPropUpdated(uint8,uint256)
-          handler: handleLogUintPropUpdated
-        - event: LogAddressPropUpdated(uint8,address)
-          handler: handleLogAddressPropUpdated
-      file: ./src/product.ts
   - kind: ethereum/contract
     name: PolicyTokenIssuer
     network: ganache
@@ -296,16 +293,12 @@ templates:
       abis:
         - name: Pool
           file: ./abis/RiskPool.json
-        - name: Product
-          file: ./abis/Product.json
         - name: RiskPools
           file: ./abis/RiskPoolsController.json
         - name: RiskPoolsController
           file: ./abis/RiskPoolsController.json
         - name: PolicyTokenIssuer
           file: ./abis/PolicyTokenIssuer.json
-        - name: PremiumRateModelDynamic
-          file: ./abis/PremiumRateModelDynamic.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
@@ -361,6 +354,14 @@ templates:
           handler: handleLogForwardCommitLoss
         - event: LogCapitalReleased(address,uint256)
           handler: handleLogCapitalReleased
+        - event: LogReleased(uint256)
+          handler: handleLogReleased
+        - event: LogRepaid(uint256,uint256,address)
+          handler: handleLogRepaid
+        - event: LogWithdrawProcedure(uint256)
+          handler: handleLogWithdrawProcedure
+        - event: LogReserveRatio(uint256)
+          handler: handleLogReserveRatio
   - kind: ethereum/contract
     name: RateOracle
     network: ganache

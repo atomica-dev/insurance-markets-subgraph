@@ -1,7 +1,6 @@
 type System @entity {
   id: ID!
   rateOracleList: [String!]!
-  premiumRateModelList: [String!]!
   coverAdjusterOracleList: [String!]!
   externalProductList: [String!]!
   syncOracleList: [String!]!
@@ -9,61 +8,83 @@ type System @entity {
   operator: Bytes!
   allowanceManager: Bytes!
   treasury: Bytes!
-  defaultPayoutRequester: Bytes!
-  defaultPayoutApprover: Bytes!
   productCreatorsAllowlistId: BigInt!
   maxProductOperatorIncentiveFee: BigInt!
   maxMarketOperatorIncentiveFee: BigInt!
   policyTokenIssuer: Bytes!
   policyTokenPermissionIssuer: Bytes!
-  allowListAddress: Bytes!
   liquidationGasUsage: BigInt!
   liquidationIncentive: BigInt!
   solvencyMultiplier: BigInt!
   minPolicyDepositMultiplier: BigInt!
-  maxRiskPoolManagerFee: BigInt!
+  maxRiskPoolOperatorFee: BigInt!
   extPoolDetailsConfidenceInterval: BigInt!
   bridgeConnector: Bytes!
   swapCycleDuration: BigInt!
   swapDuration: BigInt!
   idleDuration: BigInt!
+  maxIterations: BigInt!
+  executionDelay: BigInt!
 
   status: Int!
 }
 
 type PolicyPermissionToken @entity {
   id: ID!
-  policyId: BigInt
-  owner: Bytes
-  policy: Policy
+  policyId: BigInt!
+  owner: Bytes!
+  policy: Policy!
+}
+
+type DelayedExecution @entity {
+  # key
+  id: ID!
+  data: Bytes!
+  delayedAt: BigInt!
+  requestedBy: Bytes!
+  requestedAt: BigInt!
+}
+
+type DelayedExecutionHistory @entity {
+  id: ID!
+  key: String!
+  data: Bytes!
+  requestedBy: Bytes!
+  requestedAt: BigInt!
+  executedAt: BigInt!
+  executedBy: Bytes!
+  isDeclined: Boolean!
 }
 
 type Product @entity {
   id: ID!
+  productId: BigInt!
   riskPoolsControllerAddress: Bytes!
   policyTokenIssuerAddress: Bytes!
   treasuryAddress: Bytes!
-  allowListAddress: Bytes
-  payoutRequester: Bytes
-  payoutApprover: Bytes
-  productIncentiveFee: BigInt
-  maxMarketIncentiveFee: BigInt
+  payoutRequester: Bytes!
+  payoutApprover: Bytes!
+  operatorFee: BigInt!
+  owner: Bytes!
+  maxMarketIncentiveFee: BigInt!
   title: String
   wording: String
-  cashSettlementIsEnabled: Boolean
-  physicalSettlementIsEnabled: Boolean
-  feeToken: Bytes
-  marketCreationFeeAmount: BigInt
-  defaultPremiumToken: Bytes
-  defaultCapitalToken: Bytes
-  defaultCoverAdjusterOracle: Bytes
-  claimProcessor: Bytes
-  defaultPremiumRateModels: [Bytes!]!
-  defaultRatesOracle: Bytes
-  withdrawalDelay: BigInt
-  withdrawRequestExpiration: BigInt
-  marketCreatorsAllowlistId: BigInt
-  waitingPeriod: BigInt
+  details: String
+  data: String
+  settlementType: Int!
+  cashSettlementIsEnabled: Boolean!
+  physicalSettlementIsEnabled: Boolean!
+  feeToken: Bytes!
+  marketCreationFeeAmount: BigInt!
+  defaultPremiumToken: Bytes!
+  defaultCapitalToken: Bytes!
+  defaultCoverAdjusterOracle: Bytes!
+  claimProcessor: Bytes!
+  defaultRatesOracle: Bytes!
+  withdrawalDelay: BigInt!
+  withdrawRequestExpiration: BigInt!
+  marketCreatorsAllowlistId: BigInt!
+  waitingPeriod: BigInt!
   operator: Bytes!
   createdAt: BigInt!
   createdBy: Bytes!
@@ -79,61 +100,119 @@ type Market @entity {
   id: ID!
   marketId: BigInt!
   product: Product!
+  productId: BigInt!
   riskPoolsControllerAddress: Bytes!
   entityList: [String!]
   isEnabled: Boolean!
   createdAt: BigInt!
   title: String!
-  details: String
+  details: String!
   wording: String
-  exposure: BigInt!
-  actualCover: BigInt!
-  author: Bytes!
-  marketFeeRecipient: Bytes!
+  data: String
+  operator: Bytes!
+  owner: Bytes!
   premiumToken: Bytes!
   capitalToken: Bytes!
   insuredToken: Bytes!
-  poolMarketRelations: [PoolMarketRelation!]! @derivedFrom(field: "market")
-  latestAccruedTimestamp: BigInt
-  coverAdjusterOracle: Bytes
-  rateOracle: Bytes
-  waitingPeriod: BigInt
-  marketOperatorIncentiveFee: BigInt
-  policyBuyerAllowListId: BigInt
-  status: Int
-  premiumMulAccumulator: BigInt
-  settlementDiscount: BigInt
-  riskTowerRoot: BigInt
+
+  bids: [Bid!]! @derivedFrom(field: "market")
+  aggregatedPools: [AggregatedPool!]! @derivedFrom(field: "market")
+
+  latestAccruedTimestamp: BigInt!
+  coverAdjusterOracle: Bytes!
+  rateOracle: Bytes!
+  waitingPeriod: BigInt!
+  operatorFee: BigInt!
+  policyBuyerAllowListId: BigInt!
+  policyBuyerAllowanceListId: BigInt!
+  status: Int!
+  premiumMulAccumulator: BigInt!
+  settlementDiscount: BigInt!
+
+  desiredCover: BigInt!
+  withdrawDelay: BigInt!
+  headAggregatedPoolId: BigInt!
+  tailCover: BigInt!
+  minPremiumRatePerSec: BigInt!
+  maxPremiumRatePerSec: BigInt!
+  bidStepPremiumRatePerSec: BigInt!
+  maxAggregatedPoolSlots: BigInt!
+  tailKink: BigInt!
+  tailJumpPremiumRatePerSec: BigInt!
+  tailAggPoolId: BigInt
+
+  payoutRequester: Bytes!
+  payoutApprover: Bytes!
 
   rewards: [CoverMiningReward!]! @derivedFrom(field: "market")
-  riskTower: [RiskTowerLevel!]! @derivedFrom(field: "market")
 }
 
-type MarketAggregatedPool @entity {
+type LoanRequest @entity {
   id: ID!
-  list: [String!]!
+  policyId: BigInt!
+  loans: [Loan!]! @derivedFrom(field: "loanRequest")
+  amount: BigInt!
+  minAmount: BigInt!
+  maxPremiumRatePerSec: BigInt!
+  approvedAmount: BigInt!
+  filledAmount: BigInt!
+  receiveOnApprove: Boolean!
+  details: String
+  status: Int!
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }
 
-type RiskTowerLevel @entity {
+type Loan @entity {
   id: ID!
-  market: Market!
-  levelNo: Int
-  aggregatedPools: [AggregatedPool!]! @derivedFrom(field: "riskTowerLevel")
-  nextLevel: RiskTowerLevel
-  prevLevel: RiskTowerLevel
+  loanRequestId: BigInt!
+  loanRequest: LoanRequest!
+  policyId: BigInt!
+  marketId: BigInt!
+  borrowedAmount: BigInt!
+  lastUpdateTs: BigInt!
+  governanceIncentiveFee: BigInt!
+  productOperatorIncentiveFee: BigInt!
+  marketOperatorIncentiveFee: BigInt!
+  interestCharged: BigInt!
+  interestRepaid: BigInt!
+  data: String
+  createdAt: BigInt!
+}
+
+type LoanChunk @entity {
+  """ loanId-riskPool """
+  id: ID!
+  loanId: BigInt!
+  poolId: Bytes!
+  rate: BigInt!
+  borrowedAmount: BigInt!
+  borrowedAmountInPoolAssetToken: BigInt!
+  repaidAmount: BigInt!
+  accruedInterest: BigInt!
+  lastUpdateTs: BigInt!
+}
+
+type LoanPayment @entity {
+  id: ID!
+  loanId: BigInt!
+  poolId: Bytes!
+  paidPrinciple: BigInt!
+  paidInterest: BigInt!
+  payer: Bytes!
+  createdAt: BigInt!
 }
 
 type AggregatedPool @entity {
   id: ID!
-  riskTowerLevel: RiskTowerLevel!
-  premiumRateModel: Bytes!
   market: Market!
-  poolMarketRelations: [PoolMarketRelation!]!
-    @derivedFrom(field: "aggregatedPool")
   poolList: [String!]!
   rate: BigInt!
   totalCapacity: BigInt!
-  coverage: BigInt!
+  premiumAccumulator: BigInt!
+  premiumBalance: BigInt!
+  nextAggregatedPoolId: BigInt!
+  prevAggregatedPoolId: BigInt!
 }
 
 type CoverMiningReward @entity {
@@ -188,12 +267,12 @@ type MarketAccruedFee @entity {
 
 type FrontendOperator @entity {
   id: ID!
-  feeRecipient: Bytes
-  frontendOperatorFee: BigInt
-  referralFee: BigInt
-  policyBuyerReferralBonus: BigInt
+  feeRecipient: Bytes!
+  frontendOperatorFee: BigInt!
+  referralFee: BigInt!
+  policyBuyerReferralBonus: BigInt!
   meta: String
-  isActive: Boolean
+  isActive: Boolean!
 }
 
 type Policy @entity {
@@ -203,32 +282,34 @@ type Policy @entity {
   id: ID!
   policyTokenIssuerAddress: Bytes!
   policyId: BigInt!
-  productId: String
+  product: Product!
+  productId: BigInt!
   market: Market!
   marketId: BigInt
   owner: String!
   issuer: String!
   coverage: BigInt!
-  coverageChanged: BigInt
-  underlyingCover: BigInt
-  validFrom: BigInt
+  coverageChanged: BigInt!
+  underlyingCover: BigInt!
+  validFrom: BigInt!
   validUntil: BigInt!
   originalBalance: BigInt!
   balance: BigInt!
   totalCharged: BigInt!
-  expired: Boolean
-  waitingPeriod: BigInt
+  expired: Boolean!
+  waitingPeriod: BigInt!
   claims: [Claim!] @derivedFrom(field: "policy")
   frontendOperator: FrontendOperator
-  updatedAt: BigInt
+  updatedAt: BigInt!
   liquidatedAt: BigInt
   liquidatedBy: String
 
-  initialMarketPremiumMulAccumulator: BigInt
+  initialMarketPremiumMulAccumulator: BigInt!
 
   premiumDeposit: BigInt!
   foAddress: Bytes!
   foFeeRate: BigInt!
+  referralBonus: BigInt!
   foFeeDeposit: BigInt!
   referralAddress: Bytes!
   referralFeeRate: BigInt!
@@ -236,61 +317,55 @@ type Policy @entity {
   permissionTokens: [PolicyPermissionToken!] @derivedFrom(field: "policy")
 }
 
-type PoolMarketRelation @entity {
-  id: ID!
-  poolId: Bytes!
-  market: Market!
-  balance: BigInt!
-  capacityAllowance: BigInt
-  poolCapacityLimit: BigInt
-  marketCapacityLimit: BigInt
-  pool: Pool
-  aggregatedPool: AggregatedPool!
-}
-
 type Pool @entity {
   id: ID!
   capitalTokenAddress: Bytes!
-  nominatedTokenAddress: Bytes
+  nominatedTokenAddress: Bytes!
   name: String
   riskPoolsControllerAddress: Bytes!
   capitalTokenBalance: BigInt!
   poolTokenBalance: BigInt!
   participants: BigInt!
-  createdAt: BigInt
+  createdAt: BigInt!
   createdBy: Bytes!
   poolTokenDecimals: Int
   poolTokenSymbol: String
   capitalTokenDecimals: Int
   capitalTokenSymbol: String
   markets: [Market!]!
-  updatedAt: BigInt
-  withdrawDelay: BigInt
-  withdrawRequestExpiration: BigInt
-  capitalRequirement: BigInt
-  lpAllowListId: BigInt
+  updatedAt: BigInt!
+  withdrawDelay: BigInt!
+  withdrawRequestExpiration: BigInt!
+  capitalRequirement: BigInt!
+  lpAllowListId: BigInt!
+  lpAllowanceListId: BigInt!
   rewards: [Reward!]!
   premiums: [PoolPremium!] @derivedFrom(field: "pool")
   settlements: [PoolSettlement!] @derivedFrom(field: "pool")
   fees: [PoolFee!] @derivedFrom(field: "pool")
   marketFees: [MarketPoolFee!] @derivedFrom(field: "pool")
-  poolMarketRelations: [PoolMarketRelation!] @derivedFrom(field: "pool")
+  bids: [Bid!] @derivedFrom(field: "pool")
   externalPoolList: [String!]!
   externalWalletList: [ExternalWallet!] @derivedFrom(field: "pool")
-  externalCapacity: BigInt
+  externalCapacity: BigInt!
   externalStatLastUpdated: BigInt
-  totalTransferredOut: BigInt
+  totalTransferredOut: BigInt!
   premiumRootHash: String
   premiumRootHashLastUpdated: BigInt
   premiumDataUrl: String
   settlementRootHash: String
   settlementRootHashLastUpdated: BigInt
   settlementDataUrl: String
-  physicalSettlementMarketCount: Int
-  manager: Bytes!
-  managerFee: BigInt!
-  feeRecipient: Bytes!
+  physicalSettlementMarketCount: Int!
+  operator: Bytes!
+  operatorFee: BigInt!
+  owner: Bytes!
   agreement: String!
+  details: String!
+  data: String!
+  released: BigInt!
+  withdrawProcedure: Int!
+  reserveRatio: BigInt!
 }
 
 type FeeRecipientPool @entity {
@@ -307,14 +382,14 @@ type ExternalWallet @entity {
   """
   id: ID!
   pool: Pool!
-  externalChainId: BigInt
-  externalPoolId: Bytes
-  reserveWallet: Bytes
-  refundWallet: Bytes
-  externalReserveWallet: Bytes
-  externalRefundWallet: Bytes
-  transferredTo: BigInt
-  isActive: Boolean
+  externalChainId: BigInt!
+  externalPoolId: Bytes!
+  reserveWallet: Bytes!
+  refundWallet: Bytes!
+  externalReserveWallet: Bytes!
+  externalRefundWallet: Bytes!
+  transferredTo: BigInt!
+  isActive: Boolean!
 }
 
 type PoolPremium @entity {
@@ -401,18 +476,18 @@ type Reward @entity {
   rewardTokenDecimals: Int
   rewardTokenSymbol: String
   rewardTokenName: String
-  startedAt: BigInt
-  endedAt: BigInt
-  ratePerSecond: BigInt
-  updatedAt: BigInt
-  rewardPerToken: BigInt
+  startedAt: BigInt!
+  endedAt: BigInt!
+  ratePerSecond: BigInt!
+  updatedAt: BigInt!
+  rewardPerToken: BigInt!
   cid: String
 }
 
 type PoolParticipant @entity {
   id: ID!
   user: String!
-  poolId: String
+  poolId: String!
   tokenBalance: BigInt!
 }
 
@@ -449,20 +524,20 @@ type WithdrawRequest @entity {
   num: BigInt!
   poolId: Bytes!
   userId: Bytes!
-  status: Int
-  amount: BigInt
-  delayedAt: BigInt
+  status: Int!
+  amount: BigInt!
+  delayedAt: BigInt!
 }
 
 type Claim @entity {
   id: ID!
-  policyId: BigInt
+  policyId: BigInt!
   votingId: BigInt
   policy: Policy!
   product: Product!
   submittedBy: Bytes!
   submittedAt: BigInt!
-  status: Int
+  status: Int!
   details: String
 }
 
@@ -480,8 +555,8 @@ type RateOraclePairRate @entity {
   oracle: String!
   from: String!
   to: String!
-  value: BigInt
-  updatedAt: BigInt
+  value: BigInt!
+  updatedAt: BigInt!
 }
 
 type AdjustmentConfiguration @entity {
@@ -491,15 +566,15 @@ type AdjustmentConfiguration @entity {
   id: ID!
   configId: BigInt!
   coverAdjuster: Bytes!
-  productId: Bytes!
+  productId: BigInt!
   product: Product
   policyId: BigInt!
-  policy: Policy
-  tokenId: BigInt
-  maxCoverage: BigInt
-  maxRate: BigInt
+  policy: Policy!
+  tokenId: BigInt!
+  maxCoverage: BigInt!
+  maxRate: BigInt!
   lastAdjustmentAt: BigInt
-  adjustmentFrequency: BigInt
+  adjustmentFrequency: BigInt!
 }
 
 type PremiumRateModel @entity {
@@ -524,25 +599,37 @@ type Swap @entity {
   market: Market!
 }
 
+type SwapDetail @entity {
+  id: ID!
+  recipient: Bytes!
+  riskPool: Bytes!
+  insuredToken: Bytes!
+  insuredTokenSwappedAmount: BigInt!
+  assetToken: Bytes!
+  assetTokenSwappedAmount: BigInt!
+  createdAt: BigInt!
+  transaction: Bytes!
+}
+
 type Payout @entity {
   id: ID!
-  marketId: BigInt
+  marketId: BigInt!
   market: Market!
-  recipient: Bytes
-  capitalToken: Bytes
-  amount: BigInt
+  recipient: Bytes!
+  capitalToken: Bytes!
+  amount: BigInt!
 }
 
 type PayoutRequest @entity {
   id: ID!
   marketId: BigInt!
   market: Market!
-  policyId: BigInt
-  recipient: Bytes
-  distributor: Boolean
-  baseAsset: Bytes
-  requestedAmount: BigInt
-  status: Int
+  policyId: BigInt!
+  recipient: Bytes!
+  distributor: Boolean!
+  baseAsset: Bytes!
+  requestedAmount: BigInt!
+  status: Int!
   rootHash: String
   data: String
   externalRecipientList: [String!]!
@@ -611,4 +698,53 @@ type IncomingLoss @entity {
   poolId: Bytes
   amount: BigInt
   createdAt: BigInt
+}
+
+type AllowList @entity {
+  id: ID!
+  type: Int!
+  owner: Bytes!
+  descriptionCid: String
+  accounts: [AllowListAccount!] @derivedFrom(field: "allowListId")
+  createdAt: BigInt!
+  createdBy: Bytes!
+  updatedAt: BigInt!
+}
+
+type Bid @entity {
+  """
+  marketId-poolId
+  """
+  id: ID!
+  marketId: String!
+  poolId: Bytes!
+
+  minPremiumRatePerSec: BigInt!
+  maxPremiumRatePerSec: BigInt!
+  minCoverBuffer: BigInt!
+  maxCoverBuffer: BigInt!
+  aggregatedPoolId: BigInt!
+  bidOptimization: Int!
+
+  maxCapacityLimit: BigInt!
+  marketCapacityLimit: BigInt!
+  capacityAllowance: BigInt!
+
+  capacity: BigInt!
+  aggregatedPool: AggregatedPool
+  market: Market!
+  pool: Pool!
+
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type AllowListAccount @entity {
+  """
+  allowListId-account
+  """
+  id: ID!
+  allowListId: AllowList!
+  account: Bytes!
+  value: BigInt!
 }

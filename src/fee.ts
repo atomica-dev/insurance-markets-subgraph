@@ -1,12 +1,7 @@
 import { Bytes, BigInt } from "@graphprotocol/graph-ts";
 import { LogMarketCharge } from "../generated/RiskPoolsController/RiskPoolsController";
 import { getSystemConfig } from "./system";
-import {
-  UserFee,
-  MarketUserFee,
-  Market,
-  Product,
-} from "../generated/schema";
+import { UserFee, MarketUserFee, Market, Product } from "../generated/schema";
 
 export enum FeeType {
   Governance,
@@ -52,7 +47,7 @@ export function updateUserFee(token: Bytes, user: Bytes, type: string, delta: Bi
 
     userFee.tokenId = token;
     userFee.userId = user;
-    userFee.type = type
+    userFee.type = type;
     userFee.amount = BigInt.fromI32(0);
     userFee.claimedAmount = BigInt.fromI32(0);
   }
@@ -106,10 +101,10 @@ export function updateAllTypeFees(event: LogMarketCharge, token: Bytes, market: 
   const governanceFee = updateUserFee(token, treasury, getFeeTypeString(FeeType.Governance), event.params.governanceFee);
   updateMarketUserFee(governanceFee, event.params.marketId, event.params.governanceFee);
 
-  const marketManagerFee = updateUserFee(token, market.marketFeeRecipient, getFeeTypeString(FeeType.MarketManager), event.params.marketOparatorFee);
+  const marketManagerFee = updateUserFee(token, market.owner, getFeeTypeString(FeeType.MarketManager), event.params.marketOparatorFee);
   updateMarketUserFee(marketManagerFee, event.params.marketId, event.params.marketOparatorFee);
 
   const product = Product.load(market.product)!;
-  const productManagerFee = updateUserFee(token, product.operator, getFeeTypeString(FeeType.ProductManager), event.params.productOperatorFee);
+  const productManagerFee = updateUserFee(token, product.owner, getFeeTypeString(FeeType.ProductManager), event.params.productOperatorFee);
   updateMarketUserFee(productManagerFee, event.params.marketId, event.params.productOperatorFee);
 }

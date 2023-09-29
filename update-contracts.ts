@@ -5,13 +5,17 @@ const YAML_PATH = "./subgraph.template.yaml";
 const OUT_PATH = "./subgraph.yaml";
 const DEFAULT_NETWORK = "5";
 const ENV_TO_NETWORK: any = {
-  "srm-dev": "5",
+  "srm-dev": "80001",
   "mainnet": "1",
   "ganache": "7777",
   "srm-staging": "5",
-  "local-kovan": "42",
+  "local-mumbai": "80001",
   "local-goerli": "5",
   "srm-production": "137",
+  "srm-dev-sepolia": "11155111",
+  "srm-staging-sepolia": "11155111",
+  "srm-staging-arbitrum": "421613",
+  "srm-production-arbitrum": "42161",
 };
 const NETWORK_NAMES: any = {
   "7777": "ganache",
@@ -21,6 +25,14 @@ const NETWORK_NAMES: any = {
   "1": "mainnet",
   "137": "matic",
   "80001": "mumbai",
+  "11155111": "sepolia",
+  "1101": "polygon-zkevm",
+  "1442": "polygon-zkevm-testnet",
+  "4002": "fantom-testnet",
+  "43113": "fuji",
+  "43114": "avalanche",
+  "42161": "arbitrum-one",
+  "421613": "arbitrum-goerli",
 };
 const MANUAL_FILE_UPDATES: string[] = [];
 const ENV = process.argv[2] || "srm-dev";
@@ -55,8 +67,16 @@ function getConfigValue(name: string, networkId: string, value: string = "addres
 }
 
 function updateSubgraphYaml() {
+  const targetNetwork = Object.values(NETWORK_NAMES).some(value => value === NETWORK) ? NETWORK : NETWORK_NAMES[NETWORK || ENV_TO_NETWORK[ENV] || DEFAULT_NETWORK];
+
+  console.info(`Environment: ${ENV}, Chain: ${targetNetwork}`);
+
+  if (!ENV || !targetNetwork) {
+    console.error('Error: Can not find specified config.');
+    process.exit(1);
+  }
+
   const yaml = YAML.parse(fs.readFileSync(YAML_PATH, "utf8"));
-  const targetNetwork = NETWORK_NAMES[NETWORK || ENV_TO_NETWORK[ENV] || DEFAULT_NETWORK];
 
   for (const source of yaml.dataSources) {
     const name = source.source.abi;
