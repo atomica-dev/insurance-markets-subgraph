@@ -3069,7 +3069,7 @@
           },
           {
             "internalType": "address",
-            "name": "marketFeeRecipient",
+            "name": "owner",
             "type": "address"
           },
           {
@@ -3210,7 +3210,7 @@
           },
           {
             "internalType": "address",
-            "name": "productOperatorFeeRecipient",
+            "name": "owner",
             "type": "address"
           },
           {
@@ -5654,7 +5654,7 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "productOperator",
+        "name": "operator",
         "type": "address"
       },
       {
