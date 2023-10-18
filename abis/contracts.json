@@ -54,8 +54,8 @@
       "RiskPoolsController": "0x89481aaE571b83b58d58d0fAE8aC1c9c07ab10e9"
     },
     "local-mumbai": {
-      "defaultStartBlock": 40387985,
-      "RiskPoolsController": "0xA6dF14150aD286633C5FEc1763FB4919970b8686"
+      "defaultStartBlock": 41335680,
+      "RiskPoolsController": "0x4d09476F697265aED30aDdc652b41b0eCb94111a"
     },
     "local-fuji": {
       "defaultStartBlock": 24106979,
