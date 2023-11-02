@@ -36,6 +36,10 @@
       "defaultStartBlock": 34002868,
       "RiskPoolsController": "0x57c80926D859fb76BC0e52DdFb136504aD15af97"
     },
+    "srm-production-zk-evm": {
+      "defaultStartBlock": 6624780,
+      "RiskPoolsController": "0xEDb0fAd2626A2fbA4b0276CCbE28Ba05351bC867"
+    },
     "fc-demo": {
       "defaultStartBlock": 7534945,
       "Erc20Mock": "0x4dbcdf9b62e891a7cec5a2568c3f4faf9e8abe2b",
