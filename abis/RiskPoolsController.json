@@ -2338,6 +2338,50 @@
   {
     "inputs": [
       {
+        "internalType": "uint256[]",
+        "name": "marketIds_",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "depositAmounts_",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "desiredCovers_",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "string[]",
+        "name": "details_",
+        "type": "string[]"
+      },
+      {
+        "internalType": "address",
+        "name": "frontendOperator_",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "referral_",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "recipient_",
+        "type": "address"
+      }
+    ],
+    "name": "applyForPolicyInBatch",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x14d81fba"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "loanRequestId",
         "type": "uint256"
@@ -3069,7 +3113,7 @@
           },
           {
             "internalType": "address",
-            "name": "marketFeeRecipient",
+            "name": "owner",
             "type": "address"
           },
           {
@@ -3210,7 +3254,7 @@
           },
           {
             "internalType": "address",
-            "name": "productOperatorFeeRecipient",
+            "name": "owner",
             "type": "address"
           },
           {
@@ -5654,7 +5698,7 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "productOperator",
+        "name": "operator",
         "type": "address"
       },
       {

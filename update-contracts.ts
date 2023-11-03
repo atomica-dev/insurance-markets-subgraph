@@ -16,6 +16,7 @@ const ENV_TO_NETWORK: any = {
   "srm-staging-sepolia": "11155111",
   "srm-staging-arbitrum": "421613",
   "srm-production-arbitrum": "42161",
+  "srm-production-zk-evm": "1101",
 };
 const NETWORK_NAMES: any = {
   "7777": "ganache",
