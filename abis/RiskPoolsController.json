@@ -5467,6 +5467,35 @@
   {
     "inputs": [
       {
+        "internalType": "uint256[]",
+        "name": "policyIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "permissionIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "desiredCovers",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "int256[]",
+        "name": "balanceDeltas",
+        "type": "int256[]"
+      }
+    ],
+    "name": "policyBatchUpdate",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xf211c9fd"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "marketId",
         "type": "uint256"
@@ -7600,6 +7629,25 @@
     "stateMutability": "nonpayable",
     "type": "function",
     "signature": "0x5e700f9e"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "riskPool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "allowanceListId",
+        "type": "uint256"
+      }
+    ],
+    "name": "setRiskPoolLpAllowanceListId",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xe34d5f16"
   },
   {
     "inputs": [

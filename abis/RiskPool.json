@@ -380,6 +380,19 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "allowanceListId",
+        "type": "uint256"
+      }
+    ],
+    "name": "LogLpAllowanceListChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "allowlistId",
         "type": "uint256"
       }
@@ -2289,6 +2302,19 @@
       }
     ],
     "name": "setConnectedRiskPoolsData",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "allowanceListId",
+        "type": "uint256"
+      }
+    ],
+    "name": "setLpAllowanceListId",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
