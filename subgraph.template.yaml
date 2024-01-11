@@ -156,7 +156,7 @@ dataSources:
           handler: handleLogExecuted
         - event: LogExecutionDeclined(bytes32)
           handler: handleLogExecutionDeclined
-        - event: LogLoanRequested(uint256,uint256,uint256,uint256,uint256,bool)
+        - event: LogLoanRequested(uint256,uint256,uint256,uint256,uint256,address,bool)
           handler: handleLogLoanRequested
         - event: LogLoanApproved(uint256)
           handler: handleLogLoanApproved
