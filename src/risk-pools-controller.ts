@@ -1580,6 +1580,7 @@ function initLoanRequest(loanRequestId: BigInt, rpcAddress: Address, event: ethe
   loanRequest.maxPremiumRatePerSec = cLoanRequest.maxPremiumRatePerSec;
   loanRequest.approvedAmount = cLoanRequest.approvedAmount;
   loanRequest.filledAmount = cLoanRequest.filledAmount;
+  loanRequest.recipient = cLoanRequest.recipient;
   loanRequest.receiveOnApprove = cLoanRequest.receiveOnApprove;
   loanRequest.details = cLoanRequest.details;
   loanRequest.status = cLoanRequest.status;
