@@ -710,6 +710,12 @@
       },
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": false,
         "internalType": "bool",
         "name": "receiveOnApprove",
         "type": "bool"
@@ -717,7 +723,7 @@
     ],
     "name": "LogLoanRequested",
     "type": "event",
-    "signature": "0x5cef21080098a9ea7791db0de92061ef0352fcf7702e737ab7f2fd615a5670ea"
+    "signature": "0x18dce24eebfbf15e5524d3de72bca784c3165a0a047c77968b34e9d9cc22e23f"
   },
   {
     "anonymous": false,
@@ -6173,6 +6179,11 @@
         "type": "uint256"
       },
       {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
         "internalType": "bool",
         "name": "receiveOnApprove",
         "type": "bool"
@@ -6193,7 +6204,7 @@
     ],
     "stateMutability": "nonpayable",
     "type": "function",
-    "signature": "0xb7d6b32f"
+    "signature": "0xcf34b8e0"
   },
   {
     "inputs": [
