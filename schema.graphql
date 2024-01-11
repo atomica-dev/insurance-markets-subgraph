@@ -156,6 +156,7 @@ type LoanRequest @entity {
   maxPremiumRatePerSec: BigInt!
   approvedAmount: BigInt!
   filledAmount: BigInt!
+  recipient: Bytes!
   receiveOnApprove: Boolean!
   details: String
   status: Int!

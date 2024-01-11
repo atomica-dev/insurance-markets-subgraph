@@ -451,6 +451,7 @@ export class CLoanRequest {
   maxPremiumRatePerSec: BigInt;
   approvedAmount: BigInt;
   filledAmount: BigInt;
+  recipient: Address;
   receiveOnApprove: boolean;
   details: string;
   status: i32;
@@ -469,8 +470,9 @@ export function getLoanRequest(contract: RiskPoolsControllerContract, loanReques
     maxPremiumRatePerSec: result.value.value3,
     approvedAmount: result.value.value4,
     filledAmount: result.value.value5,
-    receiveOnApprove: result.value.value6,
-    details: result.value.value7,
-    status: result.value.value8,
+    recipient: result.value.value6,
+    receiveOnApprove: result.value.value7,
+    details: result.value.value8,
+    status: result.value.value9,
   };
 }
