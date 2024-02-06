@@ -1,8 +1,8 @@
 {
   "environment": {
     "srm-dev": {
-      "defaultStartBlock": 44657424,
-      "RiskPoolsController": "0xDa2bD6E655CacF2bb9e35367b69E615bDc8df16E"
+      "defaultStartBlock": 45613378,
+      "RiskPoolsController": "0x510c0aB96F0b919c05a44cd221Ff5EE5d088BBB7"
     },
     "srm-dev-sepolia": {
       "defaultStartBlock": 0,

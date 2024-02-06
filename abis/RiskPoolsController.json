@@ -1383,6 +1383,52 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      }
+    ],
+    "name": "LogPolicyCoverDelegationOperatorUpdated",
+    "type": "event",
+    "signature": "0x946852a1a91726b0f4cd3c5b55dc2f1548ab864d69020076ea8f94b3f1cd43ce"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "policyId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "rootHash",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "integrationNumber",
+        "type": "uint256"
+      }
+    ],
+    "name": "LogPolicyCoverDelegationUpdated",
+    "type": "event",
+    "signature": "0xe28ed3843ecf62c8f8559bf181c49b5c816440b19f503056e647b0f34b308c8c"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "policyId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "erc20",
         "type": "address"
       },
@@ -5436,6 +5482,42 @@
         "type": "uint256"
       }
     ],
+    "name": "policiesCoverDelegation",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "rootHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "integrationNumber",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "data",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true,
+    "signature": "0x222aff2d"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "policyId",
+        "type": "uint256"
+      }
+    ],
     "name": "policyActualCover",
     "outputs": [
       {
@@ -6821,6 +6903,25 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "policyId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      }
+    ],
+    "name": "setCoverDelegationOperator",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0xd970d572"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "marketId",
         "type": "uint256"
       },
@@ -8065,6 +8166,88 @@
   {
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "policyId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "rootHash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "integrationNumber",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "data",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct IApplyForPolicyImpl.UpdateCoverDelegationParams",
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "updateCoverDelegation",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x9e0b6567"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "policyId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "rootHash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "integrationNumber",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "data",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct IApplyForPolicyImpl.UpdateCoverDelegationParams",
+        "name": "params",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
+      }
+    ],
+    "name": "updateCoverDelegationWithSignature",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "signature": "0x3d9625a6"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "frontendOperatorFee",
         "type": "uint256"
@@ -8164,6 +8347,42 @@
     "type": "function",
     "constant": true,
     "signature": "0x773a77af"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "policyId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "proofs",
+        "type": "bytes32[]"
+      }
+    ],
+    "name": "verifyCoverDelegation",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true,
+    "signature": "0xcd5b43a9"
   },
   {
     "inputs": [],
