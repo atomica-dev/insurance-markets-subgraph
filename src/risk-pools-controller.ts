@@ -64,6 +64,8 @@ import {
   LogLoanInterestPaid,
   LogLoanRequestClosed,
   LogLoanRequestModified,
+  LogPolicyCoverDelegationUpdated,
+  LogPolicyCoverDelegationOperatorUpdated,
 } from "../generated/RiskPoolsController/RiskPoolsController";
 import { PolicyPermissionTokenIssuer, PolicyTokenIssuer, PayoutRequester as PayoutRequesterTemplate } from "../generated/templates";
 import {
@@ -114,6 +116,7 @@ import {
   getMarketMeta,
   getPayoutRequest,
   getPolicy,
+  getPolicyCoverDelegation,
   getPolicyDeposit,
   getProduct,
   getProductMeta,
@@ -1744,4 +1747,27 @@ export function handleLogLoanInterestCharged(event: LogLoanInterestCharged): voi
   loan.interestCharged = loan.interestCharged.plus(event.params.amount);
 
   loan.save();
+}
+
+export function handleLogPolicyCoverDelegationOperatorUpdated(event: LogPolicyCoverDelegationOperatorUpdated): void {
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+  let ptiAddress = rpcContract.policyTokenIssuer();
+  let policy = Policy.load(ptiAddress.toHexString() + "-" + event.params.policyId.toString())!;
+
+  policy.delegationOperator = event.params.operator;
+
+  policy.save();
+}
+
+export function handleLogPolicyCoverDelegationUpdated(event: LogPolicyCoverDelegationUpdated): void {
+  let rpcContract = RiskPoolsControllerContract.bind(event.address);
+  let ptiAddress = rpcContract.policyTokenIssuer();
+  let policy = Policy.load(ptiAddress.toHexString() + "-" + event.params.policyId.toString())!;
+  let cCoverDelegation = getPolicyCoverDelegation(rpcContract, event.params.policyId);
+
+  policy.delegationIntegrationNumber = cCoverDelegation.integrationNumber;
+  policy.delegationData = cCoverDelegation.data;
+  policy.delegationRootHash = cCoverDelegation.rootHash.toHexString();
+
+  policy.save();
 }

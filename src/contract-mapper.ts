@@ -54,6 +54,24 @@ export function getPolicyDeposit(contract: RiskPoolsControllerContract, id: BigI
   };
 }
 
+export class CPolicyCoverDelegation {
+  operator: Address;
+  rootHash: Bytes;
+  integrationNumber: BigInt;
+  data: string;
+}
+
+export function getPolicyCoverDelegation(contract: RiskPoolsControllerContract, id: BigInt): CPolicyCoverDelegation {
+  let d = contract.policiesCoverDelegation(id);
+
+  return {
+    operator: d.value0,
+    rootHash: d.value1,
+    integrationNumber: d.value2,
+    data: d.value3,
+  };
+}
+
 export class PoolBucket {
   premiumAccumulator: BigInt;
   settlementAccumulator: BigInt;
