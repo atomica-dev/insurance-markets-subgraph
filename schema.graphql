@@ -316,6 +316,11 @@ type Policy @entity {
   referralFeeRate: BigInt!
   referralFeeDeposit: BigInt!
   permissionTokens: [PolicyPermissionToken!] @derivedFrom(field: "policy")
+
+  delegationOperator: Bytes
+  delegationIntegrationNumber: BigInt
+  delegationData: String
+  delegationRootHash: String
 }
 
 type Pool @entity {
