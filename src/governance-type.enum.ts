@@ -22,7 +22,6 @@ export enum GovernanceLogType {
   RiskPoolWithdrawDelay,
   RiskPoolWithdrawRequestExpiration,
   RiskPoolLpAllowlistId,
-  RiskPoolLpAllowanceListId,
   RiskPoolWithdrawProcedure,
   RiskPoolReserveRatio,
   RiskPoolDetails,
@@ -70,4 +69,5 @@ export enum GovernanceLogType {
 
   SwapCycle,
   SettlementDiscount,
+  RiskPoolLpAllowanceListId,
 }
