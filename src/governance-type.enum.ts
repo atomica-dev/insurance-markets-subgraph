@@ -69,4 +69,5 @@ export enum GovernanceLogType {
 
   SwapCycle,
   SettlementDiscount,
+  RiskPoolLpAllowanceListId,
 }

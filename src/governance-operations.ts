@@ -34,6 +34,7 @@ GovernanceOperationMap.set(GovernanceLogType.RiskPoolWithdrawRequestExpiration, 
 GovernanceOperationMap.set(GovernanceLogType.MarketPolicyBuyerAllowlistId, handleUpdateMarketPolicyBuyerAllowListId);
 GovernanceOperationMap.set(GovernanceLogType.MarketPolicyBuyerAllowancelistId, handleUpdateMarketPolicyBuyerAllowanceListId);
 GovernanceOperationMap.set(GovernanceLogType.RiskPoolLpAllowlistId, handleUpdateRiskPoolLpAllowlistId);
+GovernanceOperationMap.set(GovernanceLogType.RiskPoolLpAllowanceListId, handleUpdateRiskPoolLpAllowanceListId);
 GovernanceOperationMap.set(GovernanceLogType.RiskPoolWithdrawProcedure, handleUpdateRiskPoolWithdrawProcedure);
 GovernanceOperationMap.set(GovernanceLogType.RiskPoolReserveRatio, handleUpdateRiskPoolReserveRatio);
 GovernanceOperationMap.set(GovernanceLogType.RiskPoolDetails, handleUpdateRiskPoolDetails);
@@ -365,6 +366,18 @@ function handleUpdateRiskPoolLpAllowlistId(event: LogGovernance): void {
   }
 
   pool.lpAllowListId = event.params.param3;
+
+  pool.save();
+}
+
+function handleUpdateRiskPoolLpAllowanceListId(event: LogGovernance): void {
+  let pool = Pool.load(event.params.param1.toHexString());
+
+  if (!pool) {
+    return;
+  }
+
+  pool.lpAllowanceListId = event.params.param3;
 
   pool.save();
 }

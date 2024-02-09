@@ -54,6 +54,24 @@ export function getPolicyDeposit(contract: RiskPoolsControllerContract, id: BigI
   };
 }
 
+export class CPolicyCoverDelegation {
+  operator: Address;
+  rootHash: Bytes;
+  integrationNumber: BigInt;
+  data: string;
+}
+
+export function getPolicyCoverDelegation(contract: RiskPoolsControllerContract, id: BigInt): CPolicyCoverDelegation {
+  let d = contract.policiesCoverDelegation(id);
+
+  return {
+    operator: d.value0,
+    rootHash: d.value1,
+    integrationNumber: d.value2,
+    data: d.value3,
+  };
+}
+
 export class PoolBucket {
   premiumAccumulator: BigInt;
   settlementAccumulator: BigInt;
@@ -451,6 +469,7 @@ export class CLoanRequest {
   maxPremiumRatePerSec: BigInt;
   approvedAmount: BigInt;
   filledAmount: BigInt;
+  recipient: Address;
   receiveOnApprove: boolean;
   details: string;
   status: i32;
@@ -469,8 +488,9 @@ export function getLoanRequest(contract: RiskPoolsControllerContract, loanReques
     maxPremiumRatePerSec: result.value.value3,
     approvedAmount: result.value.value4,
     filledAmount: result.value.value5,
-    receiveOnApprove: result.value.value6,
-    details: result.value.value7,
-    status: result.value.value8,
+    recipient: result.value.value6,
+    receiveOnApprove: result.value.value7,
+    details: result.value.value8,
+    status: result.value.value9,
   };
 }

@@ -156,7 +156,7 @@ dataSources:
           handler: handleLogExecuted
         - event: LogExecutionDeclined(bytes32)
           handler: handleLogExecutionDeclined
-        - event: LogLoanRequested(uint256,uint256,uint256,uint256,uint256,bool)
+        - event: LogLoanRequested(uint256,uint256,uint256,uint256,uint256,address,bool)
           handler: handleLogLoanRequested
         - event: LogLoanApproved(uint256)
           handler: handleLogLoanApproved
@@ -176,6 +176,10 @@ dataSources:
           handler: handleLogLoanTransferred
         - event: LogLoanInterestCharged(uint256,address,uint256)
           handler: handleLogLoanInterestCharged
+        - event: LogPolicyCoverDelegationOperatorUpdated(uint256,address)
+          handler: handleLogPolicyCoverDelegationOperatorUpdated
+        - event: LogPolicyCoverDelegationUpdated(uint256,bytes32,uint256)
+          handler: handleLogPolicyCoverDelegationUpdated
       file: ./src/risk-pools-controller.ts
 templates:
   - kind: ethereum/contract
