@@ -32,6 +32,10 @@
       "defaultStartBlock": 135132393,
       "RiskPoolsController": "0xdfFa95c17fCAe00e7CE8F0bD7B9Fc1792e3B3820"
     },
+    "srm-production-avalanche": {
+      "defaultStartBlock": 42171002,
+      "RiskPoolsController": "0xe7F704e9De2551B38Ce373E8A05EEec61B6BB92D"
+    },
     "srm-production": {
       "defaultStartBlock": 34002868,
       "RiskPoolsController": "0x57c80926D859fb76BC0e52DdFb136504aD15af97"
