@@ -1,8 +1,8 @@
 {
   "environment": {
     "srm-dev": {
-      "defaultStartBlock": 41268794,
-      "RiskPoolsController": "0x6E6446C4E2082270123D6D5CA944370b54873290"
+      "defaultStartBlock": 45613378,
+      "RiskPoolsController": "0x510c0aB96F0b919c05a44cd221Ff5EE5d088BBB7"
     },
     "srm-dev-sepolia": {
       "defaultStartBlock": 0,
@@ -17,8 +17,8 @@
       "RiskPoolsController": "0xC1A6B7A1C4455c7A0757c6Ec2CF3A9446C080Cc6"
     },
     "srm-staging": {
-      "defaultStartBlock": 41010865,
-      "RiskPoolsController": "0x95288832779c0c4EAc5aF564D25865cA8075EC19"
+      "defaultStartBlock": 44621016,
+      "RiskPoolsController": "0x0BeC5BEc042969F3eb6Fc12ceCFe9a77D8D90994"
     },
     "srm-staging-sepolia": {
       "defaultStartBlock": 4177725,
@@ -31,6 +31,10 @@
     "srm-production-arbitrum": {
       "defaultStartBlock": 135132393,
       "RiskPoolsController": "0xdfFa95c17fCAe00e7CE8F0bD7B9Fc1792e3B3820"
+    },
+    "srm-production-avalanche": {
+      "defaultStartBlock": 42171002,
+      "RiskPoolsController": "0xe7F704e9De2551B38Ce373E8A05EEec61B6BB92D"
     },
     "srm-production": {
       "defaultStartBlock": 34002868,
@@ -58,8 +62,8 @@
       "RiskPoolsController": "0x89481aaE571b83b58d58d0fAE8aC1c9c07ab10e9"
     },
     "local-mumbai": {
-      "defaultStartBlock": 41335680,
-      "RiskPoolsController": "0x4d09476F697265aED30aDdc652b41b0eCb94111a"
+      "defaultStartBlock": 46407716,
+      "RiskPoolsController": "0x9631AC2E8932A282728dE21501eEE8D434ac75A1"
     },
     "local-fuji": {
       "defaultStartBlock": 24106979,
