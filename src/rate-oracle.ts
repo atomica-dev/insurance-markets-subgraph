@@ -4,7 +4,7 @@ import { RateOracle as RateOracleTemplate } from "../generated/templates";
 import { ethereum, BigInt, Address, Bytes, dataSource, DataSourceContext, log } from "@graphprotocol/graph-ts";
 import { addToList } from "./utils";
 
-const DELAY_BLOCK_COUNT = 5;
+const DELAY_BLOCK_COUNT = 10000;
 
 export function isOracleExist(id: string): boolean {
   let oracle = RateOracle.load(id);
